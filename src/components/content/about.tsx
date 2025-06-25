@@ -1,13 +1,12 @@
 import React from 'react';
 import Image from 'next/image';
-import profileImg from '@/assets/images/profile.png';
 
 const AboutContent = () => {
   return (
     <div className="p-6 text-sm md:text-base space-y-4 text-card-foreground">
       <div className="flex flex-col sm:flex-row items-start space-y-4 sm:space-y-0 sm:space-x-6">
         <Image
-          src={profileImg}
+          src="/profile.png"
           alt="Rajath Hegde"
           width={150}
           height={150}
