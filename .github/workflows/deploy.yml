@@ -32,6 +32,9 @@ jobs:
         run: npm install
       - name: Build
         run: npm run build
+        env:
+          # The name of the repository becomes the basePath
+          BASE_PATH: /${{ github.event.repository.name }}
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact

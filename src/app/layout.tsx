@@ -4,8 +4,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from '@/components/theme-provider';
 
 export const metadata: Metadata = {
-  title: 'RetroFolio | A Portfolio by Rajath Hegde',
-  description: "Rajath Hegde's interactive portfolio desktop.",
+  title: 'RetroFolio: An Interactive Portfolio',
+  description: "An interactive portfolio with a retro desktop theme.",
 };
 
 export default function RootLayout({
@@ -23,7 +23,7 @@ export default function RootLayout({
       <body className="font-body antialiased">
         <ThemeProvider
           attribute="class"
-          defaultTheme="light"
+          defaultTheme="dark"
           enableSystem={false}
           disableTransitionOnChange
         >

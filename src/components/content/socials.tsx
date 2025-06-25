@@ -60,7 +60,7 @@ const SocialsContent = () => {
                             href={social.href}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center gap-3 text-blue-400 hover:underline"
+                            className="flex items-center gap-3 text-primary hover:underline"
                         >
                             <Icon />
                             <span>{social.text}</span>

@@ -6,11 +6,12 @@ const AboutContent = () => {
     <div className="p-6 text-sm md:text-base space-y-4 text-card-foreground">
       <div className="flex flex-col sm:flex-row items-start space-y-4 sm:space-y-0 sm:space-x-6">
         <Image
-          src="/profile.png"
+          src="https://img.playbook.com/mj3J7by3sHCDWk50s2eAK_qN5_wOe2va96cBxM6anIM/Z3M6Ly9wbGF5Ym9v/ay1hc3NldHMtcHVi/bGljL2YxZGU5NWZk/LTIxOGUtNDY5Zi1i/M2ZjLTg1MWI1NDNi/Y2Y1Zg"
           alt="Rajath Hegde"
           width={150}
           height={150}
-          className="rounded-lg shadow-md"
+          className="rounded-lg shadow-md object-cover"
+          data-ai-hint="person portrait"
         />
         <div className="flex-1">
           <h2 className="text-lg font-bold mb-2">Hello, I'm Rajath Hegde!</h2>
