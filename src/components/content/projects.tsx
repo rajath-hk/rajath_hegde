@@ -7,28 +7,28 @@ const projects = [
   {
     title: "Lofi YouTube Stream",
     description: "A custom player for lofi YouTube streams, offering a clean and focused listening experience without the clutter of YouTube's interface.",
-    imageUrl: "/lofi.png",
+    imageUrl: "src/components/img/ChatGPT Image Jun 25, 2025, 07_11_47 PM.png",
     hint: "music player",
     repoUrl: "https://github.com/rajath-hk/lofi-youtube-stream"
   },
   {
     title: "Virtual Classroom",
     description: "An online platform that simulates a classroom environment, designed to facilitate interactive learning between students and teachers.",
-    imageUrl: "/virtual-classroom.png",
+    imageUrl: "src/components/img/screencapture-meet-jit-si-FailedTracksOperateSteadily-2025-06-25-19_03_15.png",
     hint: "online learning",
     repoUrl: "https://github.com/rajath-hk/classroom"
   },
   {
     title: "Token Management System",
     description: "A backend system for generating, validating, and managing authentication tokens to ensure secure access to applications.",
-    imageUrl: "/token.png",
+    imageUrl: "src/components/img/screencapture-rajath-hk-github-io-token-2025-06-25-19_06_46.png",
     hint: "security dashboard",
     repoUrl: "https://github.com/rajath-hk/token"
   },
   {
     title: "Demo Homepage",
     description: "A live demonstration of a modern and responsive homepage, showcasing skills in front-end development and user interface design.",
-    imageUrl: "/demo-homepage.png",
+    imageUrl: "src/components/img/image.png",
     hint: "healthcare website",
     demoUrl: "https://rajath-hk.github.io/demo_homepage/"
   }
