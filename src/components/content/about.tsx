@@ -6,7 +6,7 @@ const AboutContent = () => {
     <div className="p-6 text-sm md:text-base space-y-4 text-card-foreground">
       <div className="flex flex-col sm:flex-row items-start space-y-4 sm:space-y-0 sm:space-x-6">
         <Image
-          src="/WhatsApp Image 2025-06-22 at 15.48.47_1df9b3c5.jpg"
+          src="/whatsapp-2025-06-22.jpg"
           alt="Rajath Hegde"
           width={150}
           height={150}
