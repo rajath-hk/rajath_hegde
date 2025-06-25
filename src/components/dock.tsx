@@ -33,7 +33,7 @@ const DockIcon = ({ win, mouseX }: { win: WindowInstance; mouseX: MotionValue<nu
                     style={{ scale }}
                     className={cn(
                         "w-12 h-12 rounded-lg flex items-center justify-center transition-colors duration-200 relative focus:outline-none focus-visible:ring-2 focus-visible:ring-ring backdrop-blur-md",
-                        isFocused ? 'bg-primary/20' : 'bg-card/50 dark:bg-black/30'
+                        isFocused ? 'bg-primary/20' : 'bg-card/80 dark:bg-card/60'
                     )}
                     aria-label={`Focus ${win.title}`}
                 >
@@ -63,7 +63,7 @@ const Dock = () => {
       <motion.div
         onMouseMove={(e) => mouseX.set(e.pageX)}
         onMouseLeave={() => mouseX.set(Infinity)}
-        className="fixed bottom-4 left-1/2 -translate-x-1/2 w-auto bg-card/40 dark:bg-black/20 backdrop-blur-lg border border-black/10 dark:border-white/10 shadow-2xl rounded-2xl p-2 z-[1000] flex flex-row items-end gap-3 h-16"
+        className="fixed bottom-4 left-1/2 -translate-x-1/2 w-auto bg-card/60 dark:bg-card/30 backdrop-blur-xl border border-black/10 dark:border-white/10 shadow-2xl rounded-2xl p-2 z-[1000] flex flex-row items-end gap-3 h-16"
       >
         {windows.map(win => (
             <DockIcon key={win.id} win={win} mouseX={mouseX} />

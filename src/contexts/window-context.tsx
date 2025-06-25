@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useCallback, ReactNode, useEffect } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import type { AppConfig, WindowInstance } from '@/types';
 
 import AboutContent from '@/components/content/about';
@@ -18,13 +18,13 @@ const LegalContent = () => <div className="p-6 text-card-foreground">This is my 
 
 
 const initialAppsData: AppConfig[] = [
-  { id: 'about', title: 'My Story', icon: FileText, content: <AboutContent />, defaultSize: { width: 550, height: 400 } },
-  { id: 'projects', title: 'Projects', icon: Folder, content: <ProjectsContent />, defaultSize: { width: 650, height: 500 } },
-  { id: 'my-work', title: 'My Work', icon: Briefcase, content: <MyWorkContent />, defaultSize: { width: 500, height: 350 } },
-  { id: 'resume', title: 'My Resume', icon: FileText, content: <ResumeContent />, defaultSize: { width: 700, height: 800 } },
-  { id: 'contact', title: 'Contact Me', icon: Mail, content: <ContactContent />, defaultSize: { width: 450, height: 580 } },
-  { id: 'socials', title: 'Socials', icon: Folder, content: <SocialsContent />, defaultSize: { width: 450, height: 350 } },
-  { id: 'legal', title: 'Legal', icon: Folder, content: <LegalContent />, defaultSize: { width: 500, height: 300 } },
+  { id: 'about', title: 'My Story', icon: FileText, content: <AboutContent />, defaultSize: { width: 550, height: 400 }, x: 20, y: 50 },
+  { id: 'projects', title: 'Projects', icon: Folder, content: <ProjectsContent />, defaultSize: { width: 650, height: 500 }, x: 20, y: 150 },
+  { id: 'my-work', title: 'My Work', icon: Briefcase, content: <MyWorkContent />, defaultSize: { width: 500, height: 350 }, x: 20, y: 250 },
+  { id: 'resume', title: 'My Resume', icon: FileText, content: <ResumeContent />, defaultSize: { width: 700, height: 800 }, x: 130, y: 50 },
+  { id: 'contact', title: 'Contact Me', icon: Mail, content: <ContactContent />, defaultSize: { width: 450, height: 580 }, x: 130, y: 150 },
+  { id: 'socials', title: 'Socials', icon: Folder, content: <SocialsContent />, defaultSize: { width: 450, height: 350 }, x: 130, y: 250 },
+  { id: 'legal', title: 'Legal', icon: Folder, content: <LegalContent />, defaultSize: { width: 500, height: 300 }, x: 20, y: 450 },
 ];
 
 
@@ -39,7 +39,7 @@ interface WindowContextType {
   updateWindowPosition: (id: string, x: number, y: number) => void;
   updateWindowSize: (id: string, width: number, height: number) => void;
   updateIconPosition: (id: string, x: number, y: number) => void;
-  arrangeIcons: () => void;
+  resetIconPositions: () => void;
 }
 
 const WindowContext = createContext<WindowContextType | undefined>(undefined);
@@ -66,27 +66,6 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
   const [windowDimensions, setWindowDimensions] = useState({width: 0, height: 0});
   const [isLoaded, setIsLoaded] = useState(false);
 
-  const arrangeIcons = useCallback(() => {
-    setDesktopIcons(prevIcons => {
-        const newIcons = initialAppsData.map((icon, index) => {
-            const gridX = 20;
-            const gridY = 50;
-            const iconWidth = 110;
-            const iconHeight = 120;
-            const numRows = Math.floor((windowDimensions.height - gridY) / iconHeight) -1;
-            const col = Math.floor(index / numRows);
-            const row = index % numRows;
-            return {
-                ...icon,
-                x: gridX + (col * iconWidth),
-                y: gridY + (row * iconHeight),
-            };
-        });
-        saveIconsState(newIcons);
-        return newIcons;
-    });
-  }, [windowDimensions.height]);
-
   // Set up resize listener and initial dimensions
   useEffect(() => {
     const updateDims = () => setWindowDimensions({width: window.innerWidth, height: window.innerHeight});
@@ -109,11 +88,8 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
                 const savedIcon = savedIcons.find(s => s.id === icon.id);
                 return savedIcon ? { ...icon, x: savedIcon.x, y: savedIcon.y } : icon;
             });
-            return updatedIcons.length > 0 ? updatedIcons : prevIcons;
+            return updatedIcons;
         });
-      } else {
-        // If no saved state, arrange icons initially
-        arrangeIcons();
       }
     } catch (error) {
       console.error("Failed to load icon state from localStorage", error);
@@ -151,10 +127,10 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
     }
 
     setIsLoaded(true);
-  }, [windowDimensions, isLoaded, arrangeIcons]);
+  }, [windowDimensions, isLoaded]);
 
 
-  const focusWindow = useCallback((id: string) => {
+  const focusWindow = (id: string) => {
     setZIndexCounter(prev => prev + 1);
     setWindows(prevWindows => {
         const newWindows = prevWindows.map(win =>
@@ -165,9 +141,9 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
         saveWindowsState(newWindows);
         return newWindows;
     });
-  }, [zIndexCounter]);
+  };
 
-  const openWindow = useCallback((app: AppConfig) => {
+  const openWindow = (app: AppConfig) => {
     const existingWindowIndex = windows.findIndex(win => win.id === app.id);
     
     if (existingWindowIndex > -1) {
@@ -203,7 +179,7 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
         return newWindows;
       });
     }
-  }, [windows, zIndexCounter, focusWindow, windowDimensions]);
+  };
 
   const closeWindow = (id: string) => {
     setWindows(prev => {
@@ -267,6 +243,17 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
         return newIcons;
     });
   };
+  
+  const resetIconPositions = () => {
+    setDesktopIcons(prevIcons => {
+        const resetIcons = prevIcons.map(icon => {
+            const initialIcon = initialAppsData.find(i => i.id === icon.id);
+            return initialIcon ? { ...icon, x: initialIcon.x, y: initialIcon.y } : icon;
+        });
+        saveIconsState(resetIcons);
+        return resetIcons;
+    });
+  };
 
   return (
     <WindowContext.Provider value={{
@@ -280,7 +267,7 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
       updateWindowPosition,
       updateWindowSize,
       updateIconPosition,
-      arrangeIcons,
+      resetIconPositions,
     }}>
       {children}
     </WindowContext.Provider>

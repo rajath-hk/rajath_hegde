@@ -5,11 +5,30 @@ import { WindowProvider, useWindows } from '@/contexts/window-context';
 import DesktopIcon from './desktop-icon';
 import Window from './window';
 import Dock from './dock';
-import { ContextMenu } from './context-menu';
-import { Maximize, Sun, Moon, Bell, Power } from 'lucide-react';
+import {
+  Maximize,
+  Sun,
+  Moon,
+  Bell,
+  Power,
+  Wallpaper,
+  ArrowDownUp,
+  RefreshCw,
+  Folder,
+} from 'lucide-react';
 import { useTheme } from 'next-themes';
-import { useToast } from '@/hooks/use-toast';
 import { AnimatePresence } from 'framer-motion';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuPortal,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 const TopBar = () => {
   const { theme, setTheme } = useTheme();
@@ -31,7 +50,7 @@ const TopBar = () => {
   };
 
   return (
-    <div className="absolute top-0 left-0 right-0 h-8 bg-secondary/30 backdrop-blur-sm text-foreground text-sm flex items-center justify-between px-3 z-[2000] border-b">
+    <div className="absolute top-0 left-0 right-0 h-8 bg-background/80 backdrop-blur-lg text-foreground text-sm flex items-center justify-between px-3 z-[2000] border-b">
       <div className="flex items-center gap-2">
         <Maximize size={16} className="cursor-pointer" />
         {mounted && (
@@ -53,53 +72,54 @@ const TopBar = () => {
 
 
 const Desktop = () => {
-  const { windows, desktopIcons, arrangeIcons } = useWindows();
-  const { toast } = useToast();
-  const [menu, setMenu] = React.useState<{ x: number, y: number, visible: boolean }>({ x: 0, y: 0, visible: false });
-
-  const handleContextMenu = (e: React.MouseEvent) => {
-    e.preventDefault();
-    // Only show context menu if right-clicking on the desktop itself, not on an icon or window
-    if ((e.target as HTMLElement).id === 'desktop-background') {
-      setMenu({ x: e.clientX, y: e.clientY, visible: true });
-    } else {
-       closeMenu();
-    }
-  };
-
-  const closeMenu = () => {
-    setMenu({ ...menu, visible: false });
-  };
-  
-  const handleDesktopClick = (e: React.MouseEvent) => {
-    if ((e.target as HTMLElement).id === 'desktop-background') {
-      closeMenu();
-    }
-  };
-
-  const handleNotImplemented = () => {
-    toast({
-      title: 'Feature Not Available',
-      description: 'This feature has not been implemented yet.',
-    });
-  };
+  const { windows, desktopIcons, resetIconPositions } = useWindows();
+  const desktopRef = React.useRef<HTMLDivElement>(null);
 
   return (
     <>
-      <div id="desktop-background" className="absolute inset-0 pt-8" onContextMenu={handleContextMenu} onClick={handleDesktopClick}>
+      <div
+        ref={desktopRef}
+        id="desktop-area"
+        className="absolute inset-0 pt-8"
+      >
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <div className="absolute inset-0" />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-56">
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger>
+                <ArrowDownUp className="mr-2 h-4 w-4" />
+                <span>Sort by</span>
+              </DropdownMenuSubTrigger>
+              <DropdownMenuPortal>
+                <DropdownMenuSubContent>
+                  <DropdownMenuItem disabled>Name</DropdownMenuItem>
+                  <DropdownMenuItem disabled>Date Modified</DropdownMenuItem>
+                </DropdownMenuSubContent>
+              </DropdownMenuPortal>
+            </DropdownMenuSub>
+            <DropdownMenuItem onClick={resetIconPositions}>
+              <RefreshCw className="mr-2 h-4 w-4" />
+              <span>Reset Icon Positions</span>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem disabled>
+              <Wallpaper className="mr-2 h-4 w-4" />
+              <span>Change Wallpaper</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem disabled>
+              <Folder className="mr-2 h-4 w-4" />
+              <span>New Folder</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
         {desktopIcons.map((app) => (
-          <DesktopIcon key={app.id} app={app} />
+          <DesktopIcon key={app.id} app={app} constraintsRef={desktopRef} />
         ))}
       </div>
-      {menu.visible && (
-        <ContextMenu
-          x={menu.x}
-          y={menu.y}
-          onClose={closeMenu}
-          onArrangeIcons={arrangeIcons}
-          onNotImplemented={handleNotImplemented}
-        />
-      )}
+
       <AnimatePresence>
         {windows.map((win) => (
           !win.isMinimized && <Window key={win.id} {...win} />

@@ -76,7 +76,7 @@ const Window = (props: WindowProps) => {
   return (
     <motion.div
       ref={windowRef}
-      className="absolute bg-card/80 backdrop-blur-md border border-black/10 dark:border-white/20 rounded-lg flex flex-col shadow-lg"
+      className="absolute bg-card/80 dark:bg-card/60 backdrop-blur-xl border rounded-lg flex flex-col shadow-lg"
       style={{
         width: size.width,
         height: size.height,
@@ -95,7 +95,7 @@ const Window = (props: WindowProps) => {
       }}
     >
       <header
-        className="flex items-center justify-center relative px-3 h-9 flex-shrink-0 border-b"
+        className="flex items-center justify-center relative px-3 h-9 flex-shrink-0 border-b bg-black/5 dark:bg-white/5"
         onDoubleClick={handleDoubleClick}
         style={{ cursor: isMaximized ? 'default' : isResizing ? 'default' : 'grab' }}
       >
@@ -115,7 +115,7 @@ const Window = (props: WindowProps) => {
             isFocused ? "text-foreground" : "text-muted-foreground/80"
           )}>{title}</span>
       </header>
-      <div className="flex-1 rounded-b-lg overflow-hidden bg-card/90">
+      <div className="flex-1 rounded-b-lg overflow-hidden">
         <div className="w-full h-full overflow-auto">
           {content}
         </div>
