@@ -2,13 +2,17 @@ import React from 'react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Github, ExternalLink } from 'lucide-react';
+import lofiImg from '@/assets/images/lofi.png';
+import virtualClassroomImg from '@/assets/images/virtual-classroom.png';
+import tokenImg from '@/assets/images/token.png';
+import demoHomepageImg from '@/assets/images/demo-homepage.png';
 
 const projects = [
 	{
 		title: 'Lofi YouTube Stream',
 		description:
 			'A custom player for lofi YouTube streams, offering a clean and focused listening experience without the clutter of YouTube\'s interface.',
-		imageUrl: '/ChatGPT Image Jun 25, 2025, 07_11_47 PM.png',
+		image: lofiImg,
 		hint: 'music player',
 		repoUrl: 'https://github.com/rajath-hk/lofi-youtube-stream',
 	},
@@ -16,7 +20,7 @@ const projects = [
 		title: 'Virtual Classroom',
 		description:
 			'An online platform that simulates a classroom environment, designed to facilitate interactive learning between students and teachers.',
-		imageUrl: '/screencapture-meet-jit-si-FailedTracksOperateSteadily-2025-06-25-19_03_15.png',
+		image: virtualClassroomImg,
 		hint: 'online learning',
 		repoUrl: 'https://github.com/rajath-hk/classroom',
 	},
@@ -24,7 +28,7 @@ const projects = [
 		title: 'Token Management System',
 		description:
 			'A backend system for generating, validating, and managing authentication tokens to ensure secure access to applications.',
-		imageUrl: '/screencapture-rajath-hk-github-io-token-2025-06-25-19_06_46.png',
+		image: tokenImg,
 		hint: 'security dashboard',
 		repoUrl: 'https://github.com/rajath-hk/token',
 	},
@@ -32,7 +36,7 @@ const projects = [
 		title: 'Demo Homepage',
 		description:
 			'A live demonstration of a modern and responsive homepage, showcasing skills in front-end development and user interface design.',
-		imageUrl: '/image.png',
+		image: demoHomepageImg,
 		hint: 'healthcare website',
 		demoUrl: 'https://rajath-hk.github.io/demo_homepage/',
 	},
@@ -51,7 +55,7 @@ const ProjectsContent = () => {
 						<div className="md:w-1/3">
 							<div className="rounded-lg overflow-hidden shadow-md">
 								<Image
-									src={project.imageUrl}
+									src={project.image}
 									alt={project.title}
 									width={400}
 									height={300}
