@@ -4,7 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from '@/components/theme-provider';
 
 export const metadata: Metadata = {
-  title: 'RetroFolio: An Interactive Portfolio',
+  title: 'Rajath Hegde',
   description: "An interactive portfolio with a retro desktop theme.",
 };
 
