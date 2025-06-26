@@ -61,9 +61,15 @@ const TopBar = () => {
 
   return (
     <div className="absolute top-0 left-0 right-0 h-8 bg-background/80 backdrop-blur-lg text-foreground text-sm flex items-center justify-between px-3 z-[2000] border-b">
-      <div className="flex items-center gap-2">
-        <img src="https://img.playbook.com/2cxKUvJGeod2w7_Wl7TOCSg-ZsH5CPxj2Hr_vj9C1ng/Z3M6Ly9wbGF5Ym9v/ay1hc3NldHMtcHVi/bGljL2EzN2ZlMzUy/LWY4NjktNGNjYS05/NTRkLTU1NTY2ZTRk/MmJlMA" alt="Rajath Hegde Logo" className="h-6 w-auto" style={{marginRight: 6}} />
-        <span className="font-bold tracking-tight text-base">Rajath Hegde</span>
+      <div className="flex items-center gap-1">
+        <button onClick={toggleFullScreen} className="p-1 rounded-md" aria-label="Toggle Fullscreen">
+          {isFullscreen ? <Shrink size={16} /> : <Expand size={16} />}
+        </button>
+        {mounted && (
+          <button onClick={toggleTheme} className="p-1 rounded-md" aria-label="Toggle Theme">
+            {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+          </button>
+        )}
       </div>
       <div className="font-medium">
         {mounted ? time : ''}
