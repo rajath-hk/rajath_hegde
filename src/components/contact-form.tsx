@@ -5,7 +5,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { contactFormSchema, type ContactFormData } from '@/lib/schemas';
 import { useToast } from '@/hooks/use-toast';
-import { sendMessage } from '@/actions/send-message';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -25,28 +24,18 @@ export function ContactForm() {
   const { isSubmitting } = form.formState;
 
   async function onSubmit(data: ContactFormData) {
-    try {
-      const result = await sendMessage(data);
-      if (result.success) {
-        toast({
-          title: 'Message Sent!',
-          description: result.message,
-        });
-        form.reset();
-      } else {
-        toast({
-          variant: 'destructive',
-          title: 'Submission Failed',
-          description: result.message,
-        });
-      }
-    } catch (error) {
-      toast({
-        variant: 'destructive',
-        title: 'An Error Occurred',
-        description: 'Something went wrong on the server. Please try again.',
-      });
-    }
+    // This is a static site, so we can't use server actions.
+    // Instead, we simulate the submission.
+    console.log('Form submitted (simulation):', data);
+
+    // Simulate network delay to show the 'Sending...' state
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    toast({
+      title: 'Message Sent!',
+      description: 'Your message has been sent successfully! (This is a simulation)',
+    });
+    form.reset();
   }
 
   return (
