@@ -1,7 +1,8 @@
-'use client';
+"use client";
 
 import React from 'react';
 import { useTheme } from 'next-themes';
+import { useWindows } from '@/contexts/window-context';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,6 +21,7 @@ const notifications = [
 
 const TopBar = () => {
   const { theme, setTheme } = useTheme();
+  const { openWindow, desktopIcons } = useWindows();
   const [time, setTime] = React.useState('');
   const [mounted, setMounted] = React.useState(false);
   const [isFullscreen, setIsFullscreen] = React.useState(false);
@@ -62,6 +64,12 @@ const TopBar = () => {
   return (
     <div className="absolute top-0 left-0 right-0 h-8 bg-background/80 backdrop-blur-lg text-foreground text-sm flex items-center justify-between px-3 z-[2000] border-b">
       <div className="flex items-center gap-1">
+        <nav aria-label="Quick navigation" className="hidden sm:flex items-center gap-2 mr-2">
+          <button onClick={() => openWindow(desktopIcons.find(d => d.id === 'about')!)} className="px-2 py-0.5 rounded text-sm hover:bg-accent/10" aria-label="Open About">About</button>
+          <button onClick={() => openWindow(desktopIcons.find(d => d.id === 'projects')!)} className="px-2 py-0.5 rounded text-sm hover:bg-accent/10" aria-label="Open Projects">Projects</button>
+          <button onClick={() => openWindow(desktopIcons.find(d => d.id === 'resume')!)} className="px-2 py-0.5 rounded text-sm hover:bg-accent/10" aria-label="Open Resume">Resume</button>
+          <button onClick={() => openWindow(desktopIcons.find(d => d.id === 'contact')!)} className="px-2 py-0.5 rounded text-sm hover:bg-accent/10" aria-label="Open Contact">Contact</button>
+        </nav>
         <button onClick={toggleFullScreen} className="p-1 rounded-md" aria-label="Toggle Fullscreen">
           {isFullscreen ? <Shrink size={16} /> : <Expand size={16} />}
         </button>
