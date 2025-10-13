@@ -9,6 +9,7 @@ import ContactContent from '@/components/content/contact';
 import ResumeContent from '@/components/content/resume';
 import MyWorkContent from '@/components/content/my-work';
 import SocialsContent from '@/components/content/socials';
+import LandingContent from '@/components/content/landing';
 import { FileText, Folder, Mail, Briefcase } from 'lucide-react';
 
 const ICON_STATE_KEY = 'retrofolio-icons-v2';
@@ -18,7 +19,8 @@ const LegalContent = () => <div className="p-6 text-card-foreground">This is my 
 
 
 const initialAppsData: AppConfig[] = [
-  { id: 'about', title: 'My Story', icon: FileText, content: <AboutContent />, defaultSize: { width: 550, height: 400 }, x: 20, y: 50 },
+  { id: 'landing', title: 'Home', icon: FileText, content: <LandingContent />, defaultSize: { width: 700, height: 420 }, x: 20, y: 20 },
+  { id: 'about', title: 'My Story', icon: FileText, content: <AboutContent />, defaultSize: { width: 550, height: 400 }, x: 20, y: 100 },
   { id: 'projects', title: 'Projects', icon: Folder, content: <ProjectsContent />, defaultSize: { width: 650, height: 500 }, x: 20, y: 150 },
   { id: 'my-work', title: 'My Work', icon: Briefcase, content: <MyWorkContent />, defaultSize: { width: 500, height: 350 }, x: 20, y: 250 },
   { id: 'resume', title: 'My Resume', icon: FileText, content: <ResumeContent />, defaultSize: { width: 700, height: 800 }, x: 130, y: 50 },
