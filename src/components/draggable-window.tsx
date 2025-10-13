@@ -2,7 +2,7 @@
 
 import React, { useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Window as WindowComponent } from '@/components/window';
+import Window from '@/components/window';
 
 interface Position {
   x: number;
@@ -55,9 +55,9 @@ export function DraggableWindow({
             }));
           }}
         >
-          <WindowComponent title={title} onClose={onClose}>
+          <Window title={title} onClose={onClose}>
             {children}
-          </WindowComponent>
+          </Window>
         </motion.div>
       )}
     </AnimatePresence>

@@ -7,7 +7,9 @@ import { cn } from '@/lib/utils';
 import { X, Minus, Square } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-type WindowProps = WindowInstance;
+type WindowProps = WindowInstance & {
+  children?: React.ReactNode;
+};
 
 const Window = (props: WindowProps) => {
   const {

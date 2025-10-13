@@ -43,7 +43,7 @@ export function KeyboardShortcuts() {
 
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
-      const pressedKeys = [];
+      const pressedKeys: string[] = [];
       if (event.ctrlKey) pressedKeys.push('Ctrl');
       if (event.shiftKey) pressedKeys.push('Shift');
       if (event.altKey) pressedKeys.push('Alt');
