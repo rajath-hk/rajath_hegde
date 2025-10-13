@@ -9,6 +9,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
+import { TooltipWrapper } from '@/components/tooltip-wrapper';
 
 export function ContactForm() {
   const { toast } = useToast();
@@ -85,9 +86,11 @@ export function ContactForm() {
             </FormItem>
           )}
         />
-        <Button type="submit" disabled={isSubmitting} className="w-full">
-          {isSubmitting ? 'Sending...' : 'Send Message'}
-        </Button>
+        <TooltipWrapper content="Send your message to get in touch">
+          <Button type="submit" disabled={isSubmitting} className="w-full">
+            {isSubmitting ? 'Sending...' : 'Send Message'}
+          </Button>
+        </TooltipWrapper>
       </form>
     </Form>
   );
