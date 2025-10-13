@@ -71,3 +71,15 @@ This is the final and most important step to enable the automated deployment.
 You're all set! The deployment workflow (defined in `.github/workflows/deploy.yml`) will automatically run every time you push a change to your `main` branch.
 
 After the first push, the action will start. You can monitor its progress in the **`Actions`** tab of your repository. Once it's complete (it usually takes a couple of minutes), your portfolio will be live at the URL shown in the `Settings > Pages` screen. The URL will look something like this: `https://YOUR_USERNAME.github.io/YOUR_REPOSITORY/`.
+
+## Optional Configuration
+
+1. Configure contact form submissions:
+    - Create a Formspree form at https://formspree.io/ (or any form endpoint) and set the endpoint URL.
+    - Add the endpoint to your environment variables when deploying as `NEXT_PUBLIC_FORM_ENDPOINT` (e.g., `https://formspree.io/f/{your-id}`).
+
+2. Add Google Analytics (GA4):
+    - Replace `G-XXXXXXXXXX` in `src/app/layout.tsx` with your GA4 measurement ID.
+
+3. Update site URL and headshot in `src/app/layout.tsx` JSON-LD block and `public/sitemap.xml`.
+
