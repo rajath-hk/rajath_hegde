@@ -1,33 +1,63 @@
 'use client';
 
-import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect, Suspense } from 'react';
 import type { AppConfig, WindowInstance } from '@/types';
 
-import AboutContent from '@/components/content/about';
-import ProjectsContent from '@/components/content/projects';
-import ContactContent from '@/components/content/contact';
-import ResumeContent from '@/components/content/resume';
-import MyWorkContent from '@/components/content/my-work';
-import SocialsContent from '@/components/content/socials';
-import LandingContent from '@/components/content/landing';
-import StoryContent from '@/components/content/story';
 import { FileText, Folder, Mail, Briefcase } from 'lucide-react';
 
 const ICON_STATE_KEY = 'retrofolio-icons-v2';
 const WINDOW_STATE_KEY = 'retrofolio-windows-v2';
 
-const LegalContent = () => <div className="p-6 text-card-foreground">This is my portfolio. To access this file, please contact me.</div>;
+// Define a type for our content components
+type ContentComponent = React.ComponentType;
+
+// Create lazy-loaded components
+const getContentComponent = (id: string): ContentComponent => {
+  switch (id) {
+    case 'landing':
+      return React.lazy(() => import('@/components/content/landing'));
+    case 'about':
+      return React.lazy(() => import('@/components/content/about'));
+    case 'projects':
+      return React.lazy(() => import('@/components/content/projects'));
+    case 'my-work':
+      return React.lazy(() => import('@/components/content/my-work'));
+    case 'resume':
+      return React.lazy(() => import('@/components/content/resume'));
+    case 'contact':
+      return React.lazy(() => import('@/components/content/contact'));
+    case 'socials':
+      return React.lazy(() => import('@/components/content/socials'));
+    case 'story':
+      return React.lazy(() => import('@/components/content/story'));
+    case 'legal':
+      const LegalContent = () => <div className="p-6 text-card-foreground">This is my portfolio. To access this file, please contact me.</div>;
+      return LegalContent;
+    default:
+      return () => <div>Content not found</div>;
+  }
+};
+
+// Create content element with proper Suspense handling
+const createContentElement = (id: string) => {
+  const Component = getContentComponent(id);
+  return (
+    <Suspense fallback={<div className="p-6">Loading...</div>}>
+      <Component />
+    </Suspense>
+  );
+};
 
 const initialAppsData: AppConfig[] = [
-  { id: 'landing', title: 'Home', icon: FileText, content: <LandingContent />, defaultSize: { width: 700, height: 420 }, x: 20, y: 20 },
-  { id: 'about', title: 'My Story', icon: FileText, content: <AboutContent />, defaultSize: { width: 550, height: 400 }, x: 20, y: 100 },
-  { id: 'projects', title: 'Projects', icon: Folder, content: <ProjectsContent />, defaultSize: { width: 650, height: 500 }, x: 20, y: 150 },
-  { id: 'my-work', title: 'My Work', icon: Briefcase, content: <MyWorkContent />, defaultSize: { width: 500, height: 350 }, x: 20, y: 250 },
-  { id: 'resume', title: 'My Resume', icon: FileText, content: <ResumeContent />, defaultSize: { width: 700, height: 800 }, x: 130, y: 50 },
-  { id: 'contact', title: 'Contact Me', icon: Mail, content: <ContactContent />, defaultSize: { width: 450, height: 580 }, x: 130, y: 150 },
-  { id: 'socials', title: 'Socials', icon: Folder, content: <SocialsContent />, defaultSize: { width: 450, height: 350 }, x: 130, y: 250 },
-  { id: 'story', title: 'Testimonials', icon: Folder, content: <StoryContent />, defaultSize: { width: 550, height: 400 }, x: 20, y: 350 },
-  { id: 'legal', title: 'Legal', icon: Folder, content: <LegalContent />, defaultSize: { width: 500, height: 300 }, x: 20, y: 450 },
+  { id: 'landing', title: 'Home', icon: FileText, content: null, defaultSize: { width: 700, height: 420 }, x: 20, y: 20 },
+  { id: 'about', title: 'My Story', icon: FileText, content: null, defaultSize: { width: 550, height: 400 }, x: 20, y: 100 },
+  { id: 'projects', title: 'Projects', icon: Folder, content: null, defaultSize: { width: 650, height: 500 }, x: 20, y: 150 },
+  { id: 'my-work', title: 'My Work', icon: Briefcase, content: null, defaultSize: { width: 500, height: 350 }, x: 20, y: 250 },
+  { id: 'resume', title: 'My Resume', icon: FileText, content: null, defaultSize: { width: 700, height: 800 }, x: 130, y: 50 },
+  { id: 'contact', title: 'Contact Me', icon: Mail, content: null, defaultSize: { width: 450, height: 580 }, x: 130, y: 150 },
+  { id: 'socials', title: 'Socials', icon: Folder, content: null, defaultSize: { width: 450, height: 350 }, x: 130, y: 250 },
+  { id: 'story', title: 'Testimonials', icon: Folder, content: null, defaultSize: { width: 550, height: 400 }, x: 20, y: 350 },
+  { id: 'legal', title: 'Legal', icon: Folder, content: null, defaultSize: { width: 500, height: 300 }, x: 20, y: 450 },
 ];
 
 interface WindowContextType {
@@ -106,14 +136,14 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
 
   // Save icon positions to localStorage
   useEffect(() => {
-    if (mounted) {
+    if (mounted && typeof localStorage !== 'undefined') {
       localStorage.setItem(ICON_STATE_KEY, JSON.stringify(desktopIcons));
     }
   }, [desktopIcons, mounted]);
 
   // Save window states to localStorage
   useEffect(() => {
-    if (mounted) {
+    if (mounted && typeof localStorage !== 'undefined') {
       localStorage.setItem(WINDOW_STATE_KEY, JSON.stringify(windows));
     }
   }, [windows, mounted]);
@@ -122,21 +152,18 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
     setWindows(prev => {
       const existingWindow = prev.find(w => w.id === app.id);
       if (existingWindow) {
-        // If window exists, bring it to front, unminimize it, and focus it
-        return prev.map(w =>
-          w.id === app.id
-            ? {
-                ...w,
-                isMinimized: false,
-                isFocused: true,
-                zIndex: Math.max(...prev.map(win => win.zIndex), 0) + 1,
-              }
-            : { ...w, isFocused: false }
+        // If window exists, bring it to front and unminimize it
+        return prev.map(w => 
+          w.id === app.id 
+            ? { ...w, isMinimized: false, zIndex: Math.max(...prev.map(win => win.zIndex), 0) + 1 } 
+            : w
         );
       } else {
-        // Create new window (unfocus others, then append)
+        // Create new window with proper content
+        const content = createContentElement(app.id);
         const newWindow: WindowInstance = {
           ...app,
+          content,
           x: app.x ?? 100,
           y: app.y ?? 100,
           width: app.defaultSize?.width ?? 500,
@@ -146,9 +173,16 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
           isMaximized: false,
           isFocused: true,
         };
-        return [...prev.map(w => ({ ...w, isFocused: false })), newWindow];
+        return [...prev, newWindow];
       }
     });
+    
+    // Unfocus other windows
+    setWindows(prev => 
+      prev.map(w => 
+        w.id === app.id ? { ...w, isFocused: true } : { ...w, isFocused: false }
+      )
+    );
   };
 
   const closeWindow = (id: string) => {
