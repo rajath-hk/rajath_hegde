@@ -1,9 +1,10 @@
 import React from 'react';
+import { basePath } from '@/lib/constants';
+
+const headshotPath = `${basePath}/images/headshot.jpg`;
 
 export default function Landing() {
   // Use basePath for images in GitHub Pages
- const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
- const headshotPath = `${basePath}/images/headshot.jpg`;
  const resumePath = `${basePath}/resume.pdf`;
   return (
     <div className="p-6 flex flex-col min-h-full">

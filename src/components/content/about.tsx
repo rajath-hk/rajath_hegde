@@ -12,9 +12,7 @@ const AboutContent = () => {
 
   // Use basePath for images in GitHub Pages
   const basePath = process.env.BASE_PATH || '';
-  const imagePath = basePath 
-    ? `${basePath}/_next/static/media/mj3J7by3sHCDWk50s2eAK_qN5_wOe2va96cBxM6anIM.Z3M6Ly9wbGF5Ym9vay1hc3NldHMtcHVi.bGljL2YxZGU5NWZk.LTIxOGUtNDY5Zi1i.M2ZjLTg1MWI1NDNi.Y2Y1Zg.jpg`
-    : "https://img.playbook.com/mj3J7by3sHCDWk50s2eAK_qN5_wOe2va96cBxM6anIM/Z3M6Ly9wbGF5Ym9vay1hc3NldHMtcHVi.bGljL2YxZGU5NWZk.LTIxOGUtNDY5Zi1i.M2ZjLTg1MWI1NDNi.Y2Y1Zg";
+  const imagePath = `${basePath}/images/headshot.jpg`;
 
   return (
     <div className="prose prose-sm md:prose-base dark:prose-invert max-w-none p-6 space-y-6">

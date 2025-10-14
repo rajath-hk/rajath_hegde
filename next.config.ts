@@ -1,11 +1,11 @@
+// 从环境变量中读取 basePath，提供空字符串作为默认值
+export const basePath = process.env.BASE_PATH || '';
 import type {NextConfig} from 'next';
-
-// This is set in the GitHub Actions workflow
-const basePath = process.env.BASE_PATH || '';
+import { basePath as envBasePath } from './src/lib/constants';
 
 const nextConfig: NextConfig = {
   output: 'export',
-  basePath: basePath,
+  basePath: envBasePath,
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -15,7 +15,6 @@ const nextConfig: NextConfig = {
   images: {
     unoptimized: true,
   },
-  // Add trailing slash to all paths
   trailingSlash: true,
 };
 

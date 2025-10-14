@@ -26,6 +26,30 @@ const Testimonials = () => {
     },
   ];
 
+  const stories = [
+    {
+      id: 1,
+      name: "John Doe",
+      avatar: `${basePath}/images/headshot.jpg`,
+      timestamp: "5 min ago",
+      message: "Just posted a new article on the blog"
+    },
+    {
+      id: 2,
+      name: "Jane Smith",
+      avatar: `${basePath}/images/headshot.jpg`,
+      timestamp: "10 min ago",
+      message: "Added new photos to the gallery"
+    },
+    {
+      id: 3,
+      name: "Mike Johnson",
+      avatar: `${basePath}/images/headshot.jpg`,
+      timestamp: "15 min ago",
+      message: "Updated his profile information"
+    }
+  ];
+
   return (
     <div className="p-6">
       <div className="mb-8 text-center">

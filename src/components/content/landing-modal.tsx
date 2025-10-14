@@ -1,10 +1,11 @@
 import React from 'react';
+import { basePath } from '@/lib/constants';
 
-export default function LandingModal() {
+const LandingModal = () => {
   return (
     <div>
       <div className="flex items-center gap-4">
-        <img src="/images/headshot.jpg" alt="Profile" className="w-24 h-24 rounded-full object-cover" />
+        <img src={`${basePath}/images/headshot.jpg`} alt="Profile" className="w-24 h-24 rounded-full object-cover" />
         <div>
           <h3 className="text-xl font-semibold">Rajath Hegde</h3>
           <p className="text-sm text-muted-foreground">Full Stack Developer — Building delightful web experiences.</p>
@@ -16,3 +17,5 @@ export default function LandingModal() {
     </div>
   );
 }
+
+export default LandingModal;
