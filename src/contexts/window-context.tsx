@@ -155,7 +155,7 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
         // If window exists, bring it to front and unminimize it
         return prev.map(w => 
           w.id === app.id 
-            ? { ...w, isMinimized: false, zIndex: Math.max(...prev.map(win => win.zIndex)) + 1 } 
+            ? { ...w, isMinimized: false, zIndex: Math.max(0, ...prev.map(win => win.zIndex)) + 1 } 
             : w
         );
       } else {
