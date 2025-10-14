@@ -63,7 +63,11 @@ const Dock = () => {
       <motion.div
         onMouseMove={(e) => mouseX.set(e.pageX)}
         onMouseLeave={() => mouseX.set(Infinity)}
-        className="fixed bottom-4 left-1/2 -translate-x-1/2 w-auto bg-card/40 backdrop-blur-lg border border-black/10 dark:border-white/10 shadow-xl rounded-full p-2 z-[1000] flex flex-row items-end gap-3 h-16"
+        className="fixed bottom-4 left-1/2 -translate-x-1/2 w-auto bg-card/40 backdrop-blur-lg border border-black/10 dark:border-white/10 shadow-xl rounded-full p-2 z-[1000] flex flex-row items-end gap-3 h-16 sm:bottom-4"
+        style={{
+          maxWidth: '90vw',
+          overflowX: 'auto',
+        }}
       >
         {windows.map(win => (
             <DockIcon key={win.id} win={win} mouseX={mouseX} />

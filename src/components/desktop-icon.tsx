@@ -28,7 +28,7 @@ const DesktopIcon = ({ app, constraintsRef }: DesktopIconProps) => {
     <motion.button
       // Use motion values for position via `style`. Framer Motion will manage this.
       style={{ x, y, position: 'absolute' }}
-      className="flex flex-col items-center justify-center text-center focus:outline-none p-2 select-none w-24"
+      className="flex flex-col items-center justify-center text-center focus:outline-none p-2 select-none w-20 sm:w-24"
       aria-label={`Open ${app.title}`}
       onDoubleClick={(e) => {
         e.stopPropagation();
@@ -43,10 +43,10 @@ const DesktopIcon = ({ app, constraintsRef }: DesktopIconProps) => {
       }}
       whileHover={{ scale: 1.1 }}
     >
-      <div className="w-16 h-16 rounded-xl bg-black/10 dark:bg-white/10 backdrop-blur-lg flex items-center justify-center shadow-lg border border-black/10 dark:border-white/10">
-        <IconComponent className="w-9 h-9 text-foreground" />
+      <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl bg-black/10 dark:bg-white/10 backdrop-blur-lg flex items-center justify-center shadow-lg border border-black/10 dark:border-white/10">
+        <IconComponent className="w-7 h-7 sm:w-9 sm:h-9 text-foreground" />
       </div>
-      <span className="text-xs mt-2 text-foreground font-semibold [text-shadow:0_1px_2px_rgba(255,255,255,0.2)] dark:[text-shadow:0_1px_2px_rgba(0,0,0,0.5)]">
+      <span className="text-xs mt-2 text-foreground font-semibold [text-shadow:0_1px_2px_rgba(255,255,255,0.2)] dark:[text-shadow:0_1px_2px_rgba(0,0,0,0.5)] line-clamp-2">
         {app.title}
       </span>
     </motion.button>

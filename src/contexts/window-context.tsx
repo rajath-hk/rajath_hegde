@@ -37,6 +37,7 @@ interface WindowContextType {
   closeWindow: (id: string) => void;
   focusWindow: (id: string) => void;
   toggleMinimize: (id: string) => void;
+  minimizeWindow: (id: string) => void;
   toggleMaximize: (id: string) => void;
   updateWindowPosition: (id: string, x: number, y: number) => void;
   updateWindowSize: (id: string, width: number, height: number) => void;
@@ -205,6 +206,19 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
+  const minimizeWindow = (id: string) => {
+    setWindows(prev => {
+        const newWindows = prev.map(win => {
+            if (win.id === id) {
+                return { ...win, isMinimized: true, isFocused: false };
+            }
+            return win;
+        });
+        saveWindowsState(newWindows);
+        return newWindows;
+    });
+  };
+
   const toggleMaximize = (id: string) => {
     setWindows(prev => {
         const newWindows = prev.map(win => {
@@ -265,6 +279,7 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
       closeWindow,
       focusWindow,
       toggleMinimize,
+      minimizeWindow,
       toggleMaximize,
       updateWindowPosition,
       updateWindowSize,

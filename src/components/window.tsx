@@ -5,7 +5,7 @@ import type { WindowInstance } from '@/types';
 import { useWindows } from '@/contexts/window-context';
 import { cn } from '@/lib/utils';
 import { X, Minus, Square } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 type WindowProps = WindowInstance & {
   children?: React.ReactNode;
@@ -27,10 +27,32 @@ const Window = (props: WindowProps) => {
 
   const [size, setSize] = useState({ width, height });
   const [isResizing, setIsResizing] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   
   const windowRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => { setSize({ width, height }); }, [width, height]);
+  // Check if we're on mobile
+  useEffect(() => {
+    const checkIsMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkIsMobile();
+    window.addEventListener('resize', checkIsMobile);
+    return () => window.removeEventListener('resize', checkIsMobile);
+  }, []);
+
+  useEffect(() => { 
+    // On mobile, make windows take up most of the screen
+    if (isMobile) {
+      setSize({ 
+        width: window.innerWidth - 20, 
+        height: Math.min(window.innerHeight - 100, 500) 
+      });
+    } else {
+      setSize({ width, height }); 
+    }
+  }, [width, height, isMobile]);
 
   const handleResizeStart = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.button !== 0) return;
@@ -47,21 +69,21 @@ const Window = (props: WindowProps) => {
   }
 
   const handleMouseMove = useCallback((e: MouseEvent) => {
-    if (isResizing) {
+    if (isResizing && !isMobile) {
       if (!windowRef.current) return;
       const rect = windowRef.current.getBoundingClientRect();
       const newWidth = e.clientX - rect.left;
       const newHeight = e.clientY - rect.top;
       setSize({ width: Math.max(300, newWidth), height: Math.max(200, newHeight) });
     }
-  }, [isResizing]);
+  }, [isResizing, isMobile]);
 
   const handleMouseUp = useCallback(() => {
-    if (isResizing) {
+    if (isResizing && !isMobile) {
       setIsResizing(false);
       updateWindowSize(id, size.width, size.height);
     }
-  }, [isResizing, id, size, updateWindowSize]);
+  }, [isResizing, id, size, updateWindowSize, isMobile]);
 
   useEffect(() => {
     if (isResizing) {
@@ -80,26 +102,40 @@ const Window = (props: WindowProps) => {
       ref={windowRef}
       className="absolute bg-card/80 dark:bg-card/60 backdrop-blur-xl border rounded-lg flex flex-col shadow-lg"
       style={{
-        width: size.width,
-        height: size.height,
+        width: isMobile ? 'calc(100vw - 20px)' : size.width,
+        height: isMobile ? Math.min(window.innerHeight - 100, 500) : size.height,
         zIndex,
+        left: isMobile ? 10 : x,
+        top: isMobile ? 50 : y,
       }}
       layout
-      initial={{ opacity: 0, scale: 0.9, x, y: y + 20 }}
-      animate={{ opacity: 1, scale: 1, x, y }}
-      exit={{ opacity: 0, scale: 0.9, y: y + 20 }}
-      transition={{ type: 'spring', stiffness: 500, damping: 40 }}
+      initial={{ opacity: 0, scale: 0.8, x: isMobile ? 10 : x, y: (isMobile ? 50 : y) + 20 }}
+      animate={{ 
+        opacity: 1, 
+        scale: 1, 
+        x: isMobile ? 10 : x, 
+        y: isMobile ? 50 : y,
+        transition: { type: 'spring', stiffness: 500, damping: 40 }
+      }}
+      exit={{ 
+        opacity: 0, 
+        scale: 0.8, 
+        y: (isMobile ? 50 : y) + 20,
+        transition: { duration: 0.2 }
+      }}
       onMouseDown={() => focusWindow(id)}
-      drag={!isMaximized && !isResizing}
+      drag={!isMobile && !isMaximized && !isResizing}
       dragMomentum={false}
       onDragEnd={(e, info) => {
-        updateWindowPosition(id, x + info.offset.x, y + info.offset.y);
+        if (!isMobile) {
+          updateWindowPosition(id, x + info.offset.x, y + info.offset.y);
+        }
       }}
     >
       <header
         className="flex items-center justify-center relative px-3 h-9 flex-shrink-0 border-b bg-black/5 dark:bg-white/5"
         onDoubleClick={handleDoubleClick}
-        style={{ cursor: isMaximized ? 'default' : isResizing ? 'default' : 'grab' }}
+        style={{ cursor: isMobile ? 'default' : isMaximized ? 'default' : isResizing ? 'default' : 'grab' }}
       >
         <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
             <button onClick={(e) => { e.stopPropagation(); closeWindow(id) }} className="w-3.5 h-3.5 rounded-full bg-[#ff5f57] flex items-center justify-center group/btn" aria-label="Close">
@@ -118,14 +154,19 @@ const Window = (props: WindowProps) => {
           )}>{title}</span>
       </header>
       <div className="flex-1 rounded-b-lg overflow-hidden">
-        <div className="w-full h-full overflow-auto">
+        <motion.div 
+          className="w-full h-full overflow-auto"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1, transition: { delay: 0.1 } }}
+          exit={{ opacity: 0 }}
+        >
           {content}
-        </div>
+        </motion.div>
       </div>
        <div
         className={cn(
           "absolute bottom-0 right-0 w-4 h-4 cursor-se-resize",
-          isMaximized && "hidden"
+          (isMaximized || isMobile) && "hidden"
         )}
         onMouseDown={handleResizeStart}
       />

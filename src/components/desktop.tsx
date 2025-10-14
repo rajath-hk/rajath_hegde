@@ -1,4 +1,3 @@
-
 'use client';
 
 import React from 'react';
@@ -17,6 +16,9 @@ import {
 import { useWindows } from '@/contexts/window-context';
 import DesktopIcon from '@/components/desktop-icon';
 import Window from '@/components/window';
+import DesktopActivity from '@/components/desktop-activity';
+import SidePanel from '@/components/side-panel';
+import NotificationCenter from '@/components/notification-center';
 import {
   ArrowDownUp,
   RefreshCw,
@@ -47,7 +49,7 @@ const Desktop = () => {
       <div
         ref={desktopRef}
         id="desktop-area"
-        className="absolute inset-0 pt-8"
+        className="absolute inset-0 pt-8 sm:pt-8"
         onContextMenu={handleContextMenu}
       >
         <DropdownMenu open={contextMenuOpen} onOpenChange={setContextMenuOpen}>
@@ -92,6 +94,10 @@ const Desktop = () => {
         {desktopIcons.map((app) => (
           <DesktopIcon key={app.id} app={app} constraintsRef={desktopRef} />
         ))}
+        
+        <DesktopActivity />
+        <SidePanel />
+        <NotificationCenter />
       </div>
 
       <AnimatePresence>
