@@ -1,7 +1,9 @@
-'use client';
-
-import ClientHome from '@/components/client-home';
+import OsUi from "@/components/retro-os";
 
 export default function Home() {
-  return <ClientHome />;
+  return (
+    <main>
+      <OsUi />
+    </main>
+  );
 }

@@ -1,9 +1,11 @@
 import type {NextConfig} from 'next';
-import { basePath as envBasePath } from './src/lib/constants';
+
+// This is set in the GitHub Actions workflow
+const basePath = process.env.BASE_PATH;
 
 const nextConfig: NextConfig = {
   output: 'export',
-  basePath: envBasePath,
+  basePath: basePath,
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -13,9 +15,6 @@ const nextConfig: NextConfig = {
   images: {
     unoptimized: true,
   },
-  trailingSlash: true,
-  // Add assetPrefix for GitHub Pages
-  assetPrefix: process.env.NODE_ENV === 'production' ? envBasePath : '',
 };
 
 export default nextConfig;

@@ -1,65 +1,32 @@
 'use client';
 
-import React, { createContext, useContext, useState, ReactNode, useEffect, Suspense } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import type { AppConfig, WindowInstance } from '@/types';
 
+import AboutContent from '@/components/content/about';
+import ProjectsContent from '@/components/content/projects';
+import ContactContent from '@/components/content/contact';
+import ResumeContent from '@/components/content/resume';
+import MyWorkContent from '@/components/content/my-work';
+import SocialsContent from '@/components/content/socials';
 import { FileText, Folder, Mail, Briefcase } from 'lucide-react';
 
-// Constants for localStorage keys
 const ICON_STATE_KEY = 'retrofolio-icons-v2';
 const WINDOW_STATE_KEY = 'retrofolio-windows-v2';
 
-// Define a type for our content components
-type ContentComponent = React.ComponentType;
+const LegalContent = () => <div className="p-6 text-card-foreground">This is my portfolio. To access this file, please contact me.</div>;
 
-// Create lazy-loaded components with better error handling
-const getContentComponent = (id: string): ContentComponent => {
-  try {
-    switch (id) {
-      case 'landing':
-        return React.lazy(() => import('@/components/content/landing'));
-      case 'about':
-        return React.lazy(() => import('@/components/content/about'));
-      case 'projects':
-        return React.lazy(() => import('@/components/content/projects'));
-      case 'my-work':
-        return React.lazy(() => import('@/components/content/my-work'));
-      case 'resume':
-        return React.lazy(() => import('@/components/content/resume'));
-      case 'contact':
-        return React.lazy(() => import('@/components/content/contact'));
-      case 'socials':
-        return React.lazy(() => import('@/components/content/socials'));
-      case 'story':
-        return React.lazy(() => import('@/components/content/story'));
-      case 'legal':
-        const LegalContent = () => <div className="p-6 text-card-foreground">This is my portfolio. To access this file, please contact me.</div>;
-        return LegalContent;
-      default:
-        return () => <div>Content not found</div>;
-    }
-  } catch (error) {
-    console.error(`Failed to load component for ${id}:`, error);
-    return () => <div>Error loading content</div>;
-  }
-};
 
-// Store component references instead of React elements
-const createContentComponent = (id: string) => {
-  return getContentComponent(id);
-};
+const initialAppsData: AppConfig[] = [
+  { id: 'about', title: 'My Story', icon: FileText, content: <AboutContent />, defaultSize: { width: 550, height: 400 }, x: 20, y: 50 },
+  { id: 'projects', title: 'Projects', icon: Folder, content: <ProjectsContent />, defaultSize: { width: 650, height: 500 }, x: 20, y: 150 },
+  { id: 'my-work', title: 'My Work', icon: Briefcase, content: <MyWorkContent />, defaultSize: { width: 500, height: 350 }, x: 20, y: 250 },
+  { id: 'resume', title: 'My Resume', icon: FileText, content: <ResumeContent />, defaultSize: { width: 700, height: 800 }, x: 130, y: 50 },
+  { id: 'contact', title: 'Contact Me', icon: Mail, content: <ContactContent />, defaultSize: { width: 450, height: 580 }, x: 130, y: 150 },
+  { id: 'socials', title: 'Socials', icon: Folder, content: <SocialsContent />, defaultSize: { width: 450, height: 350 }, x: 130, y: 250 },
+  { id: 'legal', title: 'Legal', icon: Folder, content: <LegalContent />, defaultSize: { width: 500, height: 300 }, x: 20, y: 450 },
+];
 
-const initialAppsData = [
-  { id: 'landing', title: 'Home', icon: FileText, content: undefined, defaultSize: { width: 700, height: 420 }, x: 20, y: 20 },
-  { id: 'about', title: 'My Story', icon: FileText, content: undefined, defaultSize: { width: 550, height: 400 }, x: 20, y: 100 },
-  { id: 'projects', title: 'Projects', icon: Folder, content: undefined, defaultSize: { width: 650, height: 500 }, x: 20, y: 150 },
-  { id: 'my-work', title: 'My Work', icon: Briefcase, content: undefined, defaultSize: { width: 500, height: 350 }, x: 20, y: 250 },
-  { id: 'resume', title: 'My Resume', icon: FileText, content: undefined, defaultSize: { width: 700, height: 800 }, x: 130, y: 50 },
-  { id: 'contact', title: 'Contact Me', icon: Mail, content: undefined, defaultSize: { width: 450, height: 580 }, x: 130, y: 150 },
-  { id: 'socials', title: 'Socials', icon: Folder, content: undefined, defaultSize: { width: 450, height: 350 }, x: 130, y: 250 },
-  { id: 'story', title: 'Testimonials', icon: Folder, content: undefined, defaultSize: { width: 550, height: 400 }, x: 20, y: 350 },
-  { id: 'legal', title: 'Legal', icon: Folder, content: undefined, defaultSize: { width: 500, height: 300 }, x: 20, y: 450 },
-] as const satisfies AppConfig[];
 
 interface WindowContextType {
   windows: WindowInstance[];
@@ -73,261 +40,220 @@ interface WindowContextType {
   updateWindowSize: (id: string, width: number, height: number) => void;
   updateIconPosition: (id: string, x: number, y: number) => void;
   resetIconPositions: () => void;
-  isMobile: boolean;
 }
 
 const WindowContext = createContext<WindowContextType | undefined>(undefined);
 
+// Helper to save serializable window state to localStorage
+const saveWindowsState = (windowsToSave: WindowInstance[]) => {
+  if (typeof window === 'undefined') return;
+  const serializableWindows = windowsToSave.map(({ content, icon, ...rest }) => rest);
+  localStorage.setItem(WINDOW_STATE_KEY, JSON.stringify(serializableWindows));
+};
+
+// Helper to save serializable icon state to localStorage
+const saveIconsState = (iconsToSave: AppConfig[]) => {
+  if (typeof window === 'undefined') return;
+  const serializableIcons = iconsToSave.map(({ id, x, y }) => ({ id, x, y }));
+  localStorage.setItem(ICON_STATE_KEY, JSON.stringify(serializableIcons));
+};
+
+
 export const WindowProvider = ({ children }: { children: ReactNode }) => {
   const [windows, setWindows] = useState<WindowInstance[]>([]);
   const [desktopIcons, setDesktopIcons] = useState<AppConfig[]>(initialAppsData);
-  const [isMobile, setIsMobile] = useState(false);
-  const [mounted, setMounted] = useState(false);
+  const [zIndexCounter, setZIndexCounter] = useState(10);
+  const [windowDimensions, setWindowDimensions] = useState({width: 0, height: 0});
+  const [isLoaded, setIsLoaded] = useState(false);
 
+  // Set up resize listener and initial dimensions
   useEffect(() => {
-    setMounted(true);
-    
-    // Check if we're on mobile
-    const checkMobile = () => {
-      if (typeof window !== 'undefined') {
-        setIsMobile(window.innerWidth < 768);
+    const updateDims = () => setWindowDimensions({width: window.innerWidth, height: window.innerHeight});
+    window.addEventListener('resize', updateDims);
+    updateDims();
+    return () => window.removeEventListener('resize', updateDims);
+  }, []);
+  
+  // Load state from localStorage once dimensions are available
+  useEffect(() => {
+    if (typeof window === 'undefined' || windowDimensions.width === 0 || isLoaded) return;
+
+    // Load Icon Positions
+    try {
+      const savedIconsJSON = localStorage.getItem(ICON_STATE_KEY);
+      if (savedIconsJSON) {
+        const savedIcons = JSON.parse(savedIconsJSON) as { id: string; x: number; y: number }[];
+        setDesktopIcons(prevIcons => {
+            const updatedIcons = prevIcons.map(icon => {
+                const savedIcon = savedIcons.find(s => s.id === icon.id);
+                return savedIcon ? { ...icon, x: savedIcon.x, y: savedIcon.y } : icon;
+            });
+            return updatedIcons;
+        });
       }
-    };
-    
-    if (typeof window !== 'undefined') {
-      checkMobile();
-      window.addEventListener('resize', checkMobile);
+    } catch (error) {
+      console.error("Failed to load icon state from localStorage", error);
+      localStorage.removeItem(ICON_STATE_KEY);
     }
-    
-          // Load saved icon positions
-          if (typeof localStorage !== 'undefined') {
-            const savedIcons = localStorage.getItem(ICON_STATE_KEY);
-            if (savedIcons) {
-              try {
-                const parsedIcons = JSON.parse(savedIcons);
-                setDesktopIcons(prev => 
-                  prev.map(icon => {
-                    const savedIcon = parsedIcons.find((saved: AppConfig) => saved.id === icon.id);
-                    const initialApp = initialAppsData.find(app => app.id === icon.id);
-                    return savedIcon && initialApp ? { ...icon, x: savedIcon.x, y: savedIcon.y, icon: initialApp.icon } : icon;
-                  })
-                );
-              } catch (e) {
-                console.error('Failed to parse saved icon positions', e);
-              }
-            }      
-      // Load saved window states
-      const savedWindows = localStorage.getItem(WINDOW_STATE_KEY);
-      if (savedWindows) {
-        try {
-          const parsedWindows = JSON.parse(savedWindows);
-          // Validate that we have an array
-          if (Array.isArray(parsedWindows)) {
-            const windowsWithContent = parsedWindows
-              .map((win: any) => {
-                // Validate window structure
-                if (!win || !win.id) {
-                  console.warn('Invalid window data found in localStorage', win);
-                  return null;
-                }
-                
-                try {
-                  const contentComponent = createContentComponent(win.id);
-                  return {
-                    ...win,
-                    content: contentComponent,
-                  };
-                } catch (error) {
-                  console.error(`Failed to create content component for window ${win.id}:`, error);
-                  return null;
-                }
-              })
-              .filter(Boolean) as WindowInstance[]; // Filter out null values
+
+    // Load Window State
+    try {
+      const savedWindowsJSON = localStorage.getItem(WINDOW_STATE_KEY);
+      if (savedWindowsJSON) {
+        const savedWindows = JSON.parse(savedWindowsJSON) as Omit<WindowInstance, 'content' | 'icon'>[];
+        const restoredWindows = savedWindows.map(savedWin => {
+            const appConfig = initialAppsData.find(app => app.id === savedWin.id);
+            if (!appConfig) return null;
             
-            setWindows(windowsWithContent);
-          } else {
-            console.warn('Invalid window data structure in localStorage');
-            localStorage.removeItem(WINDOW_STATE_KEY);
-          }
-        } catch (e) {
-          console.error('Failed to parse saved window states', e);
-          // Reset windows state if parsing fails
-          localStorage.removeItem(WINDOW_STATE_KEY);
-          setWindows([]);
-        }
-      }
-    }
-    
-    return () => {
-      if (typeof window !== 'undefined') {
-        window.removeEventListener('resize', checkMobile);
-      }
-    };
-  }, []);
+            // Clamp saved position to be within the current viewport
+            const width = savedWin.width || appConfig.defaultSize?.width || 500;
+            const height = savedWin.height || appConfig.defaultSize?.height || 400;
+            const clampedX = Math.max(0, Math.min(savedWin.x, windowDimensions.width - width));
+            const clampedY = Math.max(32, Math.min(savedWin.y, windowDimensions.height - height));
+            
+            return { ...savedWin, ...appConfig, x: clampedX, y: clampedY };
+        }).filter((w): w is WindowInstance => w !== null);
 
-  // Clear invalid localStorage data
-  useEffect(() => {
-    if (typeof localStorage !== 'undefined') {
-      try {
-        const savedWindows = localStorage.getItem(WINDOW_STATE_KEY);
-        if (savedWindows) {
-          const parsedWindows = JSON.parse(savedWindows);
-          if (!Array.isArray(parsedWindows)) {
-            localStorage.removeItem(WINDOW_STATE_KEY);
-          }
+        setWindows(restoredWindows);
+
+        if (restoredWindows.length > 0) {
+            const maxZIndex = Math.max(...restoredWindows.map(w => w.zIndex), 10);
+            setZIndexCounter(maxZIndex + 1);
         }
-      } catch (e) {
-        console.error('Failed to validate saved window states', e);
+      }
+    } catch (error) {
+        console.error("Failed to load window state from localStorage", error);
         localStorage.removeItem(WINDOW_STATE_KEY);
-      }
     }
-  }, []);
 
-  // Save icon positions to localStorage
-  useEffect(() => {
-    if (mounted && typeof localStorage !== 'undefined') {
-      localStorage.setItem(ICON_STATE_KEY, JSON.stringify(desktopIcons));
-    }
-  }, [desktopIcons, mounted]);
+    setIsLoaded(true);
+  }, [windowDimensions, isLoaded]);
 
-  // Save window states to localStorage
-  useEffect(() => {
-    if (mounted && typeof localStorage !== 'undefined') {
-      localStorage.setItem(WINDOW_STATE_KEY, JSON.stringify(windows));
-    }
-  }, [windows, mounted]);
+
+  const focusWindow = (id: string) => {
+    setZIndexCounter(prev => prev + 1);
+    setWindows(prevWindows => {
+        const newWindows = prevWindows.map(win =>
+            win.id === id
+            ? { ...win, zIndex: zIndexCounter + 1, isFocused: true, isMinimized: false }
+            : { ...win, isFocused: false }
+        );
+        saveWindowsState(newWindows);
+        return newWindows;
+    });
+  };
 
   const openWindow = (app: AppConfig) => {
-    try {
+    const existingWindowIndex = windows.findIndex(win => win.id === app.id);
+    
+    if (existingWindowIndex > -1) {
+      focusWindow(app.id);
+    } else {
       setWindows(prev => {
-        const existingWindow = prev.find(w => w.id === app.id);
-        if (existingWindow) {
-          // If window exists, bring it to front and unminimize it
-          return prev.map(w => 
-            w.id === app.id 
-              ? { ...w, isMinimized: false, zIndex: Math.max(0, ...prev.map(win => win.zIndex)) + 1 } 
-              : w
-          );
-        } else {
-          // Create new window with component reference
-          const contentComponent = createContentComponent(app.id);
-          // Validate that we have a proper component
-          if (!contentComponent) {
-            console.error(`Failed to create content component for ${app.id}`);
-            return prev;
-          }
-          
-          const newWindow: WindowInstance = {
-            ...app,
-            content: contentComponent,
-            x: app.x ?? 100,
-            y: app.y ?? 100,
-            width: app.defaultSize?.width ?? 500,
-            height: app.defaultSize?.height ?? 400,
-            zIndex: Math.max(...prev.map(w => w.zIndex), 0) + 1,
-            isMinimized: false,
-            isMaximized: false,
-            isFocused: true,
-          };
-          return [...prev, newWindow];
-        }
+        const newZIndex = zIndexCounter + 1;
+        setZIndexCounter(newZIndex);
+
+        const width = app.defaultSize?.width || 500;
+        const height = app.defaultSize?.height || 400;
+
+        // Cascade new windows to prevent perfect overlap
+        const offset = (prev.length % 5) * 30;
+
+        const newX = Math.max(0, (windowDimensions.width - width) / 2) + offset;
+        const newY = Math.max(32, (windowDimensions.height - height) / 2) + offset; // 32px for top bar
+
+        const newWindow: WindowInstance = {
+          ...app,
+          x: newX,
+          y: newY,
+          width,
+          height,
+          zIndex: newZIndex,
+          isMinimized: false,
+          isMaximized: false,
+          isFocused: true,
+        };
+
+        const newWindows = [...prev.map(w => ({...w, isFocused: false})), newWindow];
+        saveWindowsState(newWindows);
+        return newWindows;
       });
-      
-      // Unfocus other windows
-      setWindows(prev => 
-        prev.map(w => 
-          w.id === app.id ? { ...w, isFocused: true } : { ...w, isFocused: false }
-        )
-      );
-    } catch (error) {
-      console.error('Error opening window:', error);
     }
   };
 
   const closeWindow = (id: string) => {
-    try {
-      setWindows(prev => prev.filter(w => w.id !== id));
-    } catch (error) {
-      console.error('Error closing window:', error);
-    }
+    setWindows(prev => {
+        const newWindows = prev.filter(win => win.id !== id);
+        saveWindowsState(newWindows);
+        return newWindows;
+    });
   };
-
-  const focusWindow = (id: string) => {
-    try {
-      setWindows(prev => {
-        const maxZIndex = Math.max(0, ...prev.map(w => w.zIndex));
-        return prev.map(w => 
-          w.id === id 
-            ? { ...w, zIndex: maxZIndex + 1, isFocused: true, isMinimized: false } 
-            : { ...w, isFocused: false }
-        );
-      });
-    } catch (error) {
-      console.error('Error focusing window:', error);
-    }
-  };
-
+  
   const toggleMinimize = (id: string) => {
-    try {
-      setWindows(prev => 
-        prev.map(w => 
-          w.id === id ? { ...w, isMinimized: !w.isMinimized } : w
-        )
-      );
-    } catch (error) {
-      console.error('Error toggling window minimize:', error);
-    }
+    setWindows(prev => {
+        const newWindows = prev.map(win => {
+            if (win.id === id) {
+                const isMinimized = !win.isMinimized;
+                return { ...win, isMinimized, isFocused: !isMinimized };
+            }
+            return win;
+        });
+        saveWindowsState(newWindows);
+        return newWindows;
+    });
   };
 
   const toggleMaximize = (id: string) => {
-    try {
-      setWindows(prev => 
-        prev.map(w => 
-          w.id === id ? { ...w, isMaximized: !w.isMaximized } : w
-        )
-      );
-    } catch (error) {
-      console.error('Error toggling window maximize:', error);
-    }
-  };
+    setWindows(prev => {
+        const newWindows = prev.map(win => {
+            if (win.id === id) {
+                if (win.isMaximized) {
+                    return { ...win, isMaximized: false, width: win.defaultSize?.width || 500, height: win.defaultSize?.height || 400, x: (windowDimensions.width - (win.defaultSize?.width || 500)) / 2, y: (windowDimensions.height - (win.defaultSize?.height || 400)) / 3 };
+                } else {
+                    return { ...win, isMaximized: true, width: windowDimensions.width, height: windowDimensions.height - 32, x: 0, y: 32 };
+                }
+            }
+            return win;
+        });
+        saveWindowsState(newWindows);
+        return newWindows;
+    });
+  }
 
   const updateWindowPosition = (id: string, x: number, y: number) => {
-    setWindows(prev => 
-      prev.map(w => 
-        w.id === id ? { ...w, x, y } : w
-      )
-    );
+    setWindows(prev => {
+        const newWindows = prev.map(win => win.id === id ? { ...win, x, y } : win);
+        saveWindowsState(newWindows);
+        return newWindows;
+    });
   };
 
   const updateWindowSize = (id: string, width: number, height: number) => {
-    setWindows(prev => 
-      prev.map(w => 
-        w.id === id ? { ...w, width, height } : w
-      )
-    );
+    setWindows(prev => {
+        const newWindows = prev.map(win => win.id === id ? { ...win, width, height } : win);
+        saveWindowsState(newWindows);
+        return newWindows;
+    });
   };
 
   const updateIconPosition = (id: string, x: number, y: number) => {
-    setDesktopIcons(prev => 
-      prev.map(icon => 
-        icon.id === id ? { ...icon, x, y } : icon
-      )
-    );
+    setDesktopIcons(prev => {
+        const newIcons = prev.map(icon => icon.id === id ? { ...icon, x, y } : icon);
+        saveIconsState(newIcons);
+        return newIcons;
+    });
   };
-
+  
   const resetIconPositions = () => {
-    setDesktopIcons(prev => 
-      prev.map(icon => {
-        const initialApp = initialAppsData.find(app => app.id === icon.id);
-        return initialApp ? { ...icon, x: initialApp.x, y: initialApp.y } : icon;
-      })
-    );
+    setDesktopIcons(prevIcons => {
+        const resetIcons = prevIcons.map(icon => {
+            const initialIcon = initialAppsData.find(i => i.id === icon.id);
+            return initialIcon ? { ...icon, x: initialIcon.x, y: initialIcon.y } : icon;
+        });
+        saveIconsState(resetIcons);
+        return resetIcons;
+    });
   };
-
-  // Don't render anything on the server
-  if (!mounted) {
-    return null;
-  }
 
   return (
     <WindowContext.Provider value={{
@@ -342,7 +268,6 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
       updateWindowSize,
       updateIconPosition,
       resetIconPositions,
-      isMobile
     }}>
       {children}
     </WindowContext.Provider>

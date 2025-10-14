@@ -9,7 +9,6 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { TooltipWrapper } from '@/components/tooltip-wrapper';
 
 export function ContactForm() {
   const { toast } = useToast();
@@ -25,37 +24,18 @@ export function ContactForm() {
   const { isSubmitting } = form.formState;
 
   async function onSubmit(data: ContactFormData) {
-    try {
-      const response = await fetch('/api/send-message', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
+    // This is a static site, so we can't use server actions.
+    // Instead, we simulate the submission.
+    console.log('Form submitted (simulation):', data);
 
-      const result = await response.json();
+    // Simulate network delay to show the 'Sending...' state
+    await new Promise(resolve => setTimeout(resolve, 1000));
 
-      if (result.success) {
-        toast({
-          title: 'Message Sent!',
-          description: result.message,
-        });
-        form.reset();
-      } else {
-        toast({
-          title: 'Error',
-          description: result.message,
-          variant: 'destructive',
-        });
-      }
-    } catch (error) {
-      toast({
-        title: 'Error',
-        description: 'Something went wrong. Please try again.',
-        variant: 'destructive',
-      });
-    }
+    toast({
+      title: 'Message Sent!',
+      description: 'Your message has been sent successfully! (This is a simulation)',
+    });
+    form.reset();
   }
 
   return (
@@ -105,11 +85,9 @@ export function ContactForm() {
             </FormItem>
           )}
         />
-        <TooltipWrapper content="Send your message to get in touch">
-          <Button type="submit" disabled={isSubmitting} className="w-full">
-            {isSubmitting ? 'Sending...' : 'Send Message'}
-          </Button>
-        </TooltipWrapper>
+        <Button type="submit" disabled={isSubmitting} className="w-full">
+          {isSubmitting ? 'Sending...' : 'Send Message'}
+        </Button>
       </form>
     </Form>
   );

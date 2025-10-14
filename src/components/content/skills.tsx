@@ -99,34 +99,23 @@ const Skills = () => {
               </div>
 
               <div className="grid gap-4">
-                {category.skills.map((skill, skillIndex) => {
-  // Map level to percent
-  const levelMap = { Expert: 100, Advanced: 75, Intermediate: 50 };
-  const percent = levelMap[skill.level] || 0;
-  return (
-    <div key={skillIndex} className="space-y-2">
-      <div className="flex items-center justify-between">
-        <span className="font-medium">{skill.name}</span>
-        <Badge 
-          variant={
-            skill.level === 'Expert' ? 'default' :
-            skill.level === 'Advanced' ? 'secondary' :
-            'outline'
-          }
-        >
-          {skill.level}
-        </Badge>
-      </div>
-      <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
-        <div
-          className="h-2 bg-primary rounded-full transition-all duration-1000"
-          style={{ width: percent + '%' }}
-        />
-      </div>
-      <p className="text-sm text-muted-foreground">{skill.description}</p>
-    </div>
-  );
-})}
+                {category.skills.map((skill, skillIndex) => (
+                  <div key={skillIndex} className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="font-medium">{skill.name}</span>
+                      <Badge 
+                        variant={
+                          skill.level === 'Expert' ? 'default' :
+                          skill.level === 'Advanced' ? 'secondary' :
+                          'outline'
+                        }
+                      >
+                        {skill.level}
+                      </Badge>
+                    </div>
+                    <p className="text-sm text-muted-foreground">{skill.description}</p>
+                  </div>
+                ))}
               </div>
             </div>
           </Card>

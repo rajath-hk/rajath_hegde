@@ -1,118 +1,41 @@
-import React, { useEffect, useState } from 'react';
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Spinner } from "@/components/ui/spinner";
-import { Github } from 'lucide-react';
-
-// Helper to extract owner/repo from GitHub URL
-function parseRepo(url: string) {
-  const match = url.match(/github.com\/(.+?)\/(.+?)(?:$|\/|#|\?)/);
-  if (!match) return null;
-  return { owner: match[1], repo: match[2] };
-}
-
-// Hook to fetch GitHub repo stats
-function useGitHubStats(repoUrl?: string) {
-  const [stats, setStats] = useState<{stars: number; forks: number} | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!repoUrl) return;
-    const repo = parseRepo(repoUrl);
-    if (!repo) return;
-    
-    setLoading(true);
-    setError(null);
-    
-    const abortController = new AbortController();
-    
-    fetch(`https://api.github.com/repos/${repo.owner}/${repo.repo}`, {
-      signal: abortController.signal
-    })
-      .then(r => {
-        if (r.ok) {
-          return r.json();
-        } else {
-          if (r.status === 403) {
-            throw new Error('GitHub API rate limit exceeded. Please try again later.');
-          }
-          throw new Error(`GitHub API error: ${r.status}`);
-        }
-      })
-      .then(data => {
-        setStats({ 
-          stars: data.stargazers_count || 0, 
-          forks: data.forks_count || 0 
-        });
-        setLoading(false);
-      })
-      .catch(err => {
-        if (err.name !== 'AbortError') {
-          console.error('Error fetching GitHub stats:', err);
-          setError(err.message || 'Failed to load GitHub stats');
-          setLoading(false);
-        }
-      });
-
-    return () => abortController.abort();
-  }, [repoUrl]);
-
-  return { stats, loading, error };
-}
-
+import React from 'react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { ExternalLink } from 'lucide-react';
-
+import { Github, ExternalLink } from 'lucide-react';
 
 const projects = [
-  {
-    title: "Portfolio OS",
-    description: "A unique portfolio website designed as an interactive operating system interface.",
-    imageUrl: "https://img.playbook.com/JxSuclTXT38ACmTwF6_Wp67qQyMHBfBAmChFlvQ0Tog/Z3M6Ly9wbGF5Ym9v/ay1hc3NldHMtcHVi/bGljLzBjYTY1NTRk/LWNmNzItNDcwOS1h/OGIwLWUyMzQwZjAw/MTU3Yg",
-    techStack: ["Next.js 14", "TypeScript", "Tailwind CSS", "Framer Motion", "Shadcn UI"],
-    links: [
-      { label: "GitHub", url: "https://github.com/rajath-hk/portfolio", icon: <Github size={18} /> },
-    ],
-  },
   {
     title: "Lofi YouTube Stream",
     description: "A custom player for lofi YouTube streams, offering a clean and focused listening experience without the clutter of YouTube's interface.",
     imageUrl: "https://img.playbook.com/BTnl4TI0V6z7PfLw8FSSXEuViX5X3E-WyxuRMQL4Lmk/Z3M6Ly9wbGF5Ym9v/ay1hc3NldHMtcHVi/bGljLzI2NDQyZGM0/LTZiOTYtNGZmMi1i/YmMyLThmNDk4ZmY2/NTEyZA",
-    techStack: ["React", "TypeScript", "Next.js", "Tailwind CSS"],
-    links: [
-      { label: "GitHub", url: "https://github.com/rajath-hk/lofi-youtube-stream", icon: <Github size={18} /> },
-    ],
+    repoUrl: "https://github.com/rajath-hk/lofi-youtube-stream",
+    aiHint: "music player"
   },
   {
     title: "Virtual Classroom",
     description: "An online platform that simulates a classroom environment, designed to facilitate interactive learning between students and teachers.",
     imageUrl: "https://img.playbook.com/IATitayq6KEgMGo1QHTGJvoFK4N8MxNf6Po9LFDM2EM/Z3M6Ly9wbGF5Ym9v/ay1hc3NldHMtcHVi/bGljLzZkNjE5MTlk/LWFlOTAtNGQ5My04/MWM5LWRhOTFlN2Mw/MmQ5ZA",
-    techStack: ["React", "Node.js", "Socket.io", "MongoDB"],
-    links: [
-      { label: "GitHub", url: "https://github.com/rajath-hk/classroom", icon: <Github size={18} /> },
-    ],
+    repoUrl: "https://github.com/rajath-hk/classroom",
+    aiHint: "online learning"
   },
   {
     title: "Token Management System",
     description: "A backend system for generating, validating, and managing authentication tokens to ensure secure access to applications.",
     imageUrl: "https://img.playbook.com/MHi_VJ791_7Dm9-MZhssC17ApNtqu97RzZHCTot9izQ/Z3M6Ly9wbGF5Ym9v/ay1hc3NldHMtcHVi/bGljLzJhOWVhMGU1/LWZlMzgtNGEzNi04/OTRjLTJmZGMxYjMx/YTFjYg",
-    techStack: ["Node.js", "Express", "JWT", "MongoDB"],
-    links: [
-      { label: "GitHub", url: "https://github.com/rajath-hk/token", icon: <Github size={18} /> },
-    ],
+    repoUrl: "https://github.com/rajath-hk/token",
+    aiHint: "security system"
   },
   {
     title: "Demo Homepage",
     description: "A live demonstration of a modern and responsive homepage, showcasing skills in front-end development and user interface design.",
     imageUrl: "https://img.playbook.com/JxSuclTXT38ACmTwF6_Wp67qQyMHBfBAmChFlvQ0Tog/Z3M6Ly9wbGF5Ym9v/ay1hc3NldHMtcHVi/bGljLzBjYTY1NTRk/LWNmNzItNDcwOS1h/OGIwLWUyMzQwZjAw/MTU3Yg",
-    techStack: ["HTML5", "CSS3", "JavaScript", "Vercel"],
-    links: [
-      { label: "Demo", url: "https://rajath-hk.github.io/demo_homepage/", icon: <ExternalLink size={18} /> },
-    ],
-  },
+    demoUrl: "https://rajath-hk.github.io/demo_homepage/",
+    aiHint: "web design"
+  }
 ];
+
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 interface Project {
   title: string;
@@ -171,69 +94,73 @@ const projectsList: Project[] = [
   },
 ];
 
-
-const ProjectCard: React.FC<{ project: typeof projects[0] }> = ({ project }) => {
-  // Find first GitHub link
-  const githubLink = project.links?.find(l => l.url.includes('github.com'));
-  const { stats, loading, error } = useGitHubStats(githubLink?.url);
+const ProjectCard: React.FC<{ project: Project }> = ({ project }) => {
   return (
-    <Card className="p-0 overflow-hidden group hover:shadow-2xl transition-shadow">
-      <div className="flex flex-col md:flex-row">
-        <div className="md:w-1/3 w-full h-48 md:h-auto relative">
-          <img
-            src={project.imageUrl}
-            alt={project.title}
-            className="object-cover w-full h-full md:rounded-l-lg md:rounded-r-none rounded-t-lg md:rounded-t-none"
-            loading="lazy"
-          />
-        </div>
-        <div className="flex-1 p-6 flex flex-col gap-3">
-          <div className="flex items-center justify-between gap-2">
-            <h3 className="text-xl font-bold mb-1">{project.title}</h3>
-            <div className="flex gap-2">
-              {project.links?.map((link, i) => (
-                <a key={i} href={link.url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
-                  {link.icon}
-                  <span className="sr-only">{link.label}</span>
-                </a>
-              ))}
-            </div>
+    <Card className="p-6 space-y-6">
+      <div className="space-y-4">
+        <div>
+          <div className="flex items-baseline justify-between mb-2">
+            <h3 className="text-2xl font-bold">{project.title}</h3>
+            <span className="text-sm text-muted-foreground">{project.year}</span>
           </div>
-          <p className="text-muted-foreground text-sm mb-2">{project.description}</p>
-          <div className="flex flex-wrap gap-2 mt-auto">
-            {project.techStack?.map((tech, idx) => (
-              <Badge key={idx} variant="outline">{tech}</Badge>
+          <Badge variant="secondary">{project.platform}</Badge>
+        </div>
+        
+        <p className="text-lg font-medium">{project.overview}</p>
+      </div>
+
+      <div className="space-y-6">
+        <section>
+          <h4 className="text-lg font-semibold mb-3">The Story</h4>
+          <p className="text-muted-foreground leading-relaxed">{project.story}</p>
+        </section>
+
+        <section>
+          <h4 className="text-lg font-semibold mb-3">Challenges & Solutions</h4>
+          <ul className="space-y-2 text-muted-foreground">
+            {project.challenges.map((challenge, index) => (
+              <li key={index} className="flex items-start gap-2">
+                <span className="text-primary">•</span>
+                <span>{challenge}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <section>
+          <h4 className="text-lg font-semibold mb-3">Impact & Results</h4>
+          <p className="text-muted-foreground leading-relaxed">{project.impact}</p>
+        </section>
+
+        <section>
+          <h4 className="text-lg font-semibold mb-3">Technologies Used</h4>
+          <div className="flex flex-wrap gap-2">
+            {project.techStack.map((tech, index) => (
+              <Badge key={index} variant="outline">
+                {tech}
+              </Badge>
             ))}
           </div>
-          {githubLink && (
-            <div className="flex gap-4 items-center mt-2 text-xs text-muted-foreground">
-              {loading && (
-                <div className="flex items-center gap-2">
-                  <Spinner size="sm" />
-                  <span>Loading GitHub stats…</span>
-                </div>
-              )}
-              {error && <span>{error}</span>}
-              {stats && (
-                <>
-                  <span title="Stars" className="flex items-center gap-1"><Github size={14} /> {stats.stars} stars</span>
-                  <span title="Forks" className="flex items-center gap-1"><svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" strokeWidth="2" d="M7 7v2a5 5 0 0 0 5 5h0a5 5 0 0 0 5-5V7"/><circle cx="7" cy="5" r="2" stroke="currentColor" strokeWidth="2"/><circle cx="17" cy="5" r="2" stroke="currentColor" strokeWidth="2"/><circle cx="12" cy="19" r="2" stroke="currentColor" strokeWidth="2"/></svg> {stats.forks} forks</span>
-                </>
-              )}
-            </div>
-          )}
-        </div>
+        </section>
+
+        {project.link && (
+          <a
+            href={project.link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center text-primary hover:underline"
+          >
+            View Project →
+          </a>
+        )}
       </div>
     </Card>
   );
 };
 
 const Projects = () => {
-  // Define pinned projects
-  const pinnedProjects = projects.slice(0, 3); // First 3 projects as pinned
-
   return (
-    <div className="space-y-8 p-6">
+    <div className="space-y-8">
       <div className="space-y-4">
         <h2 className="text-3xl font-bold tracking-tight">Featured Projects</h2>
         <p className="text-lg text-muted-foreground">
@@ -241,30 +168,10 @@ const Projects = () => {
         </p>
       </div>
 
-      {/* Pinned Projects Section */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h3 className="text-xl font-semibold">Pinned Projects</h3>
-          <span className="text-sm text-muted-foreground">Featured work</span>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {pinnedProjects.map((project, index) => (
-            <ProjectCard key={`pinned-${index}`} project={project} />
-          ))}
-        </div>
-      </div>
-
-      {/* All Projects Section */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h3 className="text-xl font-semibold">All Projects</h3>
-          <span className="text-sm text-muted-foreground">{projects.length} projects</span>
-        </div>
-        <div className="grid gap-8">
-          {projects.map((project, index) => (
-            <ProjectCard key={index} project={project} />
-          ))}
-        </div>
+      <div className="grid gap-8">
+        {projectsList.map((project, index) => (
+          <ProjectCard key={index} project={project} />
+        ))}
       </div>
     </div>
   );
