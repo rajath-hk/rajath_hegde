@@ -98,23 +98,23 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
       window.addEventListener('resize', checkMobile);
     }
     
-    // Load saved icon positions
-    if (typeof localStorage !== 'undefined') {
-      const savedIcons = localStorage.getItem(ICON_STATE_KEY);
-      if (savedIcons) {
-        try {
-          const parsedIcons = JSON.parse(savedIcons);
-          setDesktopIcons(prev => 
-            prev.map(icon => {
-              const savedIcon = parsedIcons.find((saved: AppConfig) => saved.id === icon.id);
-              return savedIcon ? { ...icon, x: savedIcon.x, y: savedIcon.y } : icon;
-            })
-          );
-        } catch (e) {
-          console.error('Failed to parse saved icon positions', e);
-        }
-      }
-      
+          // Load saved icon positions
+          if (typeof localStorage !== 'undefined') {
+            const savedIcons = localStorage.getItem(ICON_STATE_KEY);
+            if (savedIcons) {
+              try {
+                const parsedIcons = JSON.parse(savedIcons);
+                setDesktopIcons(prev => 
+                  prev.map(icon => {
+                    const savedIcon = parsedIcons.find((saved: AppConfig) => saved.id === icon.id);
+                    const initialApp = initialAppsData.find(app => app.id === icon.id);
+                    return savedIcon && initialApp ? { ...icon, x: savedIcon.x, y: savedIcon.y, icon: initialApp.icon } : icon;
+                  })
+                );
+              } catch (e) {
+                console.error('Failed to parse saved icon positions', e);
+              }
+            }      
       // Load saved window states
       const savedWindows = localStorage.getItem(WINDOW_STATE_KEY);
       if (savedWindows) {
