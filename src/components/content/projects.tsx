@@ -30,7 +30,7 @@ function useGitHubStats(repoUrl?: string) {
     fetch(`https://api.github.com/repos/${repo.owner}/${repo.repo}`, {
       signal: abortController.signal
     })
-    fetch(`https://api.github.com/repos/${repo.owner}/${repo.repo}`)
+      .then(r => {
       .then(r => {
         if (r.ok) {
           return r.json();

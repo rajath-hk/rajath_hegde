@@ -2,10 +2,9 @@ import React from 'react';
 
 export default function Landing() {
   // Use basePath for images in GitHub Pages
-  const basePath = process.env.BASE_PATH || '';
-  const headshotPath = basePath ? `${basePath}/images/headshot.jpg` : '/images/headshot.jpg';
-  const resumePath = basePath ? `${basePath}/resume.pdf` : '/resume.pdf';
-
+ const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
+ const headshotPath = `${basePath}/images/headshot.jpg`;
+ const resumePath = `${basePath}/resume.pdf`;
   return (
     <div className="p-6 flex flex-col min-h-full">
       {/* Hero Section */}
