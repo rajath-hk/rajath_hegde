@@ -5,6 +5,7 @@ import type { WindowInstance } from '@/types';
 import { useWindows } from '@/contexts/window-context';
 import { cn } from '@/lib/utils';
 import { X, Minus, Square } from 'lucide-react';
+import ErrorBoundary from '@/components/error-boundary';
 
 type WindowProps = WindowInstance & {
   children?: React.ReactNode;
@@ -211,10 +212,14 @@ const Window = (props: WindowProps) => {
 
       {/* Content */}
       <div className="flex-1 overflow-auto">
-        {content && (
+        {content && typeof content === 'function' ? (
           <Suspense fallback={<div className="p-6">Loading...</div>}>
-            {React.createElement(content)}
+            <ErrorBoundary>
+              {React.createElement(content)}
+            </ErrorBoundary>
           </Suspense>
+        ) : (
+          <div className="p-6">Content not available</div>
         )}
       </div>
 

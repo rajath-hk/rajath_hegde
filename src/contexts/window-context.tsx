@@ -12,29 +12,35 @@ const WINDOW_STATE_KEY = 'retrofolio-windows-v2';
 // Define a type for our content components
 type ContentComponent = React.ComponentType;
 
-// Create lazy-loaded components
+// Create lazy-loaded components with better error handling
 const getContentComponent = (id: string): ContentComponent => {
-  switch (id) {
-    case 'landing':
-      return React.lazy(() => import('@/components/content/landing'));
-    case 'about':
-      return React.lazy(() => import('@/components/content/about'));
-    case 'projects':
-      return React.lazy(() => import('@/components/content/projects'));
-    case 'my-work':
-      return React.lazy(() => import('@/components/content/my-work'));
-    case 'resume':
-      return React.lazy(() => import('@/components/content/resume'));
-    case 'contact':
-      return React.lazy(() => import('@/components/content/contact'));
-    case 'socials':
-      return React.lazy(() => import('@/components/content/socials'));
-    case 'story':
-      return React.lazy(() => import('@/components/content/story'));
-    case 'legal':
-      return () => <div className="p-6 text-card-foreground">This is my portfolio. To access this file, please contact me.</div>;
-    default:
-      return () => <div>Content not found</div>;
+  try {
+    switch (id) {
+      case 'landing':
+        return React.lazy(() => import('@/components/content/landing'));
+      case 'about':
+        return React.lazy(() => import('@/components/content/about'));
+      case 'projects':
+        return React.lazy(() => import('@/components/content/projects'));
+      case 'my-work':
+        return React.lazy(() => import('@/components/content/my-work'));
+      case 'resume':
+        return React.lazy(() => import('@/components/content/resume'));
+      case 'contact':
+        return React.lazy(() => import('@/components/content/contact'));
+      case 'socials':
+        return React.lazy(() => import('@/components/content/socials'));
+      case 'story':
+        return React.lazy(() => import('@/components/content/story'));
+      case 'legal':
+        const LegalContent = () => <div className="p-6 text-card-foreground">This is my portfolio. To access this file, please contact me.</div>;
+        return LegalContent;
+      default:
+        return () => <div>Content not found</div>;
+    }
+  } catch (error) {
+    console.error(`Failed to load component for ${id}:`, error);
+    return () => <div>Error loading content</div>;
   }
 };
 
@@ -43,7 +49,7 @@ const createContentComponent = (id: string) => {
   return getContentComponent(id);
 };
 
-const initialAppsData: AppConfig[] = [
+const initialAppsData = [
   { id: 'landing', title: 'Home', icon: FileText, content: undefined, defaultSize: { width: 700, height: 420 }, x: 20, y: 20 },
   { id: 'about', title: 'My Story', icon: FileText, content: undefined, defaultSize: { width: 550, height: 400 }, x: 20, y: 100 },
   { id: 'projects', title: 'Projects', icon: Folder, content: undefined, defaultSize: { width: 650, height: 500 }, x: 20, y: 150 },
@@ -53,7 +59,7 @@ const initialAppsData: AppConfig[] = [
   { id: 'socials', title: 'Socials', icon: Folder, content: undefined, defaultSize: { width: 450, height: 350 }, x: 130, y: 250 },
   { id: 'story', title: 'Testimonials', icon: Folder, content: undefined, defaultSize: { width: 550, height: 400 }, x: 20, y: 350 },
   { id: 'legal', title: 'Legal', icon: Folder, content: undefined, defaultSize: { width: 500, height: 300 }, x: 20, y: 450 },
-];
+] as const satisfies AppConfig[];
 
 interface WindowContextType {
   windows: WindowInstance[];
@@ -115,14 +121,39 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
       if (savedWindows) {
         try {
           const parsedWindows = JSON.parse(savedWindows);
-          const windowsWithContent = parsedWindows.map((win: WindowInstance) => ({
-            ...win,
-            // Store component reference instead of React element
-            content: createContentComponent(win.id),
-          }));
-          setWindows(windowsWithContent);
+          // Validate that we have an array
+          if (Array.isArray(parsedWindows)) {
+            const windowsWithContent = parsedWindows
+              .map((win: any) => {
+                // Validate window structure
+                if (!win || !win.id) {
+                  console.warn('Invalid window data found in localStorage', win);
+                  return null;
+                }
+                
+                try {
+                  const contentComponent = createContentComponent(win.id);
+                  return {
+                    ...win,
+                    content: contentComponent,
+                  };
+                } catch (error) {
+                  console.error(`Failed to create content component for window ${win.id}:`, error);
+                  return null;
+                }
+              })
+              .filter(Boolean) as WindowInstance[]; // Filter out null values
+            
+            setWindows(windowsWithContent);
+          } else {
+            console.warn('Invalid window data structure in localStorage');
+            localStorage.removeItem(WINDOW_STATE_KEY);
+          }
         } catch (e) {
           console.error('Failed to parse saved window states', e);
+          // Reset windows state if parsing fails
+          localStorage.removeItem(WINDOW_STATE_KEY);
+          setWindows([]);
         }
       }
     }
@@ -132,6 +163,24 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
         window.removeEventListener('resize', checkMobile);
       }
     };
+  }, []);
+
+  // Clear invalid localStorage data
+  useEffect(() => {
+    if (typeof localStorage !== 'undefined') {
+      try {
+        const savedWindows = localStorage.getItem(WINDOW_STATE_KEY);
+        if (savedWindows) {
+          const parsedWindows = JSON.parse(savedWindows);
+          if (!Array.isArray(parsedWindows)) {
+            localStorage.removeItem(WINDOW_STATE_KEY);
+          }
+        }
+      } catch (e) {
+        console.error('Failed to validate saved window states', e);
+        localStorage.removeItem(WINDOW_STATE_KEY);
+      }
+    }
   }, []);
 
   // Save icon positions to localStorage
@@ -159,10 +208,17 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
             : w
         );
       } else {
-        // Create new window with component reference instead of React element
+        // Create new window with component reference
+        const contentComponent = createContentComponent(app.id);
+        // Validate that we have a proper component
+        if (!contentComponent) {
+          console.error(`Failed to create content component for ${app.id}`);
+          return prev;
+        }
+        
         const newWindow: WindowInstance = {
           ...app,
-          content: createContentComponent(app.id),
+          content: contentComponent,
           x: app.x ?? 100,
           y: app.y ?? 100,
           width: app.defaultSize?.width ?? 500,
