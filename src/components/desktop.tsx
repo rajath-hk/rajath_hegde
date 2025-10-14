@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { AnimatePresence } from 'framer-motion';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -49,43 +48,57 @@ const Desktop = () => {
   };
 
   const copyTextToClipboard = () => {
-    navigator.clipboard.writeText('Rajath Hegde - Full Stack Developer Portfolio')
-      .then(() => {
-        // Show a notification
-        const notification = document.createElement("div");
-        notification.className = "fixed bottom-4 right-4 bg-primary text-primary-foreground px-4 py-2 rounded-lg shadow-lg z-50";
-        notification.textContent = "Copied to clipboard!";
-        document.body.appendChild(notification);
-        setTimeout(() => {
-          document.body.removeChild(notification);
-        }, 2000);
-      });
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText('Rajath Hegde - Full Stack Developer Portfolio')
+        .then(() => {
+          // Show a notification
+          if (typeof document !== 'undefined') {
+            const notification = document.createElement("div");
+            notification.className = "fixed bottom-4 right-4 bg-primary text-primary-foreground px-4 py-2 rounded-lg shadow-lg z-50";
+            notification.textContent = "Copied to clipboard!";
+            document.body.appendChild(notification);
+            setTimeout(() => {
+              if (document.body.contains(notification)) {
+                document.body.removeChild(notification);
+              }
+            }, 2000);
+          }
+        });
+    }
     setContextMenuOpen(false);
   };
 
   const shareContent = async () => {
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: 'Rajath Hegde - Portfolio',
-          text: 'Check out this amazing portfolio!',
-          url: window.location.href,
-        });
-      } catch (err) {
-        console.log('Error sharing:', err);
+    if (typeof window !== 'undefined' && typeof navigator !== 'undefined') {
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: 'Rajath Hegde - Portfolio',
+            text: 'Check out this amazing portfolio!',
+            url: window.location.href,
+          });
+        } catch (err) {
+          console.log('Error sharing:', err);
+        }
+      } else {
+        // Fallback for browsers that don't support Web Share API
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText(window.location.href)
+            .then(() => {
+              if (typeof document !== 'undefined') {
+                const notification = document.createElement("div");
+                notification.className = "fixed bottom-4 right-4 bg-primary text-primary-foreground px-4 py-2 rounded-lg shadow-lg z-50";
+                notification.textContent = "Link copied to clipboard!";
+                document.body.appendChild(notification);
+                setTimeout(() => {
+                  if (document.body.contains(notification)) {
+                    document.body.removeChild(notification);
+                  }
+                }, 2000);
+              }
+            });
+        }
       }
-    } else {
-      // Fallback for browsers that don't support Web Share API
-      navigator.clipboard.writeText(window.location.href)
-        .then(() => {
-          const notification = document.createElement("div");
-          notification.className = "fixed bottom-4 right-4 bg-primary text-primary-foreground px-4 py-2 rounded-lg shadow-lg z-50";
-          notification.textContent = "Link copied to clipboard!";
-          document.body.appendChild(notification);
-          setTimeout(() => {
-            document.body.removeChild(notification);
-          }, 2000);
-        });
     }
     setContextMenuOpen(false);
   };
@@ -118,7 +131,12 @@ const Desktop = () => {
                 <Share2 className="mr-2 h-4 w-4" />
                 <span>Share</span>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => window.open(window.location.href, '_blank')}>
+              <DropdownMenuItem onClick={() => {
+                if (typeof window !== 'undefined') {
+                  window.open(window.location.href, '_blank');
+                }
+                setContextMenuOpen(false);
+              }}>
                 <ExternalLink className="mr-2 h-4 w-4" />
                 <span>Open in New Window</span>
               </DropdownMenuItem>
@@ -167,11 +185,9 @@ const Desktop = () => {
         <ChatbotPlaceholder />
       </div>
 
-      <AnimatePresence>
-        {windows.map((win) => (
-          !win.isMinimized && <Window key={win.id} {...win} />
-        ))}
-      </AnimatePresence>
+      {windows.map((win) => (
+        !win.isMinimized && <Window key={win.id} {...win} />
+      ))}
     </>
   );
 };

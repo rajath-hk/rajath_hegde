@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { useWindows } from '@/contexts/window-context';
 import {
@@ -11,105 +11,114 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Expand, Shrink, Sun, Moon, Bell, Power } from 'lucide-react';
+import { Expand, Shrink, Sun, Moon, Bell } from 'lucide-react';
 
 const notifications = [
-    { title: "Welcome!", description: "Thanks for checking out my portfolio." },
-    { title: "New Feature", description: "You can drag icons and windows around." },
-    { title: "Tip", description: "Right-click the desktop for more options." }
+  { title: "Welcome!", description: "Thanks for checking out my portfolio." },
+  { title: "New Feature", description: "You can drag icons and windows around." },
+  { title: "Tip", description: "Right-click the desktop for more options." }
 ];
 
 const TopBar = () => {
   const { theme, setTheme } = useTheme();
   const { openWindow, desktopIcons } = useWindows();
-  const [time, setTime] = React.useState('');
-  const [mounted, setMounted] = React.useState(false);
-  const [isFullscreen, setIsFullscreen] = React.useState(false);
+  const [time, setTime] = useState('');
+  const [mounted, setMounted] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setMounted(true);
-    const updateClock = () => {
-      setTime(new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }));
-    };
-    updateClock();
-    const timerId = setInterval(updateClock, 60 * 1000);
 
-    const onFullscreenChange = () => {
+    const updateClock = () => {
+      const now = new Date();
+      setTime(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+    };
+
+    updateClock();
+    const intervalId = setInterval(updateClock, 60000);
+
+    const handleFullscreenChange = () => {
       setIsFullscreen(!!document.fullscreenElement);
     };
-    document.addEventListener('fullscreenchange', onFullscreenChange);
-    
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+
     return () => {
-        clearInterval(timerId);
-        document.removeEventListener('fullscreenchange', onFullscreenChange);
+      clearInterval(intervalId);
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
     };
   }, []);
 
-  const toggleTheme = () => {
-    setTheme(theme === 'dark' ? 'light' : 'dark');
-  };
-  
-  const toggleFullScreen = () => {
+  const toggleFullscreen = () => {
     if (!document.fullscreenElement) {
       document.documentElement.requestFullscreen().catch(err => {
-        console.error(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
+        console.log(`Error attempting to enable fullscreen: ${err.message}`);
       });
     } else {
-      if (document.exitFullscreen) {
-        document.exitFullscreen();
-      }
+      document.exitFullscreen();
     }
   };
 
+  // 防止 SSR 错误：仅在客户端渲染
+  if (!mounted) {
+    return null;
+  }
+
   return (
-    <div className="absolute top-0 left-0 right-0 h-8 bg-background/80 backdrop-blur-lg text-foreground text-sm flex items-center justify-between px-3 z-[2000] border-b">
-      <div className="flex items-center gap-1">
-        <nav aria-label="Quick navigation" className="hidden sm:flex items-center gap-2 mr-2">
-          <button onClick={() => {const icon = desktopIcons.find(d => d.id === 'landing'); if (icon) openWindow(icon)}} className="px-2 py-0.5 rounded text-sm hover:bg-accent/10" aria-label="Open Home">Home</button>
-          <button onClick={() => {const icon = desktopIcons.find(d => d.id === 'about'); if (icon) openWindow(icon)}} className="px-2 py-0.5 rounded text-sm hover:bg-accent/10" aria-label="Open About">About</button>
-          <button onClick={() => {const icon = desktopIcons.find(d => d.id === 'projects'); if (icon) openWindow(icon)}} className="px-2 py-0.5 rounded text-sm hover:bg-accent/10" aria-label="Open Projects">Projects</button>
-          <button onClick={() => {const icon = desktopIcons.find(d => d.id === 'resume'); if (icon) openWindow(icon)}} className="px-2 py-0.5 rounded text-sm hover:bg-accent/10" aria-label="Open Resume">Resume</button>
-          <button onClick={() => {const icon = desktopIcons.find(d => d.id === 'contact'); if (icon) openWindow(icon)}} className="px-2 py-0.5 rounded text-sm hover:bg-accent/10" aria-label="Open Contact">Contact</button>
-        </nav>
-        <button onClick={toggleFullScreen} className="p-1 rounded-md" aria-label="Toggle Fullscreen">
-          {isFullscreen ? <Shrink size={16} /> : <Expand size={16} />}
-        </button>
-        {mounted && (
-          <button onClick={toggleTheme} className="p-1 rounded-md" aria-label="Toggle Theme">
-            {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
-          </button>
-        )}
-      </div>
-      <div className="font-medium">
-        {mounted ? time : ''}
-      </div>
+    <div className="fixed top-0 left-0 right-0 h-8 bg-black/10 dark:bg-white/10 backdrop-blur-lg border-b border-black/10 dark:border-white/10 flex items-center justify-between px-4 text-sm z-50">
       <div className="flex items-center gap-4">
+        <div className="font-medium">Rajath Hegde</div>
+        <div className="hidden sm:block">{time}</div>
+      </div>
+      
+      <div className="flex items-center gap-2">
         <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                <button className="relative p-1 rounded-md" aria-label="Open Notifications">
-                    <Bell size={16} />
-                    {notifications.length > 0 && (
-                        <span className="absolute top-1 right-1 block h-1.5 w-1.5 rounded-full bg-primary ring-1 ring-background" />
-                    )}
-                </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-80">
-                <DropdownMenuLabel>Notifications</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                {notifications.length > 0 ? (
-                    notifications.map((notif, index) => (
-                        <DropdownMenuItem key={index} className="flex-col items-start gap-1 cursor-default">
-                            <div className="font-medium">{notif.title}</div>
-                            <div className="text-xs text-muted-foreground">{notif.description}</div>
-                        </DropdownMenuItem>
-                    ))
-                ) : (
-                    <DropdownMenuItem disabled>No new notifications</DropdownMenuItem>
-                )}
-            </DropdownMenuContent>
+          <DropdownMenuTrigger asChild>
+            <button className="p-1 rounded-full hover:bg-black/10 dark:hover:bg-white/10 transition-colors" aria-label="Notifications">
+              <Bell className="w-4 h-4" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-80">
+            <DropdownMenuLabel>Notifications</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            {notifications.map((notification, index) => (
+              <DropdownMenuItem key={index} className="flex flex-col items-start p-3">
+                <div className="font-medium">{notification.title}</div>
+                <div className="text-sm text-muted-foreground">{notification.description}</div>
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
         </DropdownMenu>
-        <Power size={16} className="cursor-pointer" />
-        {/* Implement Power Functionality Here */}
+        
+        <button 
+          onClick={toggleFullscreen}
+          className="p-1 rounded-full hover:bg-black/10 dark:hover:bg-white/10 transition-colors"
+          aria-label={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
+        >
+          {isFullscreen ? <Shrink className="w-4 h-4" /> : <Expand className="w-4 h-4" />}
+        </button>
+        
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="p-1 rounded-full hover:bg-black/10 dark:hover:bg-white/10 transition-colors" aria-label="Theme">
+              {theme === 'dark' ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => setTheme('light')}>
+              <Sun className="mr-2 h-4 w-4" />
+              <span>Light</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setTheme('dark')}>
+              <Moon className="mr-2 h-4 w-4" />
+              <span>Dark</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setTheme('system')}>
+              <Sun className="mr-2 h-4 w-4" /> {/* 使用 Sun 作为占位符，可根据需要替换为其他图标 */}
+              <span>System</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </div>
   );

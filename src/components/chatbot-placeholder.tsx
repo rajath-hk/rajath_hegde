@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { 
   MessageCircle, 
@@ -29,6 +29,11 @@ const ChatbotPlaceholder = () => {
     }
   ]);
   const [inputValue, setInputValue] = useState('');
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleSend = () => {
     if (inputValue.trim() === '') return;
@@ -70,6 +75,11 @@ const ChatbotPlaceholder = () => {
       handleSend();
     }
   };
+
+  // Don't render anything on the server
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <div className="fixed bottom-4 left-4 z-50">

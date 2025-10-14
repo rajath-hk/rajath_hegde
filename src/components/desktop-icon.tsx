@@ -2,7 +2,7 @@
 
 import type { AppConfig } from '@/types';
 import { useWindows } from '@/contexts/window-context';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion, useMotionValue } from 'framer-motion';
 
 interface DesktopIconProps {
@@ -13,6 +13,7 @@ interface DesktopIconProps {
 const DesktopIcon = ({ app, constraintsRef }: DesktopIconProps) => {
   const { openWindow, updateIconPosition } = useWindows();
   const IconComponent = app.icon;
+  const [mounted, setMounted] = useState(false);
 
   // Use motion values for a more robust drag implementation
   const x = useMotionValue(app.x ?? 0);
@@ -24,12 +25,21 @@ const DesktopIcon = ({ app, constraintsRef }: DesktopIconProps) => {
     y.set(app.y ?? 0);
   }, [app.x, app.y, x, y]);
 
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
       openWindow(app);
     }
   };
+
+  // Don't render anything on the server
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <motion.button

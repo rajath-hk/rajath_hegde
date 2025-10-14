@@ -1,12 +1,11 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import type { WindowInstance } from '@/types';
 import { useWindows } from '@/contexts/window-context';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { motion, useMotionValue, useTransform, type MotionValue } from 'framer-motion';
-
 
 const DockIcon = ({ win, mouseX }: { win: WindowInstance; mouseX: MotionValue<number> }) => {
     const { focusWindow } = useWindows();
@@ -62,28 +61,34 @@ const DockIcon = ({ win, mouseX }: { win: WindowInstance; mouseX: MotionValue<nu
     );
 };
 
-
 const Dock = () => {
-  const { windows } = useWindows();
-  const mouseX = useMotionValue(Infinity);
+    const { windows } = useWindows();
+    const mouseX = useMotionValue(Infinity);
+    const [mounted, setMounted] = useState(false);
 
-  return (
-    <TooltipProvider>
-      <motion.div
-        onMouseMove={(e) => mouseX.set(e.pageX)}
-        onMouseLeave={() => mouseX.set(Infinity)}
-        className="fixed bottom-4 left-1/2 -translate-x-1/2 w-auto bg-card/40 backdrop-blur-lg border border-black/10 dark:border-white/10 shadow-xl rounded-full p-2 z-[1000] flex flex-row items-end gap-3 h-16 sm:bottom-4"
-        style={{
-          maxWidth: '90vw',
-          overflowX: 'auto',
-        }}
-      >
-        {windows.map(win => (
-            <DockIcon key={win.id} win={win} mouseX={mouseX} />
-        ))}
-      </motion.div>
-    </TooltipProvider>
-  );
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    // Don't render anything on the server
+    if (!mounted) {
+        return null;
+    }
+
+    return (
+        <TooltipProvider>
+            <motion.div
+                className="fixed bottom-4 left-1/2 -translate-x-1/2 bg-black/10 dark:bg-white/10 backdrop-blur-xl border border-black/10 dark:border-white/10 rounded-2xl p-2 flex items-center justify-center gap-2 shadow-xl"
+                initial={{ y: 100, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ type: "spring", stiffness: 300, damping: 20 }}
+            >
+                {windows.map((win) => (
+                    <DockIcon key={win.id} win={win} mouseX={mouseX} />
+                ))}
+            </motion.div>
+        </TooltipProvider>
+    );
 };
 
 export default Dock;

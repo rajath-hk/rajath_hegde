@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { ChevronRight, Home, User, Folder, Briefcase, FileText, Mail, Link } from 'lucide-react';
@@ -8,6 +8,7 @@ import { useWindows } from '@/contexts/window-context';
 
 const SidePanel = () => {
   const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const { openWindow, desktopIcons } = useWindows();
 
   // Define quick links - these could be the most frequently accessed windows
@@ -28,71 +29,59 @@ const SidePanel = () => {
     }
   };
 
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Don't render anything on the server
+  if (!mounted) {
+    return null;
+  }
+
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button 
-          variant="outline" 
+        <Button
+          variant="outline"
           size="icon"
-          className="fixed top-20 right-4 z-50 rounded-full shadow-lg"
-          aria-label="Open quick links panel"
+          className="fixed left-4 top-1/2 -translate-y-1/2 rounded-r-none rounded-l-full shadow-lg z-20"
+          aria-label="Open quick links"
         >
           <ChevronRight className="h-4 w-4" />
         </Button>
       </SheetTrigger>
-      <SheetContent side="right" className="w-64 sm:w-80">
+      <SheetContent side="left" className="w-64 p-0">
         <div className="flex flex-col h-full">
-          <div className="py-4 border-b">
+          <div className="p-4 border-b">
             <h2 className="text-lg font-semibold">Quick Links</h2>
-            <p className="text-sm text-muted-foreground">Access your favorite sections</p>
           </div>
           
-          <div className="flex-1 py-4 overflow-y-auto">
+          <div className="flex-1 overflow-y-auto p-2">
             <nav className="space-y-1">
               {quickLinks.map((link) => {
-                const IconComponent = link.icon;
+                const Icon = link.icon;
                 return (
-                  <button
+                  <Button
                     key={link.id}
+                    variant="ghost"
+                    className="w-full justify-start gap-2"
                     onClick={() => handleLinkClick(link.id)}
-                    className="flex items-center w-full px-3 py-2 text-sm font-medium rounded-lg hover:bg-accent hover:text-accent-foreground transition-colors"
                   >
-                    <IconComponent className="mr-3 h-5 w-5" />
+                    <Icon className="h-4 w-4" />
                     <span>{link.title}</span>
-                  </button>
+                  </Button>
                 );
               })}
             </nav>
-            
-            <div className="mt-8">
-              <h3 className="px-3 text-sm font-semibold mb-2">External Links</h3>
-              <nav className="space-y-1">
-                <a 
-                  href="https://github.com/rajath-hk" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="flex items-center w-full px-3 py-2 text-sm font-medium rounded-lg hover:bg-accent hover:text-accent-foreground transition-colors"
-                >
-                  <Link className="mr-3 h-5 w-5" />
-                  <span>GitHub</span>
-                </a>
-                <a 
-                  href="https://linkedin.com/in/rajath-hegde" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="flex items-center w-full px-3 py-2 text-sm font-medium rounded-lg hover:bg-accent hover:text-accent-foreground transition-colors"
-                >
-                  <Link className="mr-3 h-5 w-5" />
-                  <span>LinkedIn</span>
-                </a>
-              </nav>
-            </div>
           </div>
           
-          <div className="py-4 border-t">
-            <p className="text-xs text-muted-foreground text-center">
-              Portfolio OS v1.0
-            </p>
+          <div className="p-4 border-t">
+            <Button variant="outline" className="w-full gap-2" asChild>
+              <a href="https://github.com/rajath-hk" target="_blank" rel="noopener noreferrer">
+                <Link className="h-4 w-4" />
+                <span>GitHub Profile</span>
+              </a>
+            </Button>
           </div>
         </div>
       </SheetContent>

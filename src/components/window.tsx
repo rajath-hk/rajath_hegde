@@ -5,7 +5,7 @@ import type { WindowInstance } from '@/types';
 import { useWindows } from '@/contexts/window-context';
 import { cn } from '@/lib/utils';
 import { X, Minus, Square } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 type WindowProps = WindowInstance & {
   children?: React.ReactNode;
@@ -19,80 +19,110 @@ const Window = (props: WindowProps) => {
   const {
     closeWindow,
     focusWindow,
+    toggleMinimize,
+    toggleMaximize,
     updateWindowPosition,
     updateWindowSize,
-    toggleMaximize,
-    toggleMinimize,
+    isMobile
   } = useWindows();
 
-  const [size, setSize] = useState({ width, height });
   const [isResizing, setIsResizing] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
-  
+  const [resizeDirection, setResizeDirection] = useState<string | null>(null);
   const windowRef = useRef<HTMLDivElement>(null);
+  const startPos = useRef({ x: 0, y: 0, width: 0, height: 0 });
+  const [localPosition, setLocalPosition] = useState({ x, y });
+  const [localSize, setLocalSize] = useState({ width, height });
 
-  // Check if we're on mobile
+  // Update local state when props change
   useEffect(() => {
-    const checkIsMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    
-    checkIsMobile();
-    window.addEventListener('resize', checkIsMobile);
-    return () => window.removeEventListener('resize', checkIsMobile);
-  }, []);
+    setLocalPosition({ x, y });
+    setLocalSize({ width, height });
+  }, [x, y, width, height]);
 
-  useEffect(() => { 
-    // On mobile, make windows take up most of the screen
-    if (isMobile) {
-      setSize({ 
-        width: window.innerWidth - 20, 
-        height: Math.min(window.innerHeight - 100, 500) 
-      });
-    } else {
-      setSize({ width, height }); 
+
+  const handleFocus = useCallback((e: React.MouseEvent) => {
+    focusWindow(id);
+    e.stopPropagation();
+  }, [focusWindow, id]);
+
+  const handleDoubleClick = useCallback(() => {
+    if (!isMobile) {
+      toggleMaximize(id);
     }
-  }, [width, height, isMobile]);
+  }, [isMobile, toggleMaximize, id]);
 
-  const handleResizeStart = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleResizeStart = useCallback((e: React.MouseEvent<HTMLDivElement>, direction: string) => {
     if (e.button !== 0) return;
     e.stopPropagation();
+    
+    const current = windowRef.current;
+    if (!current) return;
+    
     focusWindow(id);
     setIsResizing(true);
-  };
-  
-  const handleDoubleClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if ((e.target as HTMLElement).closest('button')) {
-      return;
-    }
-    toggleMaximize(id);
-  }
+    setResizeDirection(direction);
+    
+    const rect = current.getBoundingClientRect();
+    startPos.current = {
+      x: e.clientX,
+      y: e.clientY,
+      width: rect.width,
+      height: rect.height
+    };
+  }, [focusWindow, id]);
 
   const handleMouseMove = useCallback((e: MouseEvent) => {
-    if (isResizing && !isMobile) {
-      if (!windowRef.current) return;
-      const rect = windowRef.current.getBoundingClientRect();
-      const newWidth = e.clientX - rect.left;
-      const newHeight = e.clientY - rect.top;
-      setSize({ width: Math.max(300, newWidth), height: Math.max(200, newHeight) });
+    if (!isResizing || isMobile || !resizeDirection || !windowRef.current) return;
+    
+    const dx = e.clientX - startPos.current.x;
+    const dy = e.clientY - startPos.current.y;
+    
+    let newWidth = startPos.current.width;
+    let newHeight = startPos.current.height;
+    let newX = localPosition.x;
+    let newY = localPosition.y;
+    
+    // Handle different resize directions
+    if (resizeDirection.includes('right')) {
+      newWidth = Math.max(300, startPos.current.width + dx);
+    } else if (resizeDirection.includes('left')) {
+      const delta = Math.min(dx, startPos.current.width - 300);
+      newWidth = Math.max(300, startPos.current.width - delta);
+      newX = localPosition.x + delta;
     }
-  }, [isResizing, isMobile]);
+    
+    if (resizeDirection.includes('bottom')) {
+      newHeight = Math.max(200, startPos.current.height + dy);
+    } else if (resizeDirection.includes('top')) {
+      const delta = Math.min(dy, startPos.current.height - 200);
+      newHeight = Math.max(200, startPos.current.height - delta);
+      newY = localPosition.y + delta;
+    }
+    
+    setLocalSize({ width: newWidth, height: newHeight });
+    setLocalPosition({ x: newX, y: newY });
+  }, [isResizing, isMobile, resizeDirection, localPosition]);
 
   const handleMouseUp = useCallback(() => {
     if (isResizing && !isMobile) {
       setIsResizing(false);
-      updateWindowSize(id, size.width, size.height);
+      setResizeDirection(null);
+      updateWindowSize(id, localSize.width, localSize.height);
+      updateWindowPosition(id, localPosition.x, localPosition.y);
     }
-  }, [isResizing, id, size, updateWindowSize, isMobile]);
+  }, [isResizing, isMobile, id, localSize, localPosition, updateWindowSize, updateWindowPosition]);
 
   useEffect(() => {
     if (isResizing) {
       window.addEventListener('mousemove', handleMouseMove);
       window.addEventListener('mouseup', handleMouseUp);
+      // Prevent text selection while resizing
+      document.body.style.userSelect = 'none';
     }
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
+      document.body.style.userSelect = '';
     };
   }, [isResizing, handleMouseMove, handleMouseUp]);
 
@@ -102,33 +132,22 @@ const Window = (props: WindowProps) => {
       ref={windowRef}
       className="absolute bg-card/80 dark:bg-card/60 backdrop-blur-xl border rounded-lg flex flex-col shadow-lg"
       style={{
-        width: isMobile ? 'calc(100vw - 20px)' : size.width,
-        height: isMobile ? Math.min(window.innerHeight - 100, 500) : size.height,
+        width: isMobile ? 'calc(100vw - 20px)' : localSize.width,
+        height: isMobile ? Math.min(window.innerHeight - 100, 500) : localSize.height,
         zIndex,
-        left: isMobile ? 10 : x,
-        top: isMobile ? 50 : y,
+        left: isMobile ? 10 : localPosition.x,
+        top: isMobile ? 50 : localPosition.y,
       }}
-      layout
-      initial={{ opacity: 0, scale: 0.8, x: isMobile ? 10 : x, y: (isMobile ? 50 : y) + 20 }}
-      animate={{ 
-        opacity: 1, 
-        scale: 1, 
-        x: isMobile ? 10 : x, 
-        y: isMobile ? 50 : y,
-        transition: { type: 'spring', stiffness: 500, damping: 40 }
-      }}
-      exit={{ 
-        opacity: 0, 
-        scale: 0.8, 
-        y: (isMobile ? 50 : y) + 20,
-        transition: { duration: 0.2 }
-      }}
-      onMouseDown={() => focusWindow(id)}
+      onMouseDown={handleFocus}
       drag={!isMobile && !isMaximized && !isResizing}
       dragMomentum={false}
+      dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
       onDragEnd={(e, info) => {
         if (!isMobile) {
-          updateWindowPosition(id, x + info.offset.x, y + info.offset.y);
+          const newX = localPosition.x + info.offset.x;
+          const newY = localPosition.y + info.offset.y;
+          setLocalPosition({ x: newX, y: newY });
+          updateWindowPosition(id, newX, newY);
         }
       }}
     >
@@ -182,23 +201,29 @@ const Window = (props: WindowProps) => {
           isFocused ? "text-foreground" : "text-muted-foreground/80"
         )}>{title}</span>
       </header>
-      <div className="flex-1 rounded-b-lg overflow-hidden">
-        <motion.div 
-          className="w-full h-full overflow-auto"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1, transition: { delay: 0.1 } }}
-          exit={{ opacity: 0 }}
-        >
-          {content}
-        </motion.div>
+      <div className="flex-1 rounded-b-lg overflow-auto">
+        {content}
       </div>
-       <div
-        className={cn(
-          "absolute bottom-0 right-0 w-4 h-4 cursor-se-resize",
-          (isMaximized || isMobile) && "hidden"
-        )}
-        onMouseDown={handleResizeStart}
-      />
+       {/* Resize handles */}
+       {!isMobile && !isMaximized && (
+        <>
+          {/* Bottom-right handle */}
+          <div
+            className="absolute bottom-0 right-0 w-4 h-4 cursor-se-resize"
+            onMouseDown={(e) => handleResizeStart(e, 'bottom-right')}
+          />
+          {/* Bottom edge handle */}
+          <div
+            className="absolute bottom-0 left-4 right-4 h-2 cursor-s-resize"
+            onMouseDown={(e) => handleResizeStart(e, 'bottom')}
+          />
+          {/* Right edge handle */}
+          <div
+            className="absolute right-0 top-4 bottom-4 w-2 cursor-e-resize"
+            onMouseDown={(e) => handleResizeStart(e, 'right')}
+          />
+        </>
+       )}
     </motion.div>
   );
 };

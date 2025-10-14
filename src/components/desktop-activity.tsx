@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { X } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 interface ActivityItem {
   id: string;
@@ -16,8 +17,10 @@ interface ActivityItem {
 const DesktopActivity = () => {
   const [activities, setActivities] = useState<ActivityItem[]>([]);
   const [visible, setVisible] = useState(true);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     // Simulate loading activities
     const sampleActivities: ActivityItem[] = [
       {
@@ -29,15 +32,15 @@ const DesktopActivity = () => {
       },
       {
         id: '2',
-        title: 'Blog Post Published',
-        description: 'Just published a new article about modern web development',
+        title: 'Blog Update',
+        description: 'Published a new article on modern web development practices',
         timestamp: '1 day ago',
         type: 'blog'
       },
       {
         id: '3',
-        title: 'Online Status',
-        description: 'Currently available for freelance opportunities',
+        title: 'Online',
+        description: 'Currently available for new opportunities',
         timestamp: 'Just now',
         type: 'status'
       }
@@ -46,17 +49,26 @@ const DesktopActivity = () => {
     setActivities(sampleActivities);
   }, []);
 
-  if (!visible || activities.length === 0) return null;
+  // Don't render anything on the server
+  if (!mounted) {
+    return null;
+  }
+
+  if (!visible) return null;
 
   return (
-    <div className="absolute bottom-24 left-4 w-80 z-50">
-      <Card className="bg-card/80 backdrop-blur-lg border border-border p-4 shadow-lg">
+    <motion.div
+      initial={{ opacity: 0, x: 300 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: 300 }}
+      className="fixed top-20 left-4 w-80 z-30"
+    >
+      <Card className="p-4 bg-card/80 backdrop-blur-sm">
         <div className="flex justify-between items-center mb-3">
-          <h3 className="font-semibold text-foreground">Recent Activity</h3>
+          <h3 className="font-semibold text-lg">Recent Activity</h3>
           <Button 
             variant="ghost" 
             size="icon" 
-            className="h-6 w-6"
             onClick={() => setVisible(false)}
             aria-label="Close activity panel"
           >
@@ -66,26 +78,35 @@ const DesktopActivity = () => {
         
         <div className="space-y-3">
           {activities.map((activity) => (
-            <div 
-              key={activity.id} 
-              className="border-l-2 border-primary pl-3 py-1 hover:bg-accent/50 transition-colors cursor-pointer"
-            >
-              <div className="flex justify-between">
-                <h4 className="font-medium text-sm text-foreground">{activity.title}</h4>
-                <span className="text-xs text-muted-foreground">{activity.timestamp}</span>
+            <div key={activity.id} className="flex gap-3 p-2 rounded-lg hover:bg-accent">
+              <div className="flex-shrink-0 mt-1">
+                {activity.type === 'update' && (
+                  <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                )}
+                {activity.type === 'blog' && (
+                  <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                )}
+                {activity.type === 'status' && (
+                  <div className="w-2 h-2 rounded-full bg-purple-500"></div>
+                )}
+                {activity.type === 'achievement' && (
+                  <div className="w-2 h-2 rounded-full bg-yellow-500"></div>
+                )}
               </div>
-              <p className="text-xs text-muted-foreground mt-1">{activity.description}</p>
+              <div>
+                <h4 className="font-medium text-sm">{activity.title}</h4>
+                <p className="text-xs text-muted-foreground mt-1">{activity.description}</p>
+                <p className="text-xs text-muted-foreground mt-1">{activity.timestamp}</p>
+              </div>
             </div>
           ))}
         </div>
         
-        <div className="mt-3 text-center">
-          <Button variant="outline" size="sm" className="w-full">
-            View All Activity
-          </Button>
-        </div>
+        <Button variant="outline" className="w-full mt-4 text-xs">
+          View All Activity
+        </Button>
       </Card>
-    </div>
+    </motion.div>
   );
 };
 

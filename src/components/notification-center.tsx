@@ -9,7 +9,7 @@ import {
   AlertCircle, 
   Info 
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 interface Notification {
   id: string;
@@ -24,6 +24,7 @@ const NotificationCenter = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [mounted, setMounted] = useState(false);
 
   // Initialize with some sample notifications
   useEffect(() => {
@@ -31,26 +32,26 @@ const NotificationCenter = () => {
       {
         id: '1',
         title: 'Welcome!',
-        message: 'Welcome to my interactive portfolio. Feel free to explore all the windows and features.',
+        message: 'Thanks for checking out my portfolio. Feel free to explore!',
         type: 'info',
-        timestamp: new Date(Date.now() - 1000 * 60 * 5), // 5 minutes ago
+        timestamp: new Date(Date.now() - 3600000), // 1 hour ago
         read: false
       },
       {
         id: '2',
-        title: 'Keyboard Shortcuts',
-        message: 'Did you know you can use Ctrl+Shift+Number to open windows quickly?',
-        type: 'info',
-        timestamp: new Date(Date.now() - 1000 * 60 * 30), // 30 minutes ago
-        read: false
+        title: 'New Feature',
+        message: 'You can now drag icons and windows around the screen.',
+        type: 'success',
+        timestamp: new Date(Date.now() - 86400000), // 1 day ago
+        read: true
       },
       {
         id: '3',
-        title: 'New Project Added',
-        message: 'Check out my latest project: AI Development Assistant',
-        type: 'success',
-        timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2), // 2 hours ago
-        read: false
+        title: 'Tip',
+        message: 'Right-click the desktop for more options.',
+        type: 'info',
+        timestamp: new Date(Date.now() - 172800000), // 2 days ago
+        read: true
       }
     ];
     
@@ -58,161 +59,148 @@ const NotificationCenter = () => {
     setUnreadCount(sampleNotifications.filter(n => !n.read).length);
   }, []);
 
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const markAsRead = (id: string) => {
-    setNotifications(prev => 
-      prev.map(notification => 
-        notification.id === id 
-          ? { ...notification, read: true } 
-          : notification
-      )
-    );
-    setUnreadCount(prev => Math.max(0, prev - 1));
+    setNotifications(notifications.map(notification => 
+      notification.id === id ? { ...notification, read: true } : notification
+    ));
+    setUnreadCount(notifications.filter(n => n.id !== id && !n.read).length);
   };
 
   const markAllAsRead = () => {
-    setNotifications(prev => 
-      prev.map(notification => ({ ...notification, read: true }))
-    );
+    setNotifications(notifications.map(notification => ({ ...notification, read: true })));
     setUnreadCount(0);
   };
 
   const removeNotification = (id: string) => {
-    setNotifications(prev => prev.filter(n => n.id !== id));
-    const notification = notifications.find(n => n.id === id);
-    if (notification && !notification.read) {
-      setUnreadCount(prev => Math.max(0, prev - 1));
+    setNotifications(notifications.filter(notification => notification.id !== id));
+    const removedNotification = notifications.find(n => n.id === id);
+    if (removedNotification && !removedNotification.read) {
+      setUnreadCount(unreadCount - 1);
     }
   };
 
   const getIcon = (type: Notification['type']) => {
     switch (type) {
-      case 'success': return <CheckCircle className="h-5 w-5 text-green-500" />;
-      case 'warning': return <AlertCircle className="h-5 w-5 text-yellow-500" />;
-      case 'error': return <AlertCircle className="h-5 w-5 text-red-500" />;
-      default: return <Info className="h-5 w-5 text-blue-500" />;
+      case 'success': return <CheckCircle className="h-4 w-4 text-green-500" />;
+      case 'warning': return <AlertCircle className="h-4 w-4 text-yellow-500" />;
+      case 'error': return <AlertCircle className="h-4 w-4 text-red-500" />;
+      default: return <Info className="h-4 w-4 text-blue-500" />;
     }
   };
 
-  const formatTime = (date: Date) => {
-    const now = new Date();
-    const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60));
-    
-    if (diffInMinutes < 1) return 'Just now';
-    if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
-    
-    const diffInHours = Math.floor(diffInMinutes / 60);
-    if (diffInHours < 24) return `${diffInHours}h ago`;
-    
-    const diffInDays = Math.floor(diffInHours / 24);
-    return `${diffInDays}d ago`;
+  const getBackgroundColor = (type: Notification['type']) => {
+    switch (type) {
+      case 'success': return 'bg-green-50 dark:bg-green-900/30';
+      case 'warning': return 'bg-yellow-50 dark:bg-yellow-900/30';
+      case 'error': return 'bg-red-50 dark:bg-red-900/30';
+      default: return 'bg-blue-50 dark:bg-blue-900/30';
+    }
   };
 
+  // Don't render anything on the server
+  if (!mounted) {
+    return null;
+  }
+
   return (
-    <div className="fixed bottom-24 right-4 z-50">
+    <div className="fixed top-20 right-4 z-40">
+      {/* Notification Bell */}
       <Button
         variant="outline"
         size="icon"
-        className="relative rounded-full shadow-lg"
+        className="rounded-full shadow-lg relative"
         onClick={() => setIsOpen(!isOpen)}
-        aria-label="Open notification center"
+        aria-label="Toggle notifications"
       >
-        <Bell className="h-5 w-5" />
+        <Bell className="h-4 w-4" />
         {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-red-500 text-xs text-white flex items-center justify-center">
+          <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-red-500 text-xs text-white flex items-center justify-center">
             {unreadCount}
           </span>
         )}
       </Button>
 
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 10 }}
-            className="absolute bottom-12 right-0 w-80 bg-card border rounded-lg shadow-xl overflow-hidden"
-          >
-            <div className="flex items-center justify-between p-4 border-b">
-              <h3 className="font-semibold">Notifications</h3>
-              {unreadCount > 0 && (
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  onClick={markAllAsRead}
-                  className="h-8 text-xs"
-                >
-                  Mark all as read
-                </Button>
-              )}
-            </div>
-            
-            <div className="max-h-96 overflow-y-auto">
-              {notifications.length === 0 ? (
-                <div className="p-4 text-center text-muted-foreground">
-                  No notifications
-                </div>
-              ) : (
-                notifications.map((notification) => (
-                  <div 
-                    key={notification.id} 
-                    className={`border-b p-4 hover:bg-accent/50 transition-colors ${
-                      !notification.read ? 'bg-accent/30' : ''
-                    }`}
-                  >
-                    <div className="flex">
-                      <div className="mr-3 mt-0.5">
-                        {getIcon(notification.type)}
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex justify-between">
-                          <h4 className="font-medium text-sm">{notification.title}</h4>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-5 w-5 ml-2"
-                            onClick={() => removeNotification(notification.id)}
-                          >
-                            <X className="h-3 w-3" />
-                          </Button>
-                        </div>
-                        <p className="text-sm text-muted-foreground mt-1">
-                          {notification.message}
-                        </p>
-                        <div className="flex justify-between items-center mt-2">
-                          <span className="text-xs text-muted-foreground">
-                            {formatTime(notification.timestamp)}
-                          </span>
-                          {!notification.read && (
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-6 text-xs"
-                              onClick={() => markAsRead(notification.id)}
-                            >
-                              Mark as read
-                            </Button>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-            
-            <div className="p-2 border-t text-center">
+      {/* Notification Panel */}
+      {isOpen && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          className="absolute right-0 mt-2 w-80 bg-card border rounded-lg shadow-xl z-50"
+        >
+          <div className="p-4 border-b flex justify-between items-center">
+            <h3 className="font-semibold">Notifications</h3>
+            <div className="flex gap-2">
               <Button 
                 variant="ghost" 
                 size="sm" 
-                className="h-8 text-xs"
-                onClick={() => setIsOpen(false)}
+                onClick={markAllAsRead}
+                disabled={unreadCount === 0}
               >
-                Close
+                Mark all as read
+              </Button>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={() => setIsOpen(false)}
+                aria-label="Close notifications"
+              >
+                <X className="h-4 w-4" />
               </Button>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          </div>
+          
+          <div className="max-h-96 overflow-y-auto">
+            {notifications.length === 0 ? (
+              <div className="p-4 text-center text-muted-foreground">
+                No notifications
+              </div>
+            ) : (
+              notifications.map((notification) => (
+                <div 
+                  key={notification.id} 
+                  className={`p-4 border-b ${getBackgroundColor(notification.type)} ${!notification.read ? 'border-l-4 border-l-primary' : ''}`}
+                >
+                  <div className="flex justify-between">
+                    <div className="flex items-start gap-2">
+                      {getIcon(notification.type)}
+                      <div>
+                        <h4 className="font-medium">{notification.title}</h4>
+                        <p className="text-sm text-muted-foreground">{notification.message}</p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {notification.timestamp.toLocaleDateString()} {notification.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </p>
+                      </div>
+                    </div>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      onClick={() => removeNotification(notification.id)}
+                      aria-label="Dismiss notification"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  {!notification.read && (
+                    <Button 
+                      variant="link" 
+                      size="sm" 
+                      className="mt-2 p-0 h-auto"
+                      onClick={() => markAsRead(notification.id)}
+                    >
+                      Mark as read
+                    </Button>
+                  )}
+                </div>
+              ))
+            )}
+          </div>
+        </motion.div>
+      )}
     </div>
   );
 };
