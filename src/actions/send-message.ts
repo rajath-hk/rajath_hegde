@@ -1,5 +1,3 @@
-'use server';
-
 import { contactFormSchema, type ContactFormData } from '@/lib/schemas';
 
 export async function sendMessage(data: ContactFormData) {
