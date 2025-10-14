@@ -6,6 +6,15 @@ import { useWindows } from '@/contexts/window-context';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { motion, useMotionValue, useTransform, type MotionValue } from 'framer-motion';
+import { Button } from '@/components/ui/button';
+import { 
+  FileText, 
+  Folder, 
+  Mail, 
+  Briefcase,
+  Award,
+  User
+} from 'lucide-react';
 
 
 const DockIcon = ({ win, mouseX }: { win: WindowInstance; mouseX: MotionValue<number> }) => {
@@ -53,23 +62,71 @@ const DockIcon = ({ win, mouseX }: { win: WindowInstance; mouseX: MotionValue<nu
     );
 };
 
+const MobileNav = () => {
+  const { openWindow } = useWindows();
+  
+  const navItems = [
+    { id: 'about', title: 'About', icon: User },
+    { id: 'projects', title: 'Projects', icon: Folder },
+    { id: 'my-work', title: 'Experience', icon: Briefcase },
+    { id: 'skills', title: 'Skills', icon: Award },
+    { id: 'contact', title: 'Contact', icon: Mail },
+  ];
+
+  const handleOpenWindow = (appId: string) => {
+    const appConfigMap: Record<string, any> = {
+      'about': { id: 'about', title: 'My Story', icon: FileText, defaultSize: { width: 550, height: 400 }, x: 20, y: 50 },
+      'projects': { id: 'projects', title: 'Projects', icon: Folder, defaultSize: { width: 650, height: 500 }, x: 20, y: 150 },
+      'my-work': { id: 'my-work', title: 'My Work', icon: Briefcase, defaultSize: { width: 500, height: 350 }, x: 20, y: 250 },
+      'skills': { id: 'skills', title: 'Skills', icon: Award, defaultSize: { width: 600, height: 500 }, x: 130, y: 150 },
+      'resume': { id: 'resume', title: 'My Resume', icon: FileText, defaultSize: { width: 700, height: 800 }, x: 130, y: 50 },
+      'contact': { id: 'contact', title: 'Contact Me', icon: Mail, defaultSize: { width: 450, height: 580 }, x: 130, y: 150 },
+    };
+    
+    const appConfig = appConfigMap[appId];
+    if (appConfig) {
+      openWindow(appConfig);
+    }
+  };
+
+  return (
+    <div className="fixed bottom-0 left-0 right-0 bg-card/80 backdrop-blur-lg border-t border-border md:hidden flex justify-around py-2 z-[1000]">
+      {navItems.map((item) => (
+        <Button
+          key={item.id}
+          variant="ghost"
+          size="sm"
+          onClick={() => handleOpenWindow(item.id)}
+          className="flex flex-col items-center gap-1 h-auto p-1"
+          aria-label={item.title}
+        >
+          <item.icon className="h-5 w-5" />
+          <span className="text-xs">{item.title}</span>
+        </Button>
+      ))}
+    </div>
+  );
+};
 
 const Dock = () => {
   const { windows } = useWindows();
   const mouseX = useMotionValue(Infinity);
 
   return (
-    <TooltipProvider>
-      <motion.div
-        onMouseMove={(e) => mouseX.set(e.pageX)}
-        onMouseLeave={() => mouseX.set(Infinity)}
-        className="fixed bottom-4 left-1/2 -translate-x-1/2 w-auto bg-card/40 backdrop-blur-lg border border-black/10 dark:border-white/10 shadow-xl rounded-full p-2 z-[1000] flex flex-row items-end gap-3 h-16"
-      >
-        {windows.map(win => (
-            <DockIcon key={win.id} win={win} mouseX={mouseX} />
-        ))}
-      </motion.div>
-    </TooltipProvider>
+    <>
+      <TooltipProvider>
+        <motion.div
+          onMouseMove={(e) => mouseX.set(e.pageX)}
+          onMouseLeave={() => mouseX.set(Infinity)}
+          className="fixed bottom-4 left-1/2 -translate-x-1/2 w-auto bg-card/40 backdrop-blur-lg border border-black/10 dark:border-white/10 shadow-xl rounded-full p-2 z-[1000] flex flex-row items-end gap-3 h-16 hidden md:flex"
+        >
+          {windows.map(win => (
+              <DockIcon key={win.id} win={win} mouseX={mouseX} />
+          ))}
+        </motion.div>
+      </TooltipProvider>
+      <MobileNav />
+    </>
   );
 };
 

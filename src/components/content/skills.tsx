@@ -2,14 +2,16 @@ import React from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
+interface Skill {
+  name: string;
+  level: "Beginner" | "Intermediate" | "Advanced" | "Expert";
+  description: string;
+}
+
 interface SkillCategory {
   title: string;
   description: string;
-  skills: {
-    name: string;
-    level: 'Expert' | 'Advanced' | 'Intermediate';
-    description: string;
-  }[];
+  skills: Skill[];
 }
 
 const skillCategories: SkillCategory[] = [
@@ -31,6 +33,16 @@ const skillCategories: SkillCategory[] = [
         name: "UI/UX Design",
         level: "Advanced",
         description: "Creating intuitive interfaces with focus on user experience and accessibility"
+      },
+      {
+        name: "Tailwind CSS",
+        level: "Expert",
+        description: "Utility-first CSS framework for rapid UI development"
+      },
+      {
+        name: "Framer Motion",
+        level: "Advanced",
+        description: "Animations and micro-interactions for enhanced user experiences"
       }
     ]
   },
@@ -52,6 +64,16 @@ const skillCategories: SkillCategory[] = [
         name: "Databases",
         level: "Advanced",
         description: "Experience with SQL and NoSQL databases, focusing on performance and security"
+      },
+      {
+        name: "RESTful APIs",
+        level: "Expert",
+        description: "Designing and building scalable, well-documented APIs"
+      },
+      {
+        name: "GraphQL",
+        level: "Intermediate",
+        description: "Flexible query language for APIs with precise data fetching"
       }
     ]
   },
@@ -73,12 +95,32 @@ const skillCategories: SkillCategory[] = [
         name: "Cloud Platforms",
         level: "Advanced",
         description: "AWS and Azure services for scalable applications"
+      },
+      {
+        name: "Testing",
+        level: "Advanced",
+        description: "Unit, integration, and end-to-end testing practices"
+      },
+      {
+        name: "Performance Optimization",
+        level: "Advanced",
+        description: "Web vitals, load times, and resource optimization"
       }
     ]
   }
 ];
 
 const Skills = () => {
+  const getLevelColor = (level: string) => {
+    switch (level) {
+      case "Expert": return "bg-green-500";
+      case "Advanced": return "bg-blue-500";
+      case "Intermediate": return "bg-yellow-500";
+      case "Beginner": return "bg-red-500";
+      default: return "bg-gray-500";
+    }
+  };
+
   return (
     <div className="space-y-8">
       <div className="space-y-4">
@@ -103,17 +145,12 @@ const Skills = () => {
                   <div key={skillIndex} className="space-y-2">
                     <div className="flex items-center justify-between">
                       <span className="font-medium">{skill.name}</span>
-                      <Badge 
-                        variant={
-                          skill.level === 'Expert' ? 'default' :
-                          skill.level === 'Advanced' ? 'secondary' :
-                          'outline'
-                        }
-                      >
+                      <Badge variant="secondary">
+                        <span className={`inline-block w-2 h-2 rounded-full mr-2 ${getLevelColor(skill.level)}`}></span>
                         {skill.level}
                       </Badge>
                     </div>
-                    <p className="text-sm text-muted-foreground">{skill.description}</p>
+                    <p className="text-muted-foreground text-sm">{skill.description}</p>
                   </div>
                 ))}
               </div>

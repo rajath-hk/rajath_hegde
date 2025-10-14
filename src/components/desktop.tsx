@@ -47,7 +47,7 @@ const Desktop = () => {
       <div
         ref={desktopRef}
         id="desktop-area"
-        className="absolute inset-0 pt-8"
+        className="absolute inset-0 pt-24 pb-16 md:pb-0" // Added pb-16 on mobile to account for mobile nav
         onContextMenu={handleContextMenu}
       >
         <DropdownMenu open={contextMenuOpen} onOpenChange={setContextMenuOpen}>

@@ -9,7 +9,8 @@ import ContactContent from '@/components/content/contact';
 import ResumeContent from '@/components/content/resume';
 import MyWorkContent from '@/components/content/my-work';
 import SocialsContent from '@/components/content/socials';
-import { FileText, Folder, Mail, Briefcase } from 'lucide-react';
+import SkillsContent from '@/components/content/skills';
+import { FileText, Folder, Mail, Briefcase, Award } from 'lucide-react';
 
 const ICON_STATE_KEY = 'retrofolio-icons-v2';
 const WINDOW_STATE_KEY = 'retrofolio-windows-v2';
@@ -22,6 +23,7 @@ const initialAppsData: AppConfig[] = [
   { id: 'projects', title: 'Projects', icon: Folder, content: <ProjectsContent />, defaultSize: { width: 650, height: 500 }, x: 20, y: 150 },
   { id: 'my-work', title: 'My Work', icon: Briefcase, content: <MyWorkContent />, defaultSize: { width: 500, height: 350 }, x: 20, y: 250 },
   { id: 'resume', title: 'My Resume', icon: FileText, content: <ResumeContent />, defaultSize: { width: 700, height: 800 }, x: 130, y: 50 },
+  { id: 'skills', title: 'Skills', icon: Award, content: <SkillsContent />, defaultSize: { width: 600, height: 500 }, x: 130, y: 150 },
   { id: 'contact', title: 'Contact Me', icon: Mail, content: <ContactContent />, defaultSize: { width: 450, height: 580 }, x: 130, y: 150 },
   { id: 'socials', title: 'Socials', icon: Folder, content: <SocialsContent />, defaultSize: { width: 450, height: 350 }, x: 130, y: 250 },
   { id: 'legal', title: 'Legal', icon: Folder, content: <LegalContent />, defaultSize: { width: 500, height: 300 }, x: 20, y: 450 },
