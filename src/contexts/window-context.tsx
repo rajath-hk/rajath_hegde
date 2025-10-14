@@ -120,7 +120,11 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
       if (savedWindows) {
         try {
           const parsedWindows = JSON.parse(savedWindows);
-          setWindows(parsedWindows);
+          const windowsWithContent = parsedWindows.map((win: WindowInstance) => ({
+            ...win,
+            content: createContentElement(win.id),
+          }));
+          setWindows(windowsWithContent);
         } catch (e) {
           console.error('Failed to parse saved window states', e);
         }
