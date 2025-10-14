@@ -22,15 +22,14 @@ function useGitHubStats(repoUrl?: string) {
     const repo = parseRepo(repoUrl);
     if (!repo) return;
     
-    const abortController = new AbortController();
-    
     setLoading(true);
     setError(null);
+    
+    const abortController = new AbortController();
     
     fetch(`https://api.github.com/repos/${repo.owner}/${repo.repo}`, {
       signal: abortController.signal
     })
-      .then(r => {
       .then(r => {
         if (r.ok) {
           return r.json();
@@ -49,11 +48,13 @@ function useGitHubStats(repoUrl?: string) {
         setLoading(false);
       })
       .catch(err => {
-        console.error('Error fetching GitHub stats:', err);
-        setError('Failed to load GitHub stats');
-        setLoading(false);
+        if (err.name !== 'AbortError') {
+          console.error('Error fetching GitHub stats:', err);
+          setError(err.message || 'Failed to load GitHub stats');
+          setLoading(false);
+        }
       });
-    
+
     return () => abortController.abort();
   }, [repoUrl]);
 
