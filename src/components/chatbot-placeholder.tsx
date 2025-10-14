@@ -9,7 +9,6 @@ import {
   Bot, 
   User 
 } from 'lucide-react';
-import { motion } from 'framer-motion';
 
 interface Message {
   id: string;
@@ -84,12 +83,7 @@ const ChatbotPlaceholder = () => {
   return (
     <div className="fixed bottom-4 left-4 z-50">
       {isOpen ? (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.8, y: 20 }}
-          className="w-80 h-96 bg-card border rounded-lg shadow-xl flex flex-col"
-        >
+        <div className="w-80 h-96 bg-card border rounded-lg shadow-xl flex flex-col transform transition-all duration-300">
           <div className="flex items-center justify-between p-4 border-b">
             <div className="flex items-center">
               <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center mr-2">
@@ -157,13 +151,9 @@ const ChatbotPlaceholder = () => {
               </Button>
             </div>
           </div>
-        </motion.div>
+        </div>
       ) : (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.8 }}
-        >
+        <div className="transform transition-all duration-300">
           <Button
             onClick={() => setIsOpen(true)}
             className="rounded-full shadow-lg"
@@ -172,7 +162,7 @@ const ChatbotPlaceholder = () => {
           >
             <MessageCircle className="h-5 w-5" />
           </Button>
-        </motion.div>
+        </div>
       )}
     </div>
   );

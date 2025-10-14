@@ -9,7 +9,6 @@ import {
   AlertCircle, 
   Info 
 } from 'lucide-react';
-import { motion } from 'framer-motion';
 
 interface Notification {
   id: string;
@@ -126,11 +125,12 @@ const NotificationCenter = () => {
 
       {/* Notification Panel */}
       {isOpen && (
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -10 }}
-          className="absolute right-0 mt-2 w-80 bg-card border rounded-lg shadow-xl z-50"
+        <div
+          className="absolute right-0 mt-2 w-80 bg-card border rounded-lg shadow-xl z-50 transform transition-all duration-300 ease-out opacity-0 translate-y-[-10px] scale-95"
+          style={{
+            opacity: isOpen ? 1 : 0,
+            transform: isOpen ? 'translateY(0) scale(1)' : 'translateY(-10px) scale(0.95)'
+          }}
         >
           <div className="p-4 border-b flex justify-between items-center">
             <h3 className="font-semibold">Notifications</h3>
@@ -199,7 +199,7 @@ const NotificationCenter = () => {
               ))
             )}
           </div>
-        </motion.div>
+        </div>
       )}
     </div>
   );

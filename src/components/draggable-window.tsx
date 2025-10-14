@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useRef, useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import Window from '@/components/window';
 
 interface Position {
@@ -42,25 +41,18 @@ export function DraggableWindow({
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.2 }}
-      className="fixed inset-0 z-50"
-    >
+    <div className={`fixed inset-0 z-50 transition-opacity duration-200 ${isOpen ? 'opacity-100' : 'opacity-0'}`}>
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      <motion.div
-        initial={{ scale: 0.9, y: 20 }}
-        animate={{ scale: 1, y: 0 }}
-        exit={{ scale: 0.9, y: 20 }}
-        transition={{ duration: 0.2 }}
-        className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50"
+      <div
+        className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 transition-all duration-200"
+        style={{
+          transform: 'translate(-50%, -50%) scale(1)',
+        }}
       >
         <Window title={title} onClose={onClose}>
           {children}
         </Window>
-      </motion.div>
-    </motion.div>
+      </div>
+    </div>
   );
 }

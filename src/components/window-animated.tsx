@@ -1,6 +1,5 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { motion } from "framer-motion";
 import Window from "@/components/window";
 
 export function AnimatedWindow({ open, onClose, ...props }: any) {
@@ -20,23 +19,25 @@ export function AnimatedWindow({ open, onClose, ...props }: any) {
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.25, ease: "easeInOut" }}
-      className="fixed inset-0 z-50"
+    <div 
+      className="fixed inset-0 z-50 opacity-0 transition-opacity duration-250 ease-in-out"
+      style={{ opacity: open ? 1 : 0 }}
     >
-      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95, y: 40 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.95, y: 40 }}
-        transition={{ duration: 0.25, ease: "easeInOut" }}
-        className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50"
+      <div 
+        className="absolute inset-0 bg-black/50 transition-opacity duration-250 ease-in-out" 
+        onClick={onClose} 
+        style={{ opacity: open ? 0.5 : 0 }}
+      />
+      <div
+        className="absolute top-1/2 left-1/2 z-50 opacity-0 scale-95 translate-y-10 transition-all duration-250 ease-in-out"
+        style={{
+          opacity: open ? 1 : 0,
+          transform: `translate(-50%, -50%) scale(${open ? 1 : 0.95})`,
+          translateY: `${open ? 0 : 40}px`
+        }}
       >
         <Window {...props} onClose={onClose} />
-      </motion.div>
-    </motion.div>
+      </div>
+    </div>
   );
 }
