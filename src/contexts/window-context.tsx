@@ -198,77 +198,97 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
   }, [windows, mounted]);
 
   const openWindow = (app: AppConfig) => {
-    setWindows(prev => {
-      const existingWindow = prev.find(w => w.id === app.id);
-      if (existingWindow) {
-        // If window exists, bring it to front and unminimize it
-        return prev.map(w => 
-          w.id === app.id 
-            ? { ...w, isMinimized: false, zIndex: Math.max(0, ...prev.map(win => win.zIndex)) + 1 } 
-            : w
-        );
-      } else {
-        // Create new window with component reference
-        const contentComponent = createContentComponent(app.id);
-        // Validate that we have a proper component
-        if (!contentComponent) {
-          console.error(`Failed to create content component for ${app.id}`);
-          return prev;
+    try {
+      setWindows(prev => {
+        const existingWindow = prev.find(w => w.id === app.id);
+        if (existingWindow) {
+          // If window exists, bring it to front and unminimize it
+          return prev.map(w => 
+            w.id === app.id 
+              ? { ...w, isMinimized: false, zIndex: Math.max(0, ...prev.map(win => win.zIndex)) + 1 } 
+              : w
+          );
+        } else {
+          // Create new window with component reference
+          const contentComponent = createContentComponent(app.id);
+          // Validate that we have a proper component
+          if (!contentComponent) {
+            console.error(`Failed to create content component for ${app.id}`);
+            return prev;
+          }
+          
+          const newWindow: WindowInstance = {
+            ...app,
+            content: contentComponent,
+            x: app.x ?? 100,
+            y: app.y ?? 100,
+            width: app.defaultSize?.width ?? 500,
+            height: app.defaultSize?.height ?? 400,
+            zIndex: Math.max(...prev.map(w => w.zIndex), 0) + 1,
+            isMinimized: false,
+            isMaximized: false,
+            isFocused: true,
+          };
+          return [...prev, newWindow];
         }
-        
-        const newWindow: WindowInstance = {
-          ...app,
-          content: contentComponent,
-          x: app.x ?? 100,
-          y: app.y ?? 100,
-          width: app.defaultSize?.width ?? 500,
-          height: app.defaultSize?.height ?? 400,
-          zIndex: Math.max(...prev.map(w => w.zIndex), 0) + 1,
-          isMinimized: false,
-          isMaximized: false,
-          isFocused: true,
-        };
-        return [...prev, newWindow];
-      }
-    });
-    
-    // Unfocus other windows
-    setWindows(prev => 
-      prev.map(w => 
-        w.id === app.id ? { ...w, isFocused: true } : { ...w, isFocused: false }
-      )
-    );
+      });
+      
+      // Unfocus other windows
+      setWindows(prev => 
+        prev.map(w => 
+          w.id === app.id ? { ...w, isFocused: true } : { ...w, isFocused: false }
+        )
+      );
+    } catch (error) {
+      console.error('Error opening window:', error);
+    }
   };
 
   const closeWindow = (id: string) => {
-    setWindows(prev => prev.filter(w => w.id !== id));
+    try {
+      setWindows(prev => prev.filter(w => w.id !== id));
+    } catch (error) {
+      console.error('Error closing window:', error);
+    }
   };
 
   const focusWindow = (id: string) => {
-    setWindows(prev => {
-      const maxZIndex = Math.max(0, ...prev.map(w => w.zIndex));
-      return prev.map(w => 
-        w.id === id 
-          ? { ...w, zIndex: maxZIndex + 1, isFocused: true, isMinimized: false } 
-          : { ...w, isFocused: false }
-      );
-    });
+    try {
+      setWindows(prev => {
+        const maxZIndex = Math.max(0, ...prev.map(w => w.zIndex));
+        return prev.map(w => 
+          w.id === id 
+            ? { ...w, zIndex: maxZIndex + 1, isFocused: true, isMinimized: false } 
+            : { ...w, isFocused: false }
+        );
+      });
+    } catch (error) {
+      console.error('Error focusing window:', error);
+    }
   };
 
   const toggleMinimize = (id: string) => {
-    setWindows(prev => 
-      prev.map(w => 
-        w.id === id ? { ...w, isMinimized: !w.isMinimized } : w
-      )
-    );
+    try {
+      setWindows(prev => 
+        prev.map(w => 
+          w.id === id ? { ...w, isMinimized: !w.isMinimized } : w
+        )
+      );
+    } catch (error) {
+      console.error('Error toggling window minimize:', error);
+    }
   };
 
   const toggleMaximize = (id: string) => {
-    setWindows(prev => 
-      prev.map(w => 
-        w.id === id ? { ...w, isMaximized: !w.isMaximized } : w
-      )
-    );
+    try {
+      setWindows(prev => 
+        prev.map(w => 
+          w.id === id ? { ...w, isMaximized: !w.isMaximized } : w
+        )
+      );
+    } catch (error) {
+      console.error('Error toggling window maximize:', error);
+    }
   };
 
   const updateWindowPosition = (id: string, x: number, y: number) => {

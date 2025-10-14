@@ -109,6 +109,32 @@ const Desktop = () => {
     }
   };
 
+  const handleOpenWindow = (app: AppConfig) => {
+    try {
+      openWindow(app);
+    } catch (error) {
+      console.error('Error opening window:', error);
+      toast({
+        title: "Error",
+        description: "Failed to open window. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleIconClick = (app: AppConfig) => {
+    try {
+      openWindow(app);
+    } catch (error) {
+      console.error('Error opening window:', error);
+      toast({
+        title: "Error",
+        description: "Failed to open application. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <>
       <div

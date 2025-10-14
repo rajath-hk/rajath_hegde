@@ -16,7 +16,19 @@ const DockIcon = ({ win }: { win: WindowInstance }) => {
     const handleKeyDown = (e: React.KeyboardEvent) => {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
+        try {
+          focusWindow(win.id);
+        } catch (error) {
+          console.error('Error focusing window:', error);
+        }
+      }
+    };
+
+    const handleClick = () => {
+      try {
         focusWindow(win.id);
+      } catch (error) {
+        console.error('Error focusing window:', error);
       }
     };
 
@@ -31,7 +43,7 @@ const DockIcon = ({ win }: { win: WindowInstance }) => {
                 ? "bg-primary/20 text-primary" 
                 : "bg-background/80 text-foreground hover:bg-accent"
             )}
-            onClick={() => focusWindow(win.id)}
+            onClick={handleClick}
             onKeyDown={handleKeyDown}
             aria-label={win.title}
           >

@@ -14,6 +14,8 @@ const nextConfig: NextConfig = {
     unoptimized: true,
   },
   trailingSlash: true,
+  // Add assetPrefix for GitHub Pages
+  assetPrefix: process.env.NODE_ENV === 'production' ? envBasePath : '',
 };
 
 export default nextConfig;

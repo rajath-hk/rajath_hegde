@@ -33,7 +33,7 @@ jobs:
       - name: Build
         run: npm run build
         env: # Set the basePath for project pages
-          BASE_PATH: ${{ github.repository == 'rajath-hk/rajath-hk.github.io' && '' || format('/{0}', github.event.repository.name) }}
+          BASE_PATH: ${{ github.repository_owner == 'rajath-hk' && '/rajath_hegde' || format('/{0}', github.event.repository.name) }}
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
