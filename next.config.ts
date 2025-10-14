@@ -1,7 +1,7 @@
 import type {NextConfig} from 'next';
 
 // This is set in the GitHub Actions workflow
-const basePath = process.env.BASE_PATH;
+const basePath = process.env.BASE_PATH || '';
 
 const nextConfig: NextConfig = {
   output: 'export',
@@ -15,6 +15,8 @@ const nextConfig: NextConfig = {
   images: {
     unoptimized: true,
   },
+  // Add trailing slash to all paths
+  trailingSlash: true,
 };
 
 export default nextConfig;

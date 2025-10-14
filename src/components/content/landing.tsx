@@ -1,11 +1,16 @@
 import React from 'react';
 
 export default function Landing() {
+  // Use basePath for images in GitHub Pages
+  const basePath = process.env.BASE_PATH || '';
+  const headshotPath = basePath ? `${basePath}/images/headshot.jpg` : '/images/headshot.jpg';
+  const resumePath = basePath ? `${basePath}/resume.pdf` : '/resume.pdf';
+
   return (
     <div className="p-6 flex flex-col min-h-full">
       {/* Hero Section */}
       <section className="flex flex-col sm:flex-row items-center gap-8 mb-8">
-        <img src="/images/headshot.jpg" alt="Rajath Hegde" className="w-32 h-32 rounded-full object-cover shadow-lg border-4 border-primary" loading="lazy" />
+        <img src={headshotPath} alt="Rajath Hegde" className="w-32 h-32 rounded-full object-cover shadow-lg border-4 border-primary" loading="lazy" />
         <div className="flex-1 text-center sm:text-left">
           <h1 className="text-4xl font-extrabold tracking-tight mb-2">Rajath Hegde</h1>
           <h2 className="text-xl font-medium text-primary mb-2">Full Stack Developer</h2>
@@ -14,7 +19,7 @@ export default function Landing() {
           </p>
           <div className="flex flex-col sm:flex-row gap-2 justify-center sm:justify-start">
             <a className="btn" href="#projects">See Projects</a>
-            <a className="btn-outline" href="/resume.pdf" target="_blank" rel="noopener">Download Resume</a>
+            <a className="btn-outline" href={resumePath} target="_blank" rel="noopener">Download Resume</a>
           </div>
         </div>
       </section>
