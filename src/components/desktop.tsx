@@ -13,6 +13,7 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { useToast } from '@/hooks/use-toast';
 import { useWindows } from '@/contexts/window-context';
 import DesktopIcon from '@/components/desktop-icon';
 import Window from '@/components/window';
@@ -32,6 +33,7 @@ import {
 
 const Desktop = () => {
   const { windows, desktopIcons, resetIconPositions, openWindow } = useWindows();
+  const { toast } = useToast();
   const desktopRef = React.useRef<HTMLDivElement>(null);
   const [contextMenuOpen, setContextMenuOpen] = React.useState(false);
   const [contextMenuPosition, setContextMenuPosition] = React.useState({ x: 0, y: 0 });
@@ -53,21 +55,16 @@ const Desktop = () => {
         navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText('Rajath Hegde - Full Stack Developer Portfolio')
         .then(() => {
-          // Show a notification
-          if (typeof document !== 'undefined') {
-            const notification = document.createElement("div");
-            notification.className = "fixed bottom-4 right-4 bg-primary text-primary-foreground px-4 py-2 rounded-lg shadow-lg z-50";
-            notification.textContent = "Copied to clipboard!";
-            document.body.appendChild(notification);
-            setTimeout(() => {
-              if (notification.parentElement) {
-                document.body.removeChild(notification);
-              }
-            }, 2000);
-          }
+          toast({
+            title: "Copied to clipboard!",
+          });
         })
         .catch(err => {
           console.error('Failed to copy text: ', err);
+          toast({
+            title: "Failed to copy text",
+            variant: "destructive",
+          });
         });
     }
     setContextMenuOpen(false);
@@ -91,18 +88,9 @@ const Desktop = () => {
         // Fallback for browsers that don't support Web Share API
         if (navigator.clipboard && navigator.clipboard.writeText) {
           await navigator.clipboard.writeText(window.location.href);
-          // Show success notification
-          if (typeof document !== 'undefined') {
-            const notification = document.createElement("div");
-            notification.className = "fixed bottom-4 right-4 bg-primary text-primary-foreground px-4 py-2 rounded-lg shadow-lg z-50";
-            notification.textContent = "Link copied to clipboard!";
-            document.body.appendChild(notification);
-            setTimeout(() => {
-              if (notification.parentElement) {
-                document.body.removeChild(notification);
-              }
-            }, 2000);
-          }
+          toast({
+            title: "Link copied to clipboard!",
+          });
         } else {
           // If neither API is available, just close the menu
           console.warn('Sharing not supported in this browser');
@@ -111,6 +99,10 @@ const Desktop = () => {
     } catch (err) {
       if (err instanceof Error && err.name !== 'AbortError') {
         console.error('Error sharing content:', err);
+        toast({
+          title: "Failed to share content",
+          variant: "destructive",
+        });
       }
     } finally {
       setContextMenuOpen(false);

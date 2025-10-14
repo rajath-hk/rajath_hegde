@@ -51,23 +51,6 @@ export function ThemeSwitcher() {
           <Monitor className="mr-2 h-4 w-4" />
           <span>System</span>
         </DropdownMenuItem>
-        <DropdownMenuItem 
-          onClick={() => {
-            const newTheme = theme === "dark" ? "light" : "dark";
-            setTheme(newTheme);
-            // Show a temporary notification
-            const notification = document.createElement("div");
-            notification.className = "fixed bottom-4 right-4 bg-primary text-primary-foreground px-4 py-2 rounded-lg shadow-lg z-50";
-            notification.textContent = `Theme preview: ${newTheme.charAt(0).toUpperCase() + newTheme.slice(1)}`;
-            document.body.appendChild(notification);
-            setTimeout(() => {
-              document.body.removeChild(notification);
-            }, 2000);
-          }}
-        >
-          <Monitor className="mr-2 h-4 w-4" />
-          <span>Try {theme === "dark" ? "Light" : "Dark"} Mode</span>
-        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

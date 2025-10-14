@@ -25,18 +25,37 @@ export function ContactForm() {
   const { isSubmitting } = form.formState;
 
   async function onSubmit(data: ContactFormData) {
-    // This is a static site, so we can't use server actions.
-    // Instead, we simulate the submission.
-    console.log('Form submitted (simulation):', data);
+    try {
+      const response = await fetch('/api/send-message', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
 
-    // Simulate network delay to show the 'Sending...' state
-    await new Promise(resolve => setTimeout(resolve, 1000));
+      const result = await response.json();
 
-    toast({
-      title: 'Message Sent!',
-      description: 'Your message has been sent successfully! (This is a simulation)',
-    });
-    form.reset();
+      if (result.success) {
+        toast({
+          title: 'Message Sent!',
+          description: result.message,
+        });
+        form.reset();
+      } else {
+        toast({
+          title: 'Error',
+          description: result.message,
+          variant: 'destructive',
+        });
+      }
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Something went wrong. Please try again.',
+        variant: 'destructive',
+      });
+    }
   }
 
   return (

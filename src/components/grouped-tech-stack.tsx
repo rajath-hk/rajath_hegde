@@ -51,8 +51,8 @@ export function GroupedTechStack() {
   return (
     <ScrollArea className="h-[500px]">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
-        {techGroups.map((group, index) => (
-          <Card key={index} className="hover:shadow-lg transition-shadow">
+        {techGroups.map((group) => (
+          <Card key={group.title} className="hover:shadow-lg transition-shadow">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 {group.icon}
@@ -61,9 +61,9 @@ export function GroupedTechStack() {
             </CardHeader>
             <CardContent>
               <div className="flex flex-wrap gap-2">
-                {group.skills.map((skill, skillIndex) => (
+                {group.skills.map((skill) => (
                   <Badge
-                    key={skillIndex}
+                    key={skill}
                     variant="secondary"
                     className="hover:bg-primary hover:text-primary-foreground transition-colors cursor-default"
                   >

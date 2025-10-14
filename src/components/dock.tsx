@@ -9,18 +9,9 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 const DockIcon = ({ win }: { win: WindowInstance }) => {
     const { focusWindow } = useWindows();
     const ref = useRef<HTMLButtonElement>(null);
-    const [scale, setScale] = useState(1);
 
     const isFocused = win.isFocused && !win.isMinimized;
     const IconComponent = win.icon;
-
-    const handleMouseEnter = () => {
-        setScale(1.5);
-    };
-
-    const handleMouseLeave = () => {
-        setScale(1);
-    };
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
       if (e.key === 'Enter' || e.key === ' ') {
@@ -35,22 +26,16 @@ const DockIcon = ({ win }: { win: WindowInstance }) => {
           <button
             ref={ref}
             className={cn(
-              "p-2 rounded-lg transition-all duration-200 flex items-center justify-center",
+              "p-2 rounded-lg transition-all duration-200 flex items-center justify-center group",
               isFocused 
                 ? "bg-primary/20 text-primary" 
                 : "bg-background/80 text-foreground hover:bg-accent"
             )}
-            style={{ 
-              transform: `scale(${scale})`,
-              transition: 'transform 0.2s ease-out'
-            }}
             onClick={() => focusWindow(win.id)}
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
             onKeyDown={handleKeyDown}
             aria-label={win.title}
           >
-            <IconComponent className="w-6 h-6" />
+            <IconComponent className="w-6 h-6 transition-transform duration-200 ease-out group-hover:scale-150" />
           </button>
         </TooltipTrigger>
         <TooltipContent side="right">
