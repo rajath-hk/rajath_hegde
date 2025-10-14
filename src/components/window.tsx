@@ -62,11 +62,11 @@ const Window = (props: WindowProps) => {
     if (isResizing) {
       if (!windowRef.current) return;
       const rect = windowRef.current.getBoundingClientRect();
-      const newWidth = e.clientX - rect.left;
-      const newHeight = e.clientY - rect.top;
+      const newWidth = Math.max(300, e.clientX - rect.left);
+      const newHeight = Math.max(200, e.clientY - rect.top);
       setSize({ 
-        width: Math.max(300, newWidth), 
-        height: Math.max(200, newHeight) 
+        width: newWidth, 
+        height: newHeight 
       });
     }
     
@@ -106,8 +106,8 @@ const Window = (props: WindowProps) => {
     <motion.div
       ref={windowRef}
       className={cn(
-        "absolute bg-card/90 backdrop-blur-xl border rounded-lg flex flex-col shadow-lg",
-        isFocused ? "border-blue-500" : "border-border"
+        "absolute bg-white/20 dark:bg-gray-700/20 backdrop-blur-lg border border-white/30 dark:border-gray-600/30 rounded-lg flex flex-col shadow-xl",
+        isFocused ? "ring-2 ring-gray-500/30" : ""
       )}
       style={{
         width: size.width,
@@ -133,53 +133,50 @@ const Window = (props: WindowProps) => {
       <header
         ref={headerRef}
         className={cn(
-          "flex items-center justify-center relative px-3 h-9 flex-shrink-0 border-b",
+          "flex items-center justify-center relative px-4 h-8 flex-shrink-0 rounded-t-lg",
           isFocused 
-            ? "bg-gradient-to-r from-blue-600 to-blue-500 text-white" 
-            : "bg-muted text-muted-foreground"
+            ? "bg-gray-500/80 dark:bg-gray-600/80" 
+            : "bg-gray-300/50 dark:bg-gray-700/50"
         )}
         onDoubleClick={handleDoubleClick}
-        style={{ cursor: isMaximized ? 'default' : 'grab' }}
+        style={{ cursor: isMaximized ? 'default' : 'grab', WebkitAppRegion: 'drag' }}
       >
+        {/* Ubuntu-style traffic lights */}
         <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
-            <button 
-              onClick={(e) => { 
-                e.stopPropagation(); 
-                closeWindow(id);
-              }} 
-              className="w-6 h-6 rounded hover:bg-red-500/80 flex items-center justify-center group/btn"
-              aria-label="Close"
-            >
-                <X className="w-3 h-3 group-hover/btn:text-white" />
-            </button>
-            <button 
-              onClick={(e) => { 
-                e.stopPropagation(); 
-                toggleMinimize(id);
-              }} 
-              className="w-6 h-6 rounded hover:bg-gray-500/50 flex items-center justify-center group/btn"
-              aria-label="Minimize"
-            >
-                <Minus className="w-3 h-3 group-hover/btn:text-white" />
-            </button>
-            <button 
-              onClick={(e) => { 
-                e.stopPropagation(); 
-                toggleMaximize(id);
-              }} 
-              className="w-6 h-6 rounded hover:bg-gray-500/50 flex items-center justify-center group/btn"
-              aria-label="Maximize"
-            >
-                {isMaximized ? (
-                  <Minimize className="w-3 h-3 group-hover/btn:text-white" />
-                ) : (
-                  <Square className="w-3 h-3 group-hover/btn:text-white" />
-                )}
-            </button>
+          <button 
+            onClick={(e) => { 
+              e.stopPropagation(); 
+              closeWindow(id);
+            }} 
+            className="w-3 h-3 rounded-full bg-red-500 flex items-center justify-center group/btn hover:bg-red-600 transition-colors"
+            aria-label="Close"
+            style={{ WebkitAppRegion: 'no-drag' }}
+          >
+          </button>
+          <button 
+            onClick={(e) => { 
+              e.stopPropagation(); 
+              toggleMinimize(id);
+            }} 
+            className="w-3 h-3 rounded-full bg-yellow-500 flex items-center justify-center group/btn hover:bg-yellow-600 transition-colors"
+            aria-label="Minimize"
+            style={{ WebkitAppRegion: 'no-drag' }}
+          >
+          </button>
+          <button 
+            onClick={(e) => { 
+              e.stopPropagation(); 
+              toggleMaximize(id);
+            }} 
+            className="w-3 h-3 rounded-full bg-green-500 flex items-center justify-center group/btn hover:bg-green-600 transition-colors"
+            aria-label="Maximize"
+            style={{ WebkitAppRegion: 'no-drag' }}
+          >
+          </button>
         </div>
         <span className={cn(
-            "font-medium text-sm truncate",
-            isFocused ? "text-white" : "text-muted-foreground"
+            "font-medium text-sm truncate max-w-md",
+            isFocused ? "text-white" : "text-gray-800 dark:text-gray-200"
           )}>
           {title}
         </span>
@@ -191,12 +188,13 @@ const Window = (props: WindowProps) => {
       </div>
        <div
         className={cn(
-          "absolute bottom-0 right-0 w-4 h-4 cursor-se-resize",
+          "absolute bottom-0 right-0 w-5 h-5 cursor-se-resize flex items-end justify-end p-1",
           isMaximized && "hidden"
         )}
         onMouseDown={handleResizeStart}
+        style={{ WebkitAppRegion: 'no-drag' }}
       >
-        <div className="absolute bottom-1 right-1 w-2 h-2 border-r-2 border-b-2 border-muted-foreground"></div>
+        <div className="w-2.5 h-2.5 border-r-2 border-b-2 border-gray-600 dark:border-gray-400"></div>
       </div>
     </motion.div>
   );

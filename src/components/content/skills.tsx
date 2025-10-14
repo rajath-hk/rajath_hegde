@@ -121,11 +121,23 @@ const Skills = () => {
     }
   };
 
+  const getLevelColorClass = (level: string) => {
+    switch (level) {
+      case "Expert": return "bg-gradient-to-r from-green-400 to-green-600";
+      case "Advanced": return "bg-gradient-to-r from-blue-400 to-blue-600";
+      case "Intermediate": return "bg-gradient-to-r from-yellow-400 to-yellow-600";
+      case "Beginner": return "bg-gradient-to-r from-red-400 to-red-600";
+      default: return "bg-gradient-to-r from-gray-400 to-gray-600";
+    }
+  };
+
   return (
     <div className="space-y-8">
-      <div className="space-y-4">
-        <h2 className="text-3xl font-bold tracking-tight">Skills & Expertise</h2>
-        <p className="text-lg text-muted-foreground">
+      <div className="space-y-4 text-center">
+        <h2 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-gray-500 to-gray-700 bg-clip-text text-transparent">
+          Skills & Expertise
+        </h2>
+        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
           My technical toolkit has been shaped by years of practical experience and continuous learning.
           Here's an overview of my key competencies:
         </p>
@@ -133,24 +145,38 @@ const Skills = () => {
 
       <div className="grid gap-6">
         {skillCategories.map((category, index) => (
-          <Card key={index} className="p-6">
+          <Card key={index} className="p-6 bg-gradient-to-br from-background to-secondary/10 border border-gray-200 dark:border-gray-600 shadow-lg">
             <div className="space-y-6">
-              <div className="space-y-2">
-                <h3 className="text-2xl font-semibold">{category.title}</h3>
+              <div className="space-y-2 text-center">
+                <h3 className="text-2xl font-semibold bg-gradient-to-r from-gray-500 to-gray-700 bg-clip-text text-transparent">
+                  {category.title}
+                </h3>
                 <p className="text-muted-foreground">{category.description}</p>
               </div>
 
-              <div className="grid gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {category.skills.map((skill, skillIndex) => (
-                  <div key={skillIndex} className="space-y-2">
+                  <div 
+                    key={skillIndex} 
+                    className="space-y-3 p-4 rounded-lg bg-secondary/5 hover:bg-secondary/10 transition-all duration-300 border border-gray-200 dark:border-gray-600"
+                  >
                     <div className="flex items-center justify-between">
                       <span className="font-medium">{skill.name}</span>
-                      <Badge variant="secondary">
-                        <span className={`inline-block w-2 h-2 rounded-full mr-2 ${getLevelColor(skill.level)}`}></span>
+                      <Badge className={`${getLevelColorClass(skill.level)} text-white border-0`}>
                         {skill.level}
                       </Badge>
                     </div>
                     <p className="text-muted-foreground text-sm">{skill.description}</p>
+                    <div className="w-full bg-secondary/20 rounded-full h-2">
+                      <div 
+                        className={`h-2 rounded-full ${getLevelColorClass(skill.level)}`}
+                        style={{ 
+                          width: skill.level === "Expert" ? "100%" : 
+                                 skill.level === "Advanced" ? "80%" : 
+                                 skill.level === "Intermediate" ? "60%" : "40%" 
+                        }}
+                      ></div>
+                    </div>
                   </div>
                 ))}
               </div>

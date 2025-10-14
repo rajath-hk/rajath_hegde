@@ -67,24 +67,24 @@ const WindowSwitcher = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[999] flex items-center justify-center"
+          className="fixed inset-0 bg-black/30 backdrop-blur-sm z-[999] flex items-center justify-center"
           onClick={() => setIsOpen(false)}
         >
           <motion.div
             initial={{ scale: 0.9, y: 20 }}
             animate={{ scale: 1, y: 0 }}
             exit={{ scale: 0.9, y: 20 }}
-            className="bg-card border rounded-lg p-4 shadow-xl"
+            className="bg-white/80 dark:bg-gray-700/80 backdrop-blur-xl border border-white/30 dark:border-gray-600/30 rounded-xl p-4 shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex justify-between items-center mb-4">
-              <h3 className="font-semibold">Switch Windows</h3>
+              <h3 className="font-semibold text-gray-800 dark:text-gray-200">Switch Windows</h3>
               <button 
                 onClick={() => setIsOpen(false)}
-                className="p-1 rounded hover:bg-accent"
+                className="p-1 rounded hover:bg-white/40 dark:hover:bg-gray-600/40"
                 aria-label="Close"
               >
-                <X className="h-4 w-4" />
+                <X className="h-4 w-4 text-gray-800 dark:text-gray-200" />
               </button>
             </div>
             
@@ -96,18 +96,18 @@ const WindowSwitcher = () => {
                     key={window.id}
                     className={`flex flex-col items-center p-3 rounded-lg cursor-pointer transition-all ${
                       index === selectedIndex 
-                        ? 'bg-primary/20 ring-2 ring-primary' 
-                        : 'hover:bg-accent'
+                        ? 'bg-gray-500/20 dark:bg-gray-600/20 ring-2 ring-gray-500/30' 
+                        : 'hover:bg-white/40 dark:hover:bg-gray-600/40'
                     }`}
                     onClick={() => {
                       focusWindow(window.id);
                       setIsOpen(false);
                     }}
                   >
-                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center mb-2">
-                      <IconComponent className="h-5 w-5 text-primary" />
+                    <div className="w-12 h-12 rounded-xl bg-white/80 dark:bg-gray-600/80 flex items-center justify-center mb-2 border border-white/30 dark:border-gray-600/30">
+                      <IconComponent className="h-6 w-6 text-gray-800 dark:text-gray-200" />
                     </div>
-                    <span className="text-sm text-center max-w-[80px] truncate">
+                    <span className="text-sm text-center max-w-[80px] truncate text-gray-800 dark:text-gray-200">
                       {window.title}
                     </span>
                   </div>

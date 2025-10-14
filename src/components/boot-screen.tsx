@@ -42,7 +42,7 @@ const BootScreen = ({ onComplete }: { onComplete: () => void }) => {
   }, [onComplete]);
 
   return (
-    <div className="fixed inset-0 bg-black flex flex-col items-center justify-center z-[9999]">
+    <div className="fixed inset-0 bg-gradient-to-br from-gray-600 to-gray-800 flex flex-col items-center justify-center z-[9999]">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -50,21 +50,21 @@ const BootScreen = ({ onComplete }: { onComplete: () => void }) => {
         className="text-center"
       >
         <div className="mb-8">
-          <div className="w-24 h-24 mx-auto mb-4 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+          <div className="w-24 h-24 mx-auto mb-4 bg-gradient-to-br from-gray-500 to-gray-700 rounded-2xl flex items-center justify-center shadow-lg">
             <span className="text-3xl font-bold text-white">RH</span>
           </div>
           <h1 className="text-4xl font-bold text-white mb-2">PortfolioOS</h1>
-          <p className="text-gray-400">Professional Portfolio Operating System</p>
+          <p className="text-gray-200">Professional Portfolio Operating System</p>
         </div>
 
         <div className="w-80 max-w-full mx-auto">
-          <div className="flex justify-between text-sm text-gray-400 mb-2">
+          <div className="flex justify-between text-sm text-gray-200 mb-2">
             <span>{currentMessage}</span>
             <span>{progress}%</span>
           </div>
-          <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
+          <div className="h-2 bg-gray-700/50 rounded-full overflow-hidden">
             <motion.div
-              className="h-full bg-gradient-to-r from-blue-500 to-purple-600"
+              className="h-full bg-gradient-to-r from-gray-500 to-gray-700"
               initial={{ width: 0 }}
               animate={{ width: `${progress}%` }}
               transition={{ duration: 0.3 }}
@@ -72,7 +72,7 @@ const BootScreen = ({ onComplete }: { onComplete: () => void }) => {
           </div>
         </div>
 
-        <div className="mt-8 text-xs text-gray-500">
+        <div className="mt-8 text-xs text-gray-300">
           <p>© {new Date().getFullYear()} Rajath Hegde. All rights reserved.</p>
         </div>
       </motion.div>
