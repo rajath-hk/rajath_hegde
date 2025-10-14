@@ -155,7 +155,7 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
         // If window exists, bring it to front and unminimize it
         return prev.map(w => 
           w.id === app.id 
-            ? { ...w, isMinimized: false, zIndex: Math.max(...prev.map(win => win.zIndex), 0) + 1 } 
+            ? { ...w, isMinimized: false, zIndex: Math.max(...prev.map(win => win.zIndex)) + 1 } 
             : w
         );
       } else {
@@ -191,7 +191,7 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
 
   const focusWindow = (id: string) => {
     setWindows(prev => {
-      const maxZIndex = Math.max(...prev.map(w => w.zIndex), 0);
+      const maxZIndex = Math.max(0, ...prev.map(w => w.zIndex));
       return prev.map(w => 
         w.id === id 
           ? { ...w, zIndex: maxZIndex + 1, isFocused: true, isMinimized: false } 
