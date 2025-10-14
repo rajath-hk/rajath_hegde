@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { X } from 'lucide-react';
-import { motion } from 'framer-motion';
 
 interface ActivityItem {
   id: string;
@@ -43,6 +42,13 @@ const DesktopActivity = () => {
         description: 'Currently available for new opportunities',
         timestamp: 'Just now',
         type: 'status'
+      },
+      {
+        id: '4',
+        title: 'Achievement Unlocked',
+        description: 'Completed 100+ open source contributions this year',
+        timestamp: '3 days ago',
+        type: 'achievement'
       }
     ];
     
@@ -57,12 +63,7 @@ const DesktopActivity = () => {
   if (!visible) return null;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, x: 300 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: 300 }}
-      className="fixed top-20 left-4 w-80 z-30"
-    >
+    <div className="absolute top-20 left-4 w-80 z-30">
       <Card className="p-4 bg-card/80 backdrop-blur-sm">
         <div className="flex justify-between items-center mb-3">
           <h3 className="font-semibold text-lg">Recent Activity</h3>
@@ -79,34 +80,42 @@ const DesktopActivity = () => {
         <div className="space-y-3">
           {activities.map((activity) => (
             <div key={activity.id} className="flex gap-3 p-2 rounded-lg hover:bg-accent">
-              <div className="flex-shrink-0 mt-1">
+              <div className="flex-shrink-0">
                 {activity.type === 'update' && (
-                  <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                  <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center">
+                    <span className="text-xs font-bold text-white">U</span>
+                  </div>
                 )}
                 {activity.type === 'blog' && (
-                  <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                  <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center">
+                    <span className="text-xs font-bold text-white">B</span>
+                  </div>
                 )}
                 {activity.type === 'status' && (
-                  <div className="w-2 h-2 rounded-full bg-purple-500"></div>
+                  <div className="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center">
+                    <span className="text-xs font-bold text-white">S</span>
+                  </div>
                 )}
                 {activity.type === 'achievement' && (
-                  <div className="w-2 h-2 rounded-full bg-yellow-500"></div>
+                  <div className="w-8 h-8 rounded-full bg-yellow-500 flex items-center justify-center">
+                    <span className="text-xs font-bold text-white">A</span>
+                  </div>
                 )}
               </div>
-              <div>
-                <h4 className="font-medium text-sm">{activity.title}</h4>
-                <p className="text-xs text-muted-foreground mt-1">{activity.description}</p>
+              <div className="flex-1 min-w-0">
+                <h4 className="font-medium text-sm truncate">{activity.title}</h4>
+                <p className="text-xs text-muted-foreground truncate">{activity.description}</p>
                 <p className="text-xs text-muted-foreground mt-1">{activity.timestamp}</p>
               </div>
             </div>
           ))}
         </div>
         
-        <Button variant="outline" className="w-full mt-4 text-xs">
+        <Button variant="outline" className="w-full mt-3 text-xs">
           View All Activity
         </Button>
       </Card>
-    </motion.div>
+    </div>
   );
 };
 

@@ -1,4 +1,9 @@
 import React, { useEffect, useState } from 'react';
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Spinner } from "@/components/ui/spinner";
+import { Github } from 'lucide-react';
+
 // Helper to extract owner/repo from GitHub URL
 function parseRepo(url: string) {
   const match = url.match(/github.com\/(.+?)\/(.+?)(?:$|\/|#|\?)/);
@@ -11,22 +16,53 @@ function useGitHubStats(repoUrl?: string) {
   const [stats, setStats] = useState<{stars: number; forks: number} | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
   useEffect(() => {
     if (!repoUrl) return;
     const repo = parseRepo(repoUrl);
     if (!repo) return;
+    
+    const abortController = new AbortController();
+    
     setLoading(true);
+    setError(null);
+    
+    fetch(`https://api.github.com/repos/${repo.owner}/${repo.repo}`, {
+      signal: abortController.signal
+    })
     fetch(`https://api.github.com/repos/${repo.owner}/${repo.repo}`)
-      .then(r => r.ok ? r.json() : Promise.reject(r))
-      .then(data => setStats({ stars: data.stargazers_count, forks: data.forks_count }))
-      .catch(() => setError('Could not load stats'))
-      .finally(() => setLoading(false));
+      .then(r => {
+        if (r.ok) {
+          return r.json();
+        } else {
+          if (r.status === 403) {
+            throw new Error('GitHub API rate limit exceeded. Please try again later.');
+          }
+          throw new Error(`GitHub API error: ${r.status}`);
+        }
+      })
+      .then(data => {
+        setStats({ 
+          stars: data.stargazers_count || 0, 
+          forks: data.forks_count || 0 
+        });
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error('Error fetching GitHub stats:', err);
+        setError('Failed to load GitHub stats');
+        setLoading(false);
+      });
+    
+    return () => abortController.abort();
   }, [repoUrl]);
+
   return { stats, loading, error };
 }
+
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { Github, ExternalLink } from 'lucide-react';
+import { ExternalLink } from 'lucide-react';
 
 
 const projects = [
@@ -76,10 +112,6 @@ const projects = [
     ],
   },
 ];
-
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Spinner } from "@/components/ui/spinner";
 
 interface Project {
   title: string;

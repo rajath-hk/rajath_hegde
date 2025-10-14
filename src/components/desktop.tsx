@@ -48,7 +48,9 @@ const Desktop = () => {
   };
 
   const copyTextToClipboard = () => {
-    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+    // Check for browser environment and clipboard API support
+    if (typeof window !== 'undefined' && typeof navigator !== 'undefined' && 
+        navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText('Rajath Hegde - Full Stack Developer Portfolio')
         .then(() => {
           // Show a notification
@@ -58,49 +60,61 @@ const Desktop = () => {
             notification.textContent = "Copied to clipboard!";
             document.body.appendChild(notification);
             setTimeout(() => {
-              if (document.body.contains(notification)) {
+              if (notification.parentElement) {
                 document.body.removeChild(notification);
               }
             }, 2000);
           }
+        })
+        .catch(err => {
+          console.error('Failed to copy text: ', err);
         });
     }
     setContextMenuOpen(false);
   };
 
   const shareContent = async () => {
-    if (typeof window !== 'undefined' && typeof navigator !== 'undefined') {
+    // Ensure we're in a browser environment
+    if (typeof window === 'undefined' || typeof navigator === 'undefined') {
+      setContextMenuOpen(false);
+      return;
+    }
+
+    try {
       if (navigator.share) {
-        try {
-          await navigator.share({
-            title: 'Rajath Hegde - Portfolio',
-            text: 'Check out this amazing portfolio!',
-            url: window.location.href,
-          });
-        } catch (err) {
-          console.log('Error sharing:', err);
-        }
+        await navigator.share({
+          title: 'Rajath Hegde - Portfolio',
+          text: 'Check out this amazing portfolio!',
+          url: window.location.href,
+        });
       } else {
         // Fallback for browsers that don't support Web Share API
-        if (navigator.clipboard) {
-          navigator.clipboard.writeText(window.location.href)
-            .then(() => {
-              if (typeof document !== 'undefined') {
-                const notification = document.createElement("div");
-                notification.className = "fixed bottom-4 right-4 bg-primary text-primary-foreground px-4 py-2 rounded-lg shadow-lg z-50";
-                notification.textContent = "Link copied to clipboard!";
-                document.body.appendChild(notification);
-                setTimeout(() => {
-                  if (document.body.contains(notification)) {
-                    document.body.removeChild(notification);
-                  }
-                }, 2000);
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(window.location.href);
+          // Show success notification
+          if (typeof document !== 'undefined') {
+            const notification = document.createElement("div");
+            notification.className = "fixed bottom-4 right-4 bg-primary text-primary-foreground px-4 py-2 rounded-lg shadow-lg z-50";
+            notification.textContent = "Link copied to clipboard!";
+            document.body.appendChild(notification);
+            setTimeout(() => {
+              if (notification.parentElement) {
+                document.body.removeChild(notification);
               }
-            });
+            }, 2000);
+          }
+        } else {
+          // If neither API is available, just close the menu
+          console.warn('Sharing not supported in this browser');
         }
       }
+    } catch (err) {
+      if (err instanceof Error && err.name !== 'AbortError') {
+        console.error('Error sharing content:', err);
+      }
+    } finally {
+      setContextMenuOpen(false);
     }
-    setContextMenuOpen(false);
   };
 
   return (

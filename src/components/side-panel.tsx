@@ -11,6 +11,10 @@ const SidePanel = () => {
   const [mounted, setMounted] = useState(false);
   const { openWindow, desktopIcons } = useWindows();
 
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   // Define quick links - these could be the most frequently accessed windows
   const quickLinks = [
     { id: 'landing', title: 'Home', icon: Home },
@@ -29,10 +33,6 @@ const SidePanel = () => {
     }
   };
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
   // Don't render anything on the server
   if (!mounted) {
     return null;
@@ -44,7 +44,7 @@ const SidePanel = () => {
         <Button
           variant="outline"
           size="icon"
-          className="fixed left-4 top-1/2 -translate-y-1/2 rounded-r-none rounded-l-full shadow-lg z-20"
+          className="fixed left-4 top-1/2 -translate-y-1/2 z-40 rounded-l-none rounded-r-full shadow-lg"
           aria-label="Open quick links"
         >
           <ChevronRight className="h-4 w-4" />
@@ -64,11 +64,11 @@ const SidePanel = () => {
                   <Button
                     key={link.id}
                     variant="ghost"
-                    className="w-full justify-start gap-2"
+                    className="w-full justify-start"
                     onClick={() => handleLinkClick(link.id)}
                   >
-                    <Icon className="h-4 w-4" />
-                    <span>{link.title}</span>
+                    <Icon className="mr-2 h-4 w-4" />
+                    {link.title}
                   </Button>
                 );
               })}
@@ -76,10 +76,10 @@ const SidePanel = () => {
           </div>
           
           <div className="p-4 border-t">
-            <Button variant="outline" className="w-full gap-2" asChild>
+            <Button variant="outline" className="w-full" asChild>
               <a href="https://github.com/rajath-hk" target="_blank" rel="noopener noreferrer">
-                <Link className="h-4 w-4" />
-                <span>GitHub Profile</span>
+                <Link className="mr-2 h-4 w-4" />
+                Visit GitHub
               </a>
             </Button>
           </div>
