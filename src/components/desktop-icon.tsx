@@ -24,16 +24,24 @@ const DesktopIcon = ({ app, constraintsRef }: DesktopIconProps) => {
     y.set(app.y ?? 0);
   }, [app.x, app.y, x, y]);
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      openWindow(app);
+    }
+  };
+
   return (
     <motion.button
       // Use motion values for position via `style`. Framer Motion will manage this.
       style={{ x, y, position: 'absolute' }}
-      className="flex flex-col items-center justify-center text-center focus:outline-none p-2 select-none w-20 sm:w-24"
+      className="flex flex-col items-center justify-center text-center focus:outline-none p-2 select-none w-20 sm:w-24 focus-visible:ring-2 focus-visible:ring-primary rounded-lg"
       aria-label={`Open ${app.title}`}
       onDoubleClick={(e) => {
         e.stopPropagation();
         openWindow(app);
       }}
+      onKeyDown={handleKeyDown}
       drag
       dragConstraints={constraintsRef}
       dragMomentum={false}
@@ -42,6 +50,7 @@ const DesktopIcon = ({ app, constraintsRef }: DesktopIconProps) => {
         updateIconPosition(app.id, x.get(), y.get());
       }}
       whileHover={{ scale: 1.1 }}
+      tabIndex={0}
     >
       <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl bg-black/10 dark:bg-white/10 backdrop-blur-lg flex items-center justify-center shadow-lg border border-black/10 dark:border-white/10">
         <IconComponent className="w-7 h-7 sm:w-9 sm:h-9 text-foreground" />

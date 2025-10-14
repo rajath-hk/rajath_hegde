@@ -5,6 +5,7 @@ import { AnimatePresence } from 'framer-motion';
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuPortal,
   DropdownMenuSeparator,
@@ -19,16 +20,19 @@ import Window from '@/components/window';
 import DesktopActivity from '@/components/desktop-activity';
 import SidePanel from '@/components/side-panel';
 import NotificationCenter from '@/components/notification-center';
+import ChatbotPlaceholder from '@/components/chatbot-placeholder';
 import {
   ArrowDownUp,
   RefreshCw,
   Wallpaper,
   Folder,
+  Copy,
+  Share2,
+  ExternalLink,
 } from 'lucide-react';
 
-
 const Desktop = () => {
-  const { windows, desktopIcons, resetIconPositions } = useWindows();
+  const { windows, desktopIcons, resetIconPositions, openWindow } = useWindows();
   const desktopRef = React.useRef<HTMLDivElement>(null);
   const [contextMenuOpen, setContextMenuOpen] = React.useState(false);
   const [contextMenuPosition, setContextMenuPosition] = React.useState({ x: 0, y: 0 });
@@ -42,6 +46,48 @@ const Desktop = () => {
 
     // Show the context menu
     setContextMenuOpen(true);
+  };
+
+  const copyTextToClipboard = () => {
+    navigator.clipboard.writeText('Rajath Hegde - Full Stack Developer Portfolio')
+      .then(() => {
+        // Show a notification
+        const notification = document.createElement("div");
+        notification.className = "fixed bottom-4 right-4 bg-primary text-primary-foreground px-4 py-2 rounded-lg shadow-lg z-50";
+        notification.textContent = "Copied to clipboard!";
+        document.body.appendChild(notification);
+        setTimeout(() => {
+          document.body.removeChild(notification);
+        }, 2000);
+      });
+    setContextMenuOpen(false);
+  };
+
+  const shareContent = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'Rajath Hegde - Portfolio',
+          text: 'Check out this amazing portfolio!',
+          url: window.location.href,
+        });
+      } catch (err) {
+        console.log('Error sharing:', err);
+      }
+    } else {
+      // Fallback for browsers that don't support Web Share API
+      navigator.clipboard.writeText(window.location.href)
+        .then(() => {
+          const notification = document.createElement("div");
+          notification.className = "fixed bottom-4 right-4 bg-primary text-primary-foreground px-4 py-2 rounded-lg shadow-lg z-50";
+          notification.textContent = "Link copied to clipboard!";
+          document.body.appendChild(notification);
+          setTimeout(() => {
+            document.body.removeChild(notification);
+          }, 2000);
+        });
+    }
+    setContextMenuOpen(false);
   };
 
   return (
@@ -63,6 +109,23 @@ const Desktop = () => {
             />
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-56">
+            <DropdownMenuGroup>
+              <DropdownMenuItem onClick={copyTextToClipboard}>
+                <Copy className="mr-2 h-4 w-4" />
+                <span>Copy Text</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={shareContent}>
+                <Share2 className="mr-2 h-4 w-4" />
+                <span>Share</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => window.open(window.location.href, '_blank')}>
+                <ExternalLink className="mr-2 h-4 w-4" />
+                <span>Open in New Window</span>
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+            
+            <DropdownMenuSeparator />
+            
             <DropdownMenuSub>
               <DropdownMenuSubTrigger>
                 <ArrowDownUp className="mr-2 h-4 w-4" />
@@ -75,11 +138,14 @@ const Desktop = () => {
                 </DropdownMenuSubContent>
               </DropdownMenuPortal>
             </DropdownMenuSub>
+            
             <DropdownMenuItem onClick={() => { resetIconPositions(); setContextMenuOpen(false); }}>
               <RefreshCw className="mr-2 h-4 w-4" />
               <span>Reset Icon Positions</span>
             </DropdownMenuItem>
+            
             <DropdownMenuSeparator />
+            
             <DropdownMenuItem disabled>
               <Wallpaper className="mr-2 h-4 w-4" />
               <span>Change Wallpaper</span>
@@ -98,6 +164,7 @@ const Desktop = () => {
         <DesktopActivity />
         <SidePanel />
         <NotificationCenter />
+        <ChatbotPlaceholder />
       </div>
 
       <AnimatePresence>

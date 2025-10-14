@@ -9,20 +9,20 @@
 - [x] 5. Animated transitions when opening/closing windows.
 - [x] 6. Include a side panel with "Quick Links" to most visited sections.
 - [ ] 7. Use consistent font choices and scalable typography (rem/em units).
-- [ ] 8. Add social profile icons with interactive hover effects.
-- [ ] 9. Integrate live chat or chatbot for instant communication.
-- [ ] 10. Show a notification center for site tips/alerts (with dismiss options).
-- [ ] 11. Ensure accessibility with ARIA labels and keyboard navigation support.
-- [ ] 12. Use SVG icons for crisp visuals at any resolution.
-- [ ] 13. Implement lazy loading for images/projects to boost speed.
-- [ ] 14. Add a loading spinner or skeleton screen when content is fetching.
-- [ ] 15. Provide quick theme preview buttons: e.g., "Try Dark Mode."
-- [ ] 16. Let users right-click for a custom context menu (copy text, share, open in new window).
-- [ ] 17. Display testimonials or references with user avatars.
+- [x] 8. Add social profile icons with interactive hover effects.
+- [x] 9. Integrate live chat or chatbot for instant communication.
+- [x] 10. Show a notification center for site tips/alerts (with dismiss options).
+- [x] 11. Ensure accessibility with ARIA labels and keyboard navigation support.
+- [x] 12. Use SVG icons for crisp visuals at any resolution.
+- [x] 13. Implement lazy loading for images/projects to boost speed.
+- [x] 14. Add a loading spinner or skeleton screen when content is fetching.
+- [x] 15. Provide quick theme preview buttons: e.g., "Try Dark Mode."
+- [x] 16. Let users right-click for a custom context menu (copy text, share, open in new window).
+- [x] 17. Display testimonials or references with user avatars.
 - [ ] 18. Integrate portfolio analytics (visitor count, interaction stats).
-- [ ] 19. Offer an "About Me" section with fun facts or hobbies.
-- [ ] 20. Include a footer with copyright, legal, and privacy notes.
-- [ ] 21. Create a workspace or "Pinned Projects" area for featured work.
+- [x] 19. Offer an "About Me" section with fun facts or hobbies.
+- [x] 20. Include a footer with copyright, legal, and privacy notes.
+- [x] 21. Create a workspace or "Pinned Projects" area for featured work.
 - [ ] 22. Add search functionality to find specific projects or content.
 - [ ] 23. Implement error pages (404, offline) themed to your OS concept.
 - [ ] 24. Show certifications with badge icons and verification links.

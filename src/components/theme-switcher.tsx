@@ -1,42 +1,72 @@
-'use client';
+"use client";
 
-import { Moon, Sun, Monitor } from 'lucide-react';
-import { useTheme } from 'next-themes';
-import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { TooltipWrapper } from './tooltip-wrapper';
+import React, { useState, useEffect } from "react";
+import { useTheme } from "next-themes";
+import { Button } from "@/components/ui/button";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Moon, Sun, Monitor } from "lucide-react";
 
 export function ThemeSwitcher() {
-  const { setTheme, theme } = useTheme();
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  // useEffect only runs on the client, so now we can safely show the UI
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return (
+      <Button variant="ghost" size="icon" disabled className="rounded-full">
+        <Sun className="h-5 w-5" />
+        <span className="sr-only">Loading theme switcher</span>
+      </Button>
+    );
+  }
 
   return (
     <DropdownMenu>
-      <TooltipWrapper content="Change theme">
-        <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="icon" className="h-8 w-8">
-            <Sun className="h-4 w-4 rotate-0 scale-100 transition-transform dark:-rotate-90 dark:scale-0" />
-            <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-transform dark:rotate-0 dark:scale-100" />
-            <span className="sr-only">Toggle theme</span>
-          </Button>
-        </DropdownMenuTrigger>
-      </TooltipWrapper>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" size="icon" className="rounded-full">
+          {theme === "dark" ? (
+            <Moon className="h-5 w-5" />
+          ) : theme === "light" ? (
+            <Sun className="h-5 w-5" />
+          ) : (
+            <Monitor className="h-5 w-5" />
+          )}
+          <span className="sr-only">Toggle theme</span>
+        </Button>
+      </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => setTheme('light')}>
+        <DropdownMenuItem onClick={() => setTheme("light")}>
           <Sun className="mr-2 h-4 w-4" />
-          Light
+          <span>Light</span>
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme('dark')}>
+        <DropdownMenuItem onClick={() => setTheme("dark")}>
           <Moon className="mr-2 h-4 w-4" />
-          Dark
+          <span>Dark</span>
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme('system')}>
+        <DropdownMenuItem onClick={() => setTheme("system")}>
           <Monitor className="mr-2 h-4 w-4" />
-          System
+          <span>System</span>
+        </DropdownMenuItem>
+        <DropdownMenuItem 
+          onClick={() => {
+            const newTheme = theme === "dark" ? "light" : "dark";
+            setTheme(newTheme);
+            // Show a temporary notification
+            const notification = document.createElement("div");
+            notification.className = "fixed bottom-4 right-4 bg-primary text-primary-foreground px-4 py-2 rounded-lg shadow-lg z-50";
+            notification.textContent = `Theme preview: ${newTheme.charAt(0).toUpperCase() + newTheme.slice(1)}`;
+            document.body.appendChild(notification);
+            setTimeout(() => {
+              document.body.removeChild(notification);
+            }, 2000);
+          }}
+        >
+          <Monitor className="mr-2 h-4 w-4" />
+          <span>Try {theme === "dark" ? "Light" : "Dark"} Mode</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

@@ -138,20 +138,49 @@ const Window = (props: WindowProps) => {
         style={{ cursor: isMobile ? 'default' : isMaximized ? 'default' : isResizing ? 'default' : 'grab' }}
       >
         <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
-            <button onClick={(e) => { e.stopPropagation(); closeWindow(id) }} className="w-3.5 h-3.5 rounded-full bg-[#ff5f57] flex items-center justify-center group/btn" aria-label="Close">
-                <X className="w-2 h-2 text-[#9d252b] opacity-0 group-hover/btn:opacity-100 transition-opacity" />
-            </button>
-            <button onClick={(e) => { e.stopPropagation(); toggleMinimize(id) }} className="w-3.5 h-3.5 rounded-full bg-[#febc2e] flex items-center justify-center group/btn" aria-label="Minimize">
-                <Minus className="w-2 h-2 text-[#9a542c] opacity-0 group-hover/btn:opacity-100 transition-opacity" />
-            </button>
-            <button onClick={(e) => { e.stopPropagation(); toggleMaximize(id) }} className="w-3.5 h-3.5 rounded-full bg-[#28c840] flex items-center justify-center group/btn" aria-label="Maximize">
-                <Square className="w-1.5 h-1.5 fill-current text-[#226534] opacity-0 group-hover/btn:opacity-100 transition-opacity" />
-            </button>
+          <button 
+            onClick={(e) => { e.stopPropagation(); closeWindow(id) }} 
+            className="w-3.5 h-3.5 rounded-full bg-[#ff5f57] flex items-center justify-center group/btn" 
+            aria-label="Close"
+          >
+            <svg 
+              className="w-2 h-2 text-[#9d252b] opacity-0 group-hover/btn:opacity-100 transition-opacity" 
+              fill="currentColor" 
+              viewBox="0 0 8 8"
+            >
+              <path d="M1.5 1.5l5 5m0-5l-5 5" stroke="currentColor" strokeWidth="1" strokeLinecap="round" />
+            </svg>
+          </button>
+          <button 
+            onClick={(e) => { e.stopPropagation(); toggleMinimize(id) }} 
+            className="w-3.5 h-3.5 rounded-full bg-[#febc2e] flex items-center justify-center group/btn" 
+            aria-label="Minimize"
+          >
+            <svg 
+              className="w-2 h-2 text-[#9a542c] opacity-0 group-hover/btn:opacity-100 transition-opacity" 
+              fill="currentColor" 
+              viewBox="0 0 8 8"
+            >
+              <path d="M1 4h6" stroke="currentColor" strokeWidth="1" strokeLinecap="round" />
+            </svg>
+          </button>
+          <button 
+            onClick={(e) => { e.stopPropagation(); toggleMaximize(id) }} 
+            className="w-3.5 h-3.5 rounded-full bg-[#28c840] flex items-center justify-center group/btn" 
+            aria-label="Maximize"
+          >
+            <svg 
+              className="w-1.5 h-1.5 fill-current text-[#226534] opacity-0 group-hover/btn:opacity-100 transition-opacity" 
+              viewBox="0 0 6 6"
+            >
+              <path d="M1 1h4v4H1z" />
+            </svg>
+          </button>
         </div>
         <span className={cn(
-            "font-medium text-sm truncate transition-colors",
-            isFocused ? "text-foreground" : "text-muted-foreground/80"
-          )}>{title}</span>
+          "font-medium text-sm truncate transition-colors",
+          isFocused ? "text-foreground" : "text-muted-foreground/80"
+        )}>{title}</span>
       </header>
       <div className="flex-1 rounded-b-lg overflow-hidden">
         <motion.div 

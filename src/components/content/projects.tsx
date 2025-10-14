@@ -79,6 +79,7 @@ const projects = [
 
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Spinner } from "@/components/ui/spinner";
 
 interface Project {
   title: string;
@@ -173,7 +174,12 @@ const ProjectCard: React.FC<{ project: typeof projects[0] }> = ({ project }) => 
           </div>
           {githubLink && (
             <div className="flex gap-4 items-center mt-2 text-xs text-muted-foreground">
-              {loading && <span>Loading GitHub stats…</span>}
+              {loading && (
+                <div className="flex items-center gap-2">
+                  <Spinner size="sm" />
+                  <span>Loading GitHub stats…</span>
+                </div>
+              )}
               {error && <span>{error}</span>}
               {stats && (
                 <>
@@ -190,8 +196,11 @@ const ProjectCard: React.FC<{ project: typeof projects[0] }> = ({ project }) => 
 };
 
 const Projects = () => {
+  // Define pinned projects
+  const pinnedProjects = projects.slice(0, 3); // First 3 projects as pinned
+
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 p-6">
       <div className="space-y-4">
         <h2 className="text-3xl font-bold tracking-tight">Featured Projects</h2>
         <p className="text-lg text-muted-foreground">
@@ -199,10 +208,30 @@ const Projects = () => {
         </p>
       </div>
 
-      <div className="grid gap-8">
-        {projects.map((project, index) => (
-          <ProjectCard key={index} project={project} />
-        ))}
+      {/* Pinned Projects Section */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className="text-xl font-semibold">Pinned Projects</h3>
+          <span className="text-sm text-muted-foreground">Featured work</span>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {pinnedProjects.map((project, index) => (
+            <ProjectCard key={`pinned-${index}`} project={project} />
+          ))}
+        </div>
+      </div>
+
+      {/* All Projects Section */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className="text-xl font-semibold">All Projects</h3>
+          <span className="text-sm text-muted-foreground">{projects.length} projects</span>
+        </div>
+        <div className="grid gap-8">
+          {projects.map((project, index) => (
+            <ProjectCard key={index} project={project} />
+          ))}
+        </div>
       </div>
     </div>
   );

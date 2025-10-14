@@ -2,6 +2,14 @@ import React from 'react';
 import Image from 'next/image';
 
 const AboutContent = () => {
+  const funFacts = [
+    "I'm a big fan of open-source software and contribute to several projects on GitHub",
+    "When I'm not coding, you'll find me hiking or exploring new coffee shops",
+    "I enjoy learning new programming languages and frameworks in my spare time",
+    "I'm passionate about UI/UX design and creating intuitive user experiences",
+    "I love solving algorithmic challenges on competitive programming platforms",
+  ];
+
   return (
     <div className="prose prose-sm md:prose-base dark:prose-invert max-w-none p-6 space-y-6">
       <div className="flex flex-col sm:flex-row items-start gap-6 not-prose">
@@ -12,6 +20,7 @@ const AboutContent = () => {
           height={200}
           className="rounded-lg shadow-md object-cover"
           data-ai-hint="person portrait"
+          loading="lazy"
         />
         <div className="flex-1 space-y-4">
           <h1 className="text-3xl font-bold tracking-tight">Rajath Hegde | Full Stack Developer</h1>
@@ -52,6 +61,18 @@ const AboutContent = () => {
             <li>Creating engaging user experiences with thoughtful UI/UX design</li>
             <li>Implementing efficient CI/CD pipelines and DevOps practices</li>
           </ul>
+        </section>
+
+        <section>
+          <h2 className="text-2xl font-semibold mb-4">Fun Facts & Hobbies 🎨</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {funFacts.map((fact, index) => (
+              <div key={index} className="flex items-start p-4 bg-muted rounded-lg">
+                <span className="text-primary mr-2">•</span>
+                <p>{fact}</p>
+              </div>
+            ))}
+          </div>
         </section>
       </div>
     </div>

@@ -24,18 +24,27 @@ const DockIcon = ({ win, mouseX }: { win: WindowInstance; mouseX: MotionValue<nu
     const isFocused = win.isFocused && !win.isMinimized;
     const IconComponent = win.icon;
 
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        focusWindow(win.id);
+      }
+    };
+
     return (
         <Tooltip key={win.id} delayDuration={100}>
             <TooltipTrigger asChild>
                 <motion.button
                     ref={ref}
                     onClick={() => focusWindow(win.id)}
+                    onKeyDown={handleKeyDown}
                     style={{ scale }}
                     className={cn(
-                        "w-12 h-12 rounded-full flex items-center justify-center transition-colors duration-200 relative focus:outline-none focus-visible:ring-2 focus-visible:ring-ring backdrop-blur-md",
+                        "w-12 h-12 rounded-full flex items-center justify-center transition-colors duration-200 relative focus:outline-none focus-visible:ring-2 focus-visible:ring-primary backdrop-blur-md",
                         isFocused ? 'bg-primary/20' : 'bg-black/10 dark:bg-white/10'
                     )}
                     aria-label={`Focus ${win.title}`}
+                    tabIndex={0}
                 >
                     <IconComponent className="w-7 h-7" />
                     <div
