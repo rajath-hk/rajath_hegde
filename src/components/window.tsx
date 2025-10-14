@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback, Suspense } from 'react';
 import type { WindowInstance } from '@/types';
 import { useWindows } from '@/contexts/window-context';
 import { cn } from '@/lib/utils';
@@ -211,7 +211,11 @@ const Window = (props: WindowProps) => {
 
       {/* Content */}
       <div className="flex-1 overflow-auto">
-        {content}
+        {content && (
+          <Suspense fallback={<div className="p-6">Loading...</div>}>
+            {React.createElement(content)}
+          </Suspense>
+        )}
       </div>
 
       {/* Resize handles */}

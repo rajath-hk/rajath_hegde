@@ -5,6 +5,7 @@ import type { AppConfig, WindowInstance } from '@/types';
 
 import { FileText, Folder, Mail, Briefcase } from 'lucide-react';
 
+// Constants for localStorage keys
 const ICON_STATE_KEY = 'retrofolio-icons-v2';
 const WINDOW_STATE_KEY = 'retrofolio-windows-v2';
 
@@ -31,33 +32,27 @@ const getContentComponent = (id: string): ContentComponent => {
     case 'story':
       return React.lazy(() => import('@/components/content/story'));
     case 'legal':
-      const LegalContent = () => <div className="p-6 text-card-foreground">This is my portfolio. To access this file, please contact me.</div>;
-      return LegalContent;
+      return () => <div className="p-6 text-card-foreground">This is my portfolio. To access this file, please contact me.</div>;
     default:
       return () => <div>Content not found</div>;
   }
 };
 
-// Create content element with proper Suspense handling
-const createContentElement = (id: string) => {
-  const Component = getContentComponent(id);
-  return (
-    <Suspense fallback={<div className="p-6">Loading...</div>}>
-      <Component />
-    </Suspense>
-  );
+// Store component references instead of React elements
+const createContentComponent = (id: string) => {
+  return getContentComponent(id);
 };
 
 const initialAppsData: AppConfig[] = [
-  { id: 'landing', title: 'Home', icon: FileText, content: null, defaultSize: { width: 700, height: 420 }, x: 20, y: 20 },
-  { id: 'about', title: 'My Story', icon: FileText, content: null, defaultSize: { width: 550, height: 400 }, x: 20, y: 100 },
-  { id: 'projects', title: 'Projects', icon: Folder, content: null, defaultSize: { width: 650, height: 500 }, x: 20, y: 150 },
-  { id: 'my-work', title: 'My Work', icon: Briefcase, content: null, defaultSize: { width: 500, height: 350 }, x: 20, y: 250 },
-  { id: 'resume', title: 'My Resume', icon: FileText, content: null, defaultSize: { width: 700, height: 800 }, x: 130, y: 50 },
-  { id: 'contact', title: 'Contact Me', icon: Mail, content: null, defaultSize: { width: 450, height: 580 }, x: 130, y: 150 },
-  { id: 'socials', title: 'Socials', icon: Folder, content: null, defaultSize: { width: 450, height: 350 }, x: 130, y: 250 },
-  { id: 'story', title: 'Testimonials', icon: Folder, content: null, defaultSize: { width: 550, height: 400 }, x: 20, y: 350 },
-  { id: 'legal', title: 'Legal', icon: Folder, content: null, defaultSize: { width: 500, height: 300 }, x: 20, y: 450 },
+  { id: 'landing', title: 'Home', icon: FileText, content: undefined, defaultSize: { width: 700, height: 420 }, x: 20, y: 20 },
+  { id: 'about', title: 'My Story', icon: FileText, content: undefined, defaultSize: { width: 550, height: 400 }, x: 20, y: 100 },
+  { id: 'projects', title: 'Projects', icon: Folder, content: undefined, defaultSize: { width: 650, height: 500 }, x: 20, y: 150 },
+  { id: 'my-work', title: 'My Work', icon: Briefcase, content: undefined, defaultSize: { width: 500, height: 350 }, x: 20, y: 250 },
+  { id: 'resume', title: 'My Resume', icon: FileText, content: undefined, defaultSize: { width: 700, height: 800 }, x: 130, y: 50 },
+  { id: 'contact', title: 'Contact Me', icon: Mail, content: undefined, defaultSize: { width: 450, height: 580 }, x: 130, y: 150 },
+  { id: 'socials', title: 'Socials', icon: Folder, content: undefined, defaultSize: { width: 450, height: 350 }, x: 130, y: 250 },
+  { id: 'story', title: 'Testimonials', icon: Folder, content: undefined, defaultSize: { width: 550, height: 400 }, x: 20, y: 350 },
+  { id: 'legal', title: 'Legal', icon: Folder, content: undefined, defaultSize: { width: 500, height: 300 }, x: 20, y: 450 },
 ];
 
 interface WindowContextType {
@@ -122,7 +117,8 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
           const parsedWindows = JSON.parse(savedWindows);
           const windowsWithContent = parsedWindows.map((win: WindowInstance) => ({
             ...win,
-            content: createContentElement(win.id),
+            // Store component reference instead of React element
+            content: createContentComponent(win.id),
           }));
           setWindows(windowsWithContent);
         } catch (e) {
@@ -163,11 +159,10 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
             : w
         );
       } else {
-        // Create new window with proper content
-        const content = createContentElement(app.id);
+        // Create new window with component reference instead of React element
         const newWindow: WindowInstance = {
           ...app,
-          content,
+          content: createContentComponent(app.id),
           x: app.x ?? 100,
           y: app.y ?? 100,
           width: app.defaultSize?.width ?? 500,
