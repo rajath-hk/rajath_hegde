@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { useWindows } from '@/contexts/window-context';
+import { create } from 'zustand';
 
 export const useKeyboardShortcuts = () => {
   const { openWindow, windows, closeWindow, minimizeWindow } = useWindows();
