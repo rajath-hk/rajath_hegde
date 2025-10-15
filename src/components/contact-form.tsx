@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { sendMessage } from '@/actions/send-message';
-import { contactFormSchema, ContactFormData } from '@/lib/schemas';
+import { contactSchema, ContactFormData } from '@/lib/schemas';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -23,7 +23,7 @@ const ContactForm = () => {
   const { toast } = useToast();
   
   const form = useForm<ContactFormData>({
-    resolver: zodResolver(contactFormSchema),
+    resolver: zodResolver(contactSchema),
     defaultValues: {
       name: '',
       email: '',
@@ -45,7 +45,7 @@ const ContactForm = () => {
       } else {
         toast({
           title: 'Error',
-          description: result.message || 'Failed to send message. Please try again.',
+          description: result.error || 'Failed to send message. Please try again.',
           variant: 'destructive',
         });
       }

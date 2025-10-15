@@ -30,8 +30,10 @@ jobs:
           cache: 'npm'
       - name: Install dependencies
         run: npm install
-      - name: Build
-        run: npm run build
+      - name: Build with Base Path
+        run: |
+          echo "Building with BASE_PATH: /${GITHUB_REPOSITORY#*/}"
+          npm run build
         env:
           # The name of the repository becomes the basePath
           BASE_PATH: /${{ github.event.repository.name }}

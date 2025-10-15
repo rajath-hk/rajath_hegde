@@ -6,6 +6,7 @@ const basePath = process.env.BASE_PATH;
 const nextConfig: NextConfig = {
   output: 'export',
   basePath: basePath,
+  trailingSlash: true,
   typescript: {
     ignoreBuildErrors: true,
   },

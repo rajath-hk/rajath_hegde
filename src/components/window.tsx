@@ -75,6 +75,47 @@ const Window = (props: WindowProps) => {
     toggleMaximize(id);
   }
 
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (e.button !== 0) return;
+    if (headerRef.current && headerRef.current.contains(e.target as Node)) {
+      focusWindow(id);
+      setIsDragging(true);
+    }
+  };
+
+  // Handle mouse events for desktop dragging and resizing
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    if (isResizing) {
+      if (!windowRef.current) return;
+      const rect = windowRef.current.getBoundingClientRect();
+      const newWidth = Math.max(300, e.clientX - rect.left);
+      const newHeight = Math.max(200, e.clientY - rect.top);
+      setSize({ 
+        width: newWidth, 
+        height: newHeight 
+      });
+    }
+    
+    if (isDragging) {
+      setPosition(prev => ({
+        x: prev.x + e.movementX,
+        y: prev.y + e.movementY
+      }));
+    }
+  }, [isResizing, isDragging]);
+
+  const handleMouseUp = useCallback(() => {
+    if (isResizing) {
+      setIsResizing(false);
+      updateWindowSize(id, size.width, size.height);
+    }
+    
+    if (isDragging) {
+      setIsDragging(false);
+      updateWindowPosition(id, position.x, position.y);
+    }
+  }, [isResizing, isDragging, id, size, position, updateWindowSize, updateWindowPosition]);
+
   // Handle touch events for mobile dragging
   const handleTouchStart = (e: React.TouchEvent) => {
     e.stopPropagation();
@@ -109,49 +150,11 @@ const Window = (props: WindowProps) => {
       window.removeEventListener('touchend', handleTouchEnd);
     };
     
-    window.addEventListener('touchmove', handleTouchMove);
+    window.addEventListener('touchmove', handleTouchMove, { passive: false });
     window.addEventListener('touchend', handleTouchEnd);
   };
 
-  // Handle mouse events for desktop dragging
-  const handleDragStart = (e: React.MouseEvent) => {
-    if (e.button !== 0 || isMaximized) return;
-    e.stopPropagation();
-    focusWindow(id);
-    setIsDragging(true);
-  };
-
-  const handleMouseMove = useCallback((e: MouseEvent) => {
-    if (!isDragging && !isResizing) return;
-    
-    if (isDragging && windowRef.current) {
-      const deltaX = e.movementX;
-      const deltaY = e.movementY;
-      
-      setPosition(prev => ({
-        x: Math.max(0, prev.x + deltaX),
-        y: Math.max(0, prev.y + deltaY)
-      }));
-    }
-    
-    if (isResizing) {
-      const newWidth = Math.max(300, size.width + e.movementX);
-      const newHeight = Math.max(200, size.height + e.movementY);
-      setSize({ width: newWidth, height: newHeight });
-    }
-  }, [isDragging, isResizing, size]);
-
-  const handleMouseUp = useCallback(() => {
-    if (isDragging) {
-      setIsDragging(false);
-      updateWindowPosition(id, position.x, position.y);
-    }
-    if (isResizing) {
-      setIsResizing(false);
-      updateWindowSize(id, size.width, size.height);
-    }
-  }, [isDragging, isResizing, id, position, size, updateWindowPosition, updateWindowSize]);
-
+  // Add or remove event listeners based on mouse and touch activity
   useEffect(() => {
     if (isResizing || isDragging) {
       window.addEventListener('mousemove', handleMouseMove);
@@ -163,84 +166,114 @@ const Window = (props: WindowProps) => {
     };
   }, [isResizing, isDragging, handleMouseMove, handleMouseUp]);
 
+
   return (
     <motion.div
       ref={windowRef}
       className={cn(
-        "fixed bg-background border border-border rounded-lg shadow-xl overflow-hidden flex flex-col select-none",
-        isFocused ? "shadow-2xl" : "opacity-90"
+        "absolute bg-white/20 dark:bg-gray-700/20 backdrop-blur-lg border border-white/30 dark:border-gray-600/30 rounded-lg flex flex-col shadow-xl",
+        isFocused ? "ring-2 ring-gray-500/30" : ""
       )}
       style={{
         width: size.width,
         height: size.height,
-        zIndex,
         left: position.x,
         top: position.y,
+        zIndex,
       }}
-      initial={{ opacity: 0, scale: 0.8 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.8 }}
-      transition={{ duration: 0.2 }}
-    >
-      {/* Window Header */}
-      <div
-        ref={headerRef}
-        className={cn(
-          "flex items-center justify-between p-2 border-b border-border cursor-move",
-          isFocused ? "bg-primary/10" : "bg-muted"
-        )}
-        onMouseDown={handleDragStart}
+```
+
+```typescript
+c:\Users\rajath\Documents\GitHub\rajath_hegde\src\components/window.tsx
+```javascript
+<<<<<<< SEARCH
+        onDoubleClick={handleDoubleClick}
+        style={{ cursor: isMaximized ? 'default' : 'grab', WebkitAppRegion: 'drag' }}
+      >
         onDoubleClick={handleDoubleClick}
         onTouchStart={handleTouchStart}
+        style={{ cursor: isMaximized ? 'default' : 'grab', WebkitAppRegion: 'drag' }}
       >
-        <div className="flex items-center gap-2">
-          <div className="flex gap-1.5">
-            <button
-              className="w-6 h-6 flex items-center justify-center rounded-full bg-red-500 hover:bg-red-600 text-white text-xs focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1"
-              onClick={() => closeWindow(id)}
-              aria-label="Close window"
-            >
-              <X size={14} />
-            </button>
-            <button
-              className="w-6 h-6 flex items-center justify-center rounded-full bg-yellow-500 hover:bg-yellow-600 text-white text-xs focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-1"
-              onClick={() => toggleMinimize(id)}
-              aria-label="Minimize window"
-            >
-              <Minus size={14} />
-            </button>
-            <button
-              className="w-6 h-6 flex items-center justify-center rounded-full bg-green-500 hover:bg-green-600 text-white text-xs focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-1"
-              onClick={() => toggleMaximize(id)}
-              aria-label={isMaximized ? "Restore window" : "Maximize window"}
-            >
-              {isMaximized ? <Minimize size={14} /> : <Square size={14} />}
-            </button>
-          </div>
-          <span className="text-sm font-medium truncate max-w-[160px] sm:max-w-xs">
-            {title}
-          </span>
+      layout
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ 
+        opacity: 1, 
+        scale: 1,
+        x: position.x,
+        y: position.y,
+        width: size.width,
+        height: size.height
+      }}
+      exit={{ opacity: 0, scale: 0.9 }}
+      transition={{ type: 'spring', stiffness: 500, damping: 40 }}
+      onMouseDown={handleMouseDown}
+    >
+      <header
+        ref={headerRef}
+        className={cn(
+          "flex items-center justify-center relative px-4 h-8 flex-shrink-0 rounded-t-lg",
+          isFocused 
+            ? "bg-gray-500/80 dark:bg-gray-600/80" 
+            : "bg-gray-300/50 dark:bg-gray-700/50"
+        )}
+        onDoubleClick={handleDoubleClick}
+        style={{ cursor: isMaximized ? 'default' : 'grab', WebkitAppRegion: 'drag' }}
+      >
+        {/* Ubuntu-style traffic lights */}
+        <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
+          <button 
+            onClick={(e) => { 
+              e.stopPropagation(); 
+              closeWindow(id);
+            }} 
+            className="w-3 h-3 rounded-full bg-red-500 flex items-center justify-center group/btn hover:bg-red-600 transition-colors"
+            aria-label="Close"
+            style={{ WebkitAppRegion: 'no-drag' }}
+          >
+          </button>
+          <button 
+            onClick={(e) => { 
+              e.stopPropagation(); 
+              toggleMinimize(id);
+            }} 
+            className="w-3 h-3 rounded-full bg-yellow-500 flex items-center justify-center group/btn hover:bg-yellow-600 transition-colors"
+            aria-label="Minimize"
+            style={{ WebkitAppRegion: 'no-drag' }}
+          >
+          </button>
+          <button 
+            onClick={(e) => { 
+              e.stopPropagation(); 
+              toggleMaximize(id);
+            }} 
+            className="w-3 h-3 rounded-full bg-green-500 flex items-center justify-center group/btn hover:bg-green-600 transition-colors"
+            aria-label="Maximize"
+            style={{ WebkitAppRegion: 'no-drag' }}
+          >
+          </button>
+        </div>
+        <span className={cn(
+            "font-medium text-sm truncate max-w-md",
+            isFocused ? "text-white" : "text-gray-800 dark:text-gray-200"
+          )}>
+          {title}
+        </span>
+      </header>
+      <div className="flex-1 rounded-b-lg overflow-hidden">
+        <div className="w-full h-full overflow-auto">
+          {content}
         </div>
       </div>
-
-      {/* Window Content */}
-      <div className="flex-1 overflow-auto">
-        {content && typeof content === 'function' && React.createElement(content, { id })}
-        {content && typeof content !== 'function' && content}
+       <div
+        className={cn(
+          "absolute bottom-0 right-0 w-5 h-5 cursor-se-resize flex items-end justify-end p-1",
+          isMaximized && "hidden"
+        )}
+        onMouseDown={handleResizeStart}
+        style={{ WebkitAppRegion: 'no-drag' }}
+      >
+        <div className="w-2.5 h-2.5 border-r-2 border-b-2 border-gray-600 dark:border-gray-400"></div>
       </div>
-
-      {/* Resize Handle */}
-      {!isMaximized && (
-        <div
-          className={cn(
-            "absolute bottom-0 right-0 w-4 h-4 cursor-nwse-resize",
-            "bg-primary/20 hover:bg-primary/40 active:bg-primary/60 transition-colors"
-          )}
-          onMouseDown={handleResizeStart}
-        >
-          <div className="absolute bottom-1 right-1 w-2 h-2 border-r-2 border-b-2 border-primary/60" />
-        </div>
-      )}
     </motion.div>
   );
 };

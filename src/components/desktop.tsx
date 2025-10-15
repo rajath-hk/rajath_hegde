@@ -95,68 +95,95 @@ const Desktop = () => {
     e.preventDefault();
     setContextMenuPosition({ x: e.clientX, y: e.clientY });
     
-    // Update context menu options with actions
-    const updatedOptions = [
+    setContextMenuOptions([
       {
-        label: 'View',
-        icon: FileSearch,
-        submenu: [
-          { label: 'Large icons', action: () => console.log('Large icons') },
-          { label: 'Medium icons', action: () => console.log('Medium icons') },
-          { label: 'Small icons', action: () => console.log('Small icons') },
-        ]
+        label: 'Terminal',
+        icon: <Terminal className="h-4 w-4" />,
+        action: () => {
+          openWindow({
+            id: 'terminal',
+            title: 'Terminal',
+            icon: Terminal,
+            content: <TerminalContent />,
+            defaultSize: { width: 650, height: 450 },
+            x: 100,
+            y: 100
+          });
+        }
       },
       {
-        label: 'Sort by',
-        icon: ArrowDownUp,
-        submenu: [
-          { label: 'Name', action: () => console.log('Sort by name') },
-          { label: 'Date', action: () => console.log('Sort by date') },
-          { label: 'Type', action: () => console.log('Sort by type') },
-        ]
+        label: 'File Explorer',
+        icon: <Folder className="h-4 w-4" />,
+        action: () => {
+          openWindow({
+            id: 'explorer',
+            title: 'File Explorer',
+            icon: Folder,
+            content: <FileExplorerContent />,
+            defaultSize: { width: 700, height: 500 },
+            x: 150,
+            y: 150
+          });
+        }
+      },
+      {
+        label: 'About Me',
+        icon: <User className="h-4 w-4" />,
+        action: () => {
+          openWindow({
+            id: 'about',
+            title: 'About Me',
+            icon: User,
+            content: <AboutContent />,
+            defaultSize: { width: 550, height: 400 },
+            x: 200,
+            y: 200
+          });
+        }
       },
       {
         separator: true
       },
       {
+        label: 'Organize Icons',
+        action: () => setOrganizedIcons(organizeIcons()),
+        icon: <Folder className="w-4 h-4" />,
+      },
+      {
+        separator: true,
+      },
+      {
         label: 'Refresh',
-        icon: RefreshCw,
+        icon: <RefreshCw className="h-4 w-4" />,
         action: () => window.location.reload()
       },
       {
         label: 'Change Wallpaper',
-        icon: Wallpaper,
+        icon: <Wallpaper className="h-4 w-4" />,
         action: () => console.log('Change wallpaper')
       },
       {
         separator: true
       },
       {
-        label: 'New',
-        icon: FileText,
-        submenu: [
-          { label: 'Folder', action: () => console.log('New folder') },
-          { label: 'Text Document', action: () => console.log('New text document') },
-          { 
-            label: 'Terminal', 
-            icon: Terminal,
-            action: openTerminal
-          },
-        ]
+        label: 'View',
+        icon: <FileSearch className="w-4 h-4" />,
+        action: () => console.log('View options'),
       },
       {
-        label: 'Open File Explorer',
-        icon: Folder,
-        action: openFileExplorer
+        label: 'Sort By',
+        icon: <ArrowDownUp className="w-4 h-4" />,
+        action: () => console.log('Sort options'),
       },
       {
-        label: 'About Me',
-        icon: User,
-        action: openAbout
+        separator: true
+      },
+      {
+        label: 'Reset Icon Positions',
+        action: resetIconPositions
       }
-    ];
+    ]);
     
-    setContextMenuOptions(updatedOptions);
     setContextMenuOpen(true);
   };
 
@@ -182,51 +209,6 @@ const Desktop = () => {
     };
   }, []);
 
-  // Add missing components
-  const TerminalContent = React.lazy(() => import('@/components/content/terminal'));
-  const FileExplorerContent = React.lazy(() => import('@/components/content/file-explorer'));
-  const AboutContent = React.lazy(() => import('@/components/content/about'));
-
-  // Context menu actions
-  const openTerminal = () => {
-    const TerminalContent = React.lazy(() => import('@/components/content/terminal'));
-    openWindow({
-      id: 'terminal-' + Date.now(),
-      title: 'Terminal',
-      icon: Terminal,
-      content: <TerminalContent />,
-      defaultSize: { width: 600, height: 400 },
-      x: 100,
-      y: 100
-    });
-  };
-
-  const openFileExplorer = () => {
-    const FileExplorerContent = React.lazy(() => import('@/components/content/file-explorer'));
-    openWindow({
-      id: 'explorer-' + Date.now(),
-      title: 'File Explorer',
-      icon: Folder,
-      content: <FileExplorerContent />,
-      defaultSize: { width: 800, height: 500 },
-      x: 150,
-      y: 150
-    });
-  };
-
-  const openAbout = () => {
-    const AboutContent = React.lazy(() => import('@/components/content/about'));
-    openWindow({
-      id: 'about-' + Date.now(),
-      title: 'About Me',
-      icon: User,
-      content: <AboutContent />,
-      defaultSize: { width: 600, height: 400 },
-      x: 200,
-      y: 200
-    });
-  };
-
   return (
     <>
       <div
@@ -235,6 +217,55 @@ const Desktop = () => {
         className="absolute inset-0 pt-8 sm:pt-8 overflow-y-auto"
         onContextMenu={handleContextMenu}
       >
+        <DropdownMenu open={contextMenuOpen} onOpenChange={setContextMenuOpen}>
+          <DropdownMenuTrigger asChild>
+            <div 
+              className="absolute inset-0"
+              style={{ left: contextMenuPosition.x, top: contextMenuPosition.y }}
+            />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent 
+            className="w-48" 
+            onContextMenu={(e) => e.preventDefault()}
+            style={{ 
+              position: 'absolute', 
+              left: contextMenuPosition.x, 
+              top: contextMenuPosition.y 
+            }}
+          >
+            {contextMenuOptions.map((option, index) => (
+              <React.Fragment key={index}>
+                {option.separator && <DropdownMenuSeparator />}
+                {option.submenu ? (
+                  <DropdownMenuSub>
+                    <DropdownMenuSubTrigger>
+                      <option.icon className="mr-2 h-4 w-4" />
+                      <span>{option.label}</span>
+                    </DropdownMenuSubTrigger>
+                    <DropdownMenuPortal>
+                      <DropdownMenuSubContent>
+                        {option.submenu.map((subOption: any, subIndex: number) => (
+                          <DropdownMenuItem 
+                            key={subIndex} 
+                            onClick={subOption.action}
+                          >
+                            {subOption.icon && <subOption.icon className="mr-2 h-4 w-4" />}
+                            <span>{subOption.label}</span>
+                          </DropdownMenuItem>
+                        ))}
+                      </DropdownMenuSubContent>
+                    </DropdownMenuPortal>
+                  </DropdownMenuSub>
+                ) : (
+                  <DropdownMenuItem onClick={option.action}>
+                    <option.icon className="mr-2 h-4 w-4" />
+                    <span>{option.label}</span>
+                  </DropdownMenuItem>
+                )}
+              </React.Fragment>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
 
         {/* Desktop Icons */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 p-4">
@@ -263,9 +294,10 @@ const Desktop = () => {
       )}
 
       <ContextMenu 
+        open={contextMenuOpen} 
+        onOpenChange={setContextMenuOpen}
         position={contextMenuPosition}
         options={contextMenuOptions}
-        onClose={() => setContextMenuOpen(false)}
       />
     </>
   );
