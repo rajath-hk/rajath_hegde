@@ -36,44 +36,46 @@ const blogPosts = [
   }
 ];
 
+import { Separator } from '@/components/ui/separator';
+
 const Blog = () => {
   return (
-    <div className="space-y-6 p-6">
-      <div className="space-y-2">
-        <h1 className="text-3xl font-bold">Blog</h1>
-        <p className="text-muted-foreground">
+    <div className="space-y-4 p-4">
+      <div className="space-y-1">
+        <h1 className="text-2xl font-bold">Blog</h1>
+        <p className="text-muted-foreground text-sm">
           Thoughts, tutorials, and insights from my journey as a developer.
         </p>
       </div>
 
-      <div className="space-y-4">
+      <Separator />
+
+      <div className="space-y-6">
         {blogPosts.map((post) => (
-          <Card key={post.id} className="p-6 hover:bg-accent transition-colors cursor-pointer">
-            <div className="space-y-3">
-              <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-                <span>{new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
-                <span>•</span>
-                <span>{post.readTime}</span>
-              </div>
-              
-              <h2 className="text-xl font-semibold">{post.title}</h2>
-              
-              <p className="text-muted-foreground">
-                {post.excerpt}
-              </p>
-              
-              <div className="flex flex-wrap gap-2">
-                {post.tags.map((tag, index) => (
-                  <span 
-                    key={index} 
-                    className="px-2 py-1 text-xs bg-secondary rounded"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
+          <div key={post.id} className="space-y-3 group">
+            <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+              <span>{new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+              <span>•</span>
+              <span>{post.readTime}</span>
             </div>
-          </Card>
+            
+            <h2 className="text-lg font-semibold group-hover:underline cursor-pointer">{post.title}</h2>
+            
+            <p className="text-sm text-muted-foreground">
+              {post.excerpt}
+            </p>
+            
+            <div className="flex flex-wrap gap-2">
+              {post.tags.map((tag, index) => (
+                <span 
+                  key={index} 
+                  className="px-2 py-0.5 text-xs bg-secondary rounded"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </div>
         ))}
       </div>
     </div>
