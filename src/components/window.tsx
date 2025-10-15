@@ -181,32 +181,9 @@ const Window = (props: WindowProps) => {
         top: position.y,
         zIndex,
       }}
-```
-
-```typescript
-c:\Users\rajath\Documents\GitHub\rajath_hegde\src\components/window.tsx
-```javascript
-<<<<<<< SEARCH
-        onDoubleClick={handleDoubleClick}
-        style={{ cursor: isMaximized ? 'default' : 'grab', WebkitAppRegion: 'drag' }}
-      >
-        onDoubleClick={handleDoubleClick}
-        onTouchStart={handleTouchStart}
-        style={{ cursor: isMaximized ? 'default' : 'grab', WebkitAppRegion: 'drag' }}
-      >
-      layout
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ 
-        opacity: 1, 
-        scale: 1,
-        x: position.x,
-        y: position.y,
-        width: size.width,
-        height: size.height
-      }}
-      exit={{ opacity: 0, scale: 0.9 }}
-      transition={{ type: 'spring', stiffness: 500, damping: 40 }}
-      onMouseDown={handleMouseDown}
+      onDoubleClick={handleDoubleClick}
+      onTouchStart={handleTouchStart}
+      style={{ cursor: isMaximized ? 'default' : 'grab', WebkitAppRegion: 'drag' }}
     >
       <header
         ref={headerRef}
@@ -264,7 +241,7 @@ c:\Users\rajath\Documents\GitHub\rajath_hegde\src\components/window.tsx
           {content}
         </div>
       </div>
-       <div
+      <div
         className={cn(
           "absolute bottom-0 right-0 w-5 h-5 cursor-se-resize flex items-end justify-end p-1",
           isMaximized && "hidden"

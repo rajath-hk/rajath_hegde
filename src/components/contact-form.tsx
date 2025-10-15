@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { sendMessage } from '@/actions/send-message';
-import { contactSchema, ContactFormData } from '@/lib/schemas';
+import { contactFormSchema, ContactFormData } from '@/lib/schemas';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -23,7 +23,7 @@ const ContactForm = () => {
   const { toast } = useToast();
   
   const form = useForm<ContactFormData>({
-    resolver: zodResolver(contactSchema),
+    resolver: zodResolver(contactFormSchema),
     defaultValues: {
       name: '',
       email: '',
