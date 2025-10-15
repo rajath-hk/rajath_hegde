@@ -15,7 +15,7 @@ permissions:
 # Allow only one concurrent deployment
 concurrency:
   group: "pages"
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -31,12 +31,9 @@ jobs:
       - name: Install dependencies
         run: npm install
       - name: Build with Base Path
-        run: |
-          echo "Building with BASE_PATH: /${GITHUB_REPOSITORY#*/}"
-          npm run build
         env:
-          # The name of the repository becomes the basePath
           BASE_PATH: /${{ github.event.repository.name }}
+        run: npm run build
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
