@@ -23,6 +23,13 @@ import {
   Moon
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { cn } from "@/lib/utils";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 
 const Taskbar = () => {
   const { windows, focusWindow, openWindow } = useWindows();
@@ -31,6 +38,17 @@ const Taskbar = () => {
   const [date, setDate] = useState<string>('');
   const [startMenuOpen, setStartMenuOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   useEffect(() => {
     const updateDateTime = () => {
@@ -159,139 +177,109 @@ const Taskbar = () => {
   };
 
   return (
-    <>
-      {/* Ubuntu-style Menu Bar */}
-      <div className="fixed top-0 left-0 right-0 h-6 bg-gray-500/80 dark:bg-gray-600/80 backdrop-blur-lg border-b border-gray-400/50 dark:border-gray-700/50 z-40 flex items-center justify-between px-4 text-xs">
-        <div className="flex items-center gap-4">
-          <span className="font-medium text-white">PortfolioOS</span>
-          <div className="hidden md:flex items-center gap-3">
-            {navItems.map((item) => (
-              <button
-                key={item.id}
-                className="text-white hover:text-gray-200 transition-colors text-xs"
-                onClick={() => handleStartApp(item.id)}
-              >
-                {item.title}
-              </button>
-            ))}
-          </div>
-        </div>
-        <div className="flex items-center gap-3">
-          <button 
-            onClick={toggleTheme}
-            className="p-1 rounded-full hover:bg-gray-400/50 dark:hover:bg-gray-700/50 transition-colors"
-            aria-label={theme === 'dark' ? "Switch to light mode" : "Switch to dark mode"}
-          >
-            {theme === 'dark' ? (
-              <Sun className="h-3 w-3 text-white" />
-            ) : (
-              <Moon className="h-3 w-3 text-white" />
+    <div className={cn(
+      "fixed bottom-0 left-0 right-0 h-12 bg-background/80 backdrop-blur-md border-t border-border flex items-center justify-between px-2 sm:px-4 z-50",
+      isMobile ? "h-14" : "h-12"
+    )}>
+      {/* Start Button */}
+      <DropdownMenu open={startMenuOpen} onOpenChange={setStartMenuOpen}>
+        <DropdownMenuTrigger asChild>
+          <Button 
+            variant="ghost" 
+            className={cn(
+              "flex items-center gap-2 px-2 py-1 h-10 hover:bg-accent",
+              isMobile ? "h-12" : "h-10"
             )}
-          </button>
-          <div className="flex items-center gap-2 text-white">
-            <Wifi className="h-3 w-3" />
-            <Volume2 className="h-3 w-3" />
-          </div>
-          <div className="flex items-center gap-1 text-white">
-            <span>{time}</span>
-            <span>•</span>
-            <span>{date}</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Ubuntu-style Dock */}
-      <div className="fixed bottom-4 left-1/2 -translate-x-1/2 w-auto bg-white/20 dark:bg-gray-700/20 backdrop-blur-lg border border-white/30 dark:border-gray-600/30 shadow-xl rounded-2xl p-2 z-[1000] flex flex-row items-end gap-2 h-14 hidden md:flex">
-        {/* Running Applications */}
-        <div className="flex items-end gap-1 h-full">
-          {windows
-            .filter(window => !window.isMinimized)
-            .map(window => {
-              const IconComponent = window.icon;
-              return (
-                <Button
-                  key={window.id}
-                  variant="ghost"
-                  size="icon"
-                  className={`w-12 h-12 flex items-center justify-center rounded-xl transition-all ${
-                    window.isFocused 
-                      ? 'bg-white/40 dark:bg-gray-600/40' 
-                      : 'hover:bg-white/30 dark:hover:bg-gray-600/30'
-                  }`}
-                  onClick={() => focusWindow(window.id)}
-                  aria-label={`Focus ${window.title} window`}
-                >
-                  <IconComponent className="w-6 h-6 text-gray-800 dark:text-gray-200" />
-                </Button>
-              );
-            })}
-        </div>
-      </div>
-
-      {/* Start Menu - Ubuntu-style Application Menu */}
-      <AnimatePresence>
-        {startMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
-            transition={{ duration: 0.2 }}
-            className="fixed top-12 left-1/2 -translate-x-1/2 w-96 bg-white/80 dark:bg-gray-700/80 backdrop-blur-xl border border-white/30 dark:border-gray-600/30 rounded-xl shadow-xl z-50 p-4"
+            aria-label="Start menu"
           >
-            <div className="relative mb-3">
-              <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                <FileSearch className="h-4 w-4 text-gray-500" />
-              </div>
-              <input
-                type="text"
-                className="w-full pl-10 pr-4 py-2 bg-gray-100/50 dark:bg-gray-600/50 border border-gray-300/50 dark:border-gray-500/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500/30 text-gray-800 dark:text-gray-200"
-                placeholder="Search apps, files, and more..."
-              />
+            <div className="w-6 h-6 bg-primary rounded-sm flex items-center justify-center">
+              <span className="text-primary-foreground font-bold text-xs">R</span>
             </div>
-            
-            <div className="grid grid-cols-4 gap-3">
-              {startMenuApps.map(app => {
-                const IconComponent = app.icon;
-                return (
-                  <button
-                    key={app.id}
-                    className="flex flex-col items-center justify-center p-3 rounded-lg hover:bg-white/40 dark:hover:bg-gray-600/40 transition-colors"
-                    onClick={() => handleStartApp(app.id)}
-                  >
-                    <div className="w-12 h-12 rounded-xl bg-white/80 dark:bg-gray-600/80 flex items-center justify-center mb-2 border border-white/30 dark:border-gray-500/30">
-                      <IconComponent className="h-6 w-6 text-gray-800 dark:text-gray-200" />
-                    </div>
-                    <span className="text-xs text-center text-gray-800 dark:text-gray-200">{app.title}</span>
-                  </button>
-                );
-              })}
-            </div>
-            
-            <div className="mt-4 pt-4 border-t border-gray-300/30 dark:border-gray-600/30">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-gray-500 to-gray-700 flex items-center justify-center">
-                    <span className="text-xs font-bold text-white">RH</span>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-800 dark:text-gray-200">Rajath Hegde</p>
-                    <p className="text-xs text-gray-600 dark:text-gray-400">Full Stack Developer</p>
-                  </div>
-                </div>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  className="border border-gray-300/50 dark:border-gray-500/50 text-gray-800 dark:text-gray-200 hover:bg-white/40 dark:hover:bg-gray-600/40"
-                  onClick={() => setStartMenuOpen(false)}
-                >
-                  Close
-                </Button>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </>
+            <span className="hidden sm:inline font-medium">Start</span>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="w-56">
+          <DropdownMenuItem className="flex items-center gap-2">
+            <Terminal className="w-4 h-4" />
+            <span>Terminal</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem className="flex items-center gap-2">
+            <User className="w-4 h-4" />
+            <span>About Me</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem className="flex items-center gap-2">
+            <Folder className="w-4 h-4" />
+            <span>Projects</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem className="flex items-center gap-2">
+            <Briefcase className="w-4 h-4" />
+            <span>Experience</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem className="flex items-center gap-2">
+            <Award className="w-4 h-4" />
+            <span>Skills</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem className="flex items-center gap-2">
+            <FileText className="w-4 h-4" />
+            <span>Resume</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem className="flex items-center gap-2">
+            <Mail className="w-4 h-4" />
+            <span>Contact</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem className="flex items-center gap-2">
+            <FileSearch className="w-4 h-4" />
+            <span>Blog</span>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      {/* Open Windows */}
+      <div className="flex-1 flex justify-center mx-4 overflow-x-auto">
+        <div className="flex gap-1 min-w-0">
+          {windows.map((window) => (
+            <Button
+              key={window.id}
+              variant={window.isFocused ? "default" : "outline"}
+              className={cn(
+                "h-8 px-2 text-xs truncate max-w-[120px]",
+                isMobile ? "h-10 px-3" : "h-8 px-2"
+              )}
+              onClick={() => focusWindow(window.id)}
+            >
+              <window.icon className="w-4 h-4 mr-1.5" />
+              <span className="truncate">{window.title}</span>
+            </Button>
+          ))}
+        </div>
+      </div>
+
+      {/* System Tray */}
+      <div className="flex items-center gap-1 sm:gap-2">
+        <button 
+          onClick={toggleTheme}
+          className="p-1 rounded-full hover:bg-accent transition-colors"
+          aria-label={theme === 'dark' ? "Switch to light mode" : "Switch to dark mode"}
+        >
+          {theme === 'dark' ? (
+            <Sun className="h-3 w-3" />
+          ) : (
+            <Moon className="h-3 w-3" />
+          )}
+        </button>
+        <div className="flex items-center gap-2">
+          <Wifi className="h-3 w-3" />
+          <Volume2 className="h-3 w-3" />
+        </div>
+        <div className={cn(
+          "flex items-center text-xs font-medium px-2 py-1 rounded",
+          isMobile ? "text-[10px] px-1 py-0.5" : "text-xs px-2 py-1"
+        )}>
+          <span className="hidden sm:inline mr-2">{date}</span>
+          <span>{time}</span>
+        </div>
+      </div>
+    </div>
   );
 };
 

@@ -181,7 +181,13 @@ const Window = (props: WindowProps) => {
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.8 }}
       transition={{ duration: 0.2 }}
-    >
+```
+
+```typescript
+c:\Users\rajath\Documents\GitHub\rajath_hegde\src\components/window.tsx
+```javascript
+<<<<<<< SEARCH
+      >
       {/* Window Header */}
       <div
         ref={headerRef}
@@ -225,8 +231,7 @@ const Window = (props: WindowProps) => {
 
       {/* Window Content */}
       <div className="flex-1 overflow-auto">
-        {content && typeof content === 'function' && React.createElement(content, { id })}
-        {content && typeof content !== 'function' && content}
+        {content && React.createElement(content, { id })}
       </div>
 
       {/* Resize Handle */}

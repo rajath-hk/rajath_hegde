@@ -27,11 +27,11 @@ import {
   User,
   Award,
   Mail,
-  FileText
+  FileText,
+  ChevronUp
 } from 'lucide-react';
 import ContextMenu from '@/components/context-menu';
 import type { AppConfig } from '@/types';
-
 
 const Desktop = () => {
   const { windows, desktopIcons, resetIconPositions, openWindow } = useWindows();
@@ -40,6 +40,29 @@ const Desktop = () => {
   const [contextMenuPosition, setContextMenuPosition] = useState({ x: 0, y: 0 });
   const [organizedIcons, setOrganizedIcons] = useState<AppConfig[]>([]);
   const [contextMenuOptions, setContextMenuOptions] = useState<any[]>([]);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  // Handle scroll to top button visibility
+  useEffect(() => {
+    const handleScroll = () => {
+      if (desktopRef.current) {
+        setShowScrollTop(desktopRef.current.scrollTop > 300);
+      }
+    };
+
+    const desktopElement = desktopRef.current;
+    if (desktopElement) {
+      desktopElement.addEventListener('scroll', handleScroll);
+      return () => desktopElement.removeEventListener('scroll', handleScroll);
+    }
+  }, []);
+
+  // Scroll to top function
+  const scrollToTop = () => {
+    if (desktopRef.current) {
+      desktopRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
 
   // Organize desktop icons in a grid
   const organizeIcons = () => {
@@ -72,95 +95,68 @@ const Desktop = () => {
     e.preventDefault();
     setContextMenuPosition({ x: e.clientX, y: e.clientY });
     
-    setContextMenuOptions([
+    // Update context menu options with actions
+    const updatedOptions = [
       {
-        label: 'Terminal',
-        icon: <Terminal className="h-4 w-4" />,
-        action: () => {
-          openWindow({
-            id: 'terminal',
-            title: 'Terminal',
-            icon: Terminal,
-            content: <TerminalContent />,
-            defaultSize: { width: 650, height: 450 },
-            x: 100,
-            y: 100
-          });
-        }
+        label: 'View',
+        icon: FileSearch,
+        submenu: [
+          { label: 'Large icons', action: () => console.log('Large icons') },
+          { label: 'Medium icons', action: () => console.log('Medium icons') },
+          { label: 'Small icons', action: () => console.log('Small icons') },
+        ]
       },
       {
-        label: 'File Explorer',
-        icon: <Folder className="h-4 w-4" />,
-        action: () => {
-          openWindow({
-            id: 'explorer',
-            title: 'File Explorer',
-            icon: Folder,
-            content: <FileExplorerContent />,
-            defaultSize: { width: 700, height: 500 },
-            x: 150,
-            y: 150
-          });
-        }
-      },
-      {
-        label: 'About Me',
-        icon: <User className="h-4 w-4" />,
-        action: () => {
-          openWindow({
-            id: 'about',
-            title: 'About Me',
-            icon: User,
-            content: <AboutContent />,
-            defaultSize: { width: 550, height: 400 },
-            x: 200,
-            y: 200
-          });
-        }
+        label: 'Sort by',
+        icon: ArrowDownUp,
+        submenu: [
+          { label: 'Name', action: () => console.log('Sort by name') },
+          { label: 'Date', action: () => console.log('Sort by date') },
+          { label: 'Type', action: () => console.log('Sort by type') },
+        ]
       },
       {
         separator: true
       },
       {
-        label: 'Organize Icons',
-        action: () => setOrganizedIcons(organizeIcons()),
-        icon: <Folder className="w-4 h-4" />,
-      },
-      {
-        separator: true,
-      },
-      {
         label: 'Refresh',
-        icon: <RefreshCw className="h-4 w-4" />,
+        icon: RefreshCw,
         action: () => window.location.reload()
       },
       {
         label: 'Change Wallpaper',
-        icon: <Wallpaper className="h-4 w-4" />,
+        icon: Wallpaper,
         action: () => console.log('Change wallpaper')
       },
       {
         separator: true
       },
       {
-        label: 'View',
-        icon: <FileSearch className="w-4 h-4" />,
-        action: () => console.log('View options'),
+        label: 'New',
+        icon: FileText,
+        submenu: [
+          { label: 'Folder', action: () => console.log('New folder') },
+          { label: 'Text Document', action: () => console.log('New text document') },
+          { 
+            label: 'Terminal', 
+            icon: Terminal,
+            action: openTerminal
+          },
+        ]
       },
       {
-        label: 'Sort By',
-        icon: <ArrowDownUp className="w-4 h-4" />,
-        action: () => console.log('Sort options'),
+        label: 'Open File Explorer',
+        icon: Folder,
+        action: openFileExplorer
       },
       {
-        separator: true
-      },
-      {
-        label: 'Reset Icon Positions',
-        action: resetIconPositions
+        label: 'About Me',
+        icon: User,
+        action: openAbout
       }
-    ]);
+    ];
     
+    setContextMenuOptions(updatedOptions);
     setContextMenuOpen(true);
   };
 
@@ -186,35 +182,91 @@ const Desktop = () => {
     };
   }, []);
 
+  // Add missing components
+  const TerminalContent = React.lazy(() => import('@/components/content/terminal'));
+  const FileExplorerContent = React.lazy(() => import('@/components/content/file-explorer'));
+  const AboutContent = React.lazy(() => import('@/components/content/about'));
+
+  // Context menu actions
+  const openTerminal = () => {
+    const TerminalContent = React.lazy(() => import('@/components/content/terminal'));
+    openWindow({
+      id: 'terminal-' + Date.now(),
+      title: 'Terminal',
+      icon: Terminal,
+      content: <TerminalContent />,
+      defaultSize: { width: 600, height: 400 },
+      x: 100,
+      y: 100
+    });
+  };
+
+  const openFileExplorer = () => {
+    const FileExplorerContent = React.lazy(() => import('@/components/content/file-explorer'));
+    openWindow({
+      id: 'explorer-' + Date.now(),
+      title: 'File Explorer',
+      icon: Folder,
+      content: <FileExplorerContent />,
+      defaultSize: { width: 800, height: 500 },
+      x: 150,
+      y: 150
+    });
+  };
+
+  const openAbout = () => {
+    const AboutContent = React.lazy(() => import('@/components/content/about'));
+    openWindow({
+      id: 'about-' + Date.now(),
+      title: 'About Me',
+      icon: User,
+      content: <AboutContent />,
+      defaultSize: { width: 600, height: 400 },
+      x: 200,
+      y: 200
+    });
+  };
+
   return (
     <>
       <div
         ref={desktopRef}
         id="desktop-area"
-        className="absolute inset-0 pt-6 pb-16 md:pb-0"
+        className="absolute inset-0 pt-8 sm:pt-8 overflow-y-auto"
         onContextMenu={handleContextMenu}
       >
-        {/* Render desktop icons with organized grid positioning */}
-        {organizedIcons.map((icon) => (
-          <DesktopIcon key={icon.id} app={icon} />
-        ))}
-        
+
+        {/* Desktop Icons */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 p-4">
+          {desktopIcons.map((app) => (
+            <DesktopIcon key={app.id} app={app} />
+          ))}
+        </div>
+
+        {/* Windows */}
         <AnimatePresence>
-          {windows
-            .filter(win => !win.isMinimized)
-            .map(win => (
-              <Window key={win.id} {...win} />
-            ))}
+          {windows.map((window) => (
+            <Window key={window.id} {...window} />
+          ))}
         </AnimatePresence>
       </div>
 
-      {contextMenuOpen && (
-        <ContextMenu
-          options={contextMenuOptions}
-          position={contextMenuPosition}
-          onClose={() => setContextMenuOpen(false)}
-        />
+      {/* Scroll to top button */}
+      {showScrollTop && (
+        <button
+          onClick={scrollToTop}
+          className="fixed bottom-20 right-4 z-50 p-3 bg-primary text-primary-foreground rounded-full shadow-lg hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-all duration-200 md:bottom-4"
+          aria-label="Scroll to top"
+        >
+          <ChevronUp className="h-5 w-5" />
+        </button>
       )}
+
+      <ContextMenu 
+        position={contextMenuPosition}
+        options={contextMenuOptions}
+        onClose={() => setContextMenuOpen(false)}
+      />
     </>
   );
 };

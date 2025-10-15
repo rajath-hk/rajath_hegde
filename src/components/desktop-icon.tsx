@@ -67,26 +67,50 @@ const DesktopIcon = ({ app }: DesktopIconProps) => {
   const IconComponent = app.icon;
 
   return (
-    <motion.div
+    <div
       ref={iconRef}
-      className="absolute flex flex-col items-center p-1 rounded-lg cursor-pointer hover:bg-white/20 dark:hover:bg-gray-700/20 transition-colors backdrop-blur-sm"
-      style={{
-        x: position.x,
-        y: position.y,
+      className={cn(
+        "flex flex-col items-center p-2 rounded-lg cursor-pointer transition-all duration-200 group relative select-none touch-manipulation",
+        "hover:bg-black/10 dark:hover:bg-white/10",
+        "active:scale-95",
+        "focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
+        isDragging && "opacity-50"
+      )}
+      style={{ 
+        position: 'absolute',
+        left: position?.x || 0, 
+        top: position?.y || 0,
+        touchAction: 'none'
       }}
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
+      draggable
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
       onClick={handleClick}
-      onDoubleClick={handleDoubleClick}
-      onMouseDown={handleMouseDown}
+      onKeyDown={handleKeyDown}
+      onContextMenu={handleRightClick}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      role="button"
+      tabIndex={0}
+      aria-label={`${app.title} icon`}
     >
-      <div className="w-12 h-12 rounded-xl bg-white/30 dark:bg-gray-700/30 flex items-center justify-center mb-1 shadow-md backdrop-blur-lg border border-white/30 dark:border-gray-600/30">
-        <IconComponent className="w-6 h-6 text-gray-800 dark:text-gray-200" />
+      <div className="bg-card border border-border rounded-lg p-3 shadow-sm w-12 h-12 flex items-center justify-center mb-1 touch-manipulation">
+        <Icon className="w-6 h-6 text-primary" />
       </div>
-      <span className="text-xs text-center text-gray-800 dark:text-gray-200 font-medium max-w-[80px] truncate px-1 rounded bg-white/20 dark:bg-gray-700/20 backdrop-blur-sm">
+      <span 
+        className={cn(
+          "text-xs text-center px-1 py-0.5 rounded max-w-[100px] touch-manipulation",
+          "group-hover:bg-black/10 dark:group-hover:bg-white/10 truncate"
+        )}
+      >
         {app.title}
       </span>
-    </motion.div>
+      
+      {isSelected && (
+        <div className="absolute inset-0 border-2 border-primary rounded-lg pointer-events-none" />
+      )}
+    </div>
   );
 };
 

@@ -57,3 +57,55 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Mobile-specific improvements */
+@media (max-width: 768px) {
+  /* Larger touch targets for mobile */
+  .touch-manipulation {
+    min-height: 48px;
+    min-width: 48px;
+    padding: 8px;
+  }
+  
+  /* Improved spacing on mobile */
+  .space-y-6 > :not([hidden]) ~ :not([hidden]) {
+    --tw-space-y-reverse: 0;
+    margin-top: calc(1.5rem * calc(1 - var(--tw-space-y-reverse)));
+    margin-bottom: calc(1.5rem * var(--tw-space-y-reverse));
+  }
+  
+  /* Better text sizing for mobile */
+  h1 {
+    font-size: 1.75rem;
+    line-height: 2.25rem;
+  }
+  
+  h2 {
+    font-size: 1.5rem;
+    line-height: 2rem;
+  }
+  
+  /* Ensure proper scrolling on mobile */
+  #desktop-area {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Scrollbar styling for webkit browsers */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(var(--background));
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--border));
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--accent));
+}
