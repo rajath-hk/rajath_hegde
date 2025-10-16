@@ -2,42 +2,16 @@
 
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import type { AppConfig, WindowInstance } from '@/types';
-
-import AboutContent from '@/components/content/about';
-import ProjectsContent from '@/components/content/projects';
-import ContactContent from '@/components/content/contact';
-import ResumeContent from '@/components/content/resume';
-import MyWorkContent from '@/components/content/my-work';
-import SocialsContent from '@/components/content/socials';
-import SkillsContent from '@/components/content/skills';
-import TerminalContent from '@/components/content/terminal';
-import BlogContent from '@/components/content/blog';
-import FileExplorerContent from '@/components/content/file-explorer';
-import { FileText, Folder, Mail, Briefcase, Award, Terminal, FileSearch } from 'lucide-react';
+import { initialAppsData } from '@/lib/apps';
+import AppContent from '@/components/app-content';
 
 const ICON_STATE_KEY = 'retrofolio-icons-v2';
 const WINDOW_STATE_KEY = 'retrofolio-windows-v2';
 
-const LegalContent = () => <div className="p-6 text-card-foreground">This is my portfolio. To access this file, please contact me.</div>;
-
-
-const initialAppsData: AppConfig[] = [
-  { id: 'about', title: 'My Story', icon: FileText, content: <AboutContent />, defaultSize: { width: 550, height: 400 }, x: 20, y: 50 },
-  { id: 'my-work', title: 'My Work', icon: Briefcase, content: <MyWorkContent />, defaultSize: { width: 700, height: 500 }, x: 20, y: 150 },
-  { id: 'skills', title: 'Skills', icon: Award, content: <SkillsContent />, defaultSize: { width: 600, height: 500 }, x: 130, y: 150 },
-  { id: 'contact', title: 'Contact Me', icon: Mail, content: <ContactContent />, defaultSize: { width: 450, height: 580 }, x: 130, y: 150 },
-  { id: 'socials', title: 'Socials', icon: Folder, content: <SocialsContent />, defaultSize: { width: 450, height: 350 }, x: 130, y: 250 },
-  { id: 'terminal', title: 'Terminal', icon: Terminal, content: <TerminalContent />, defaultSize: { width: 650, height: 450 }, x: 100, y: 100 },
-  { id: 'blog', title: 'Blog', icon: FileSearch, content: <BlogContent />, defaultSize: { width: 650, height: 500 }, x: 150, y: 150 },
-  { id: 'explorer', title: 'File Explorer', icon: Folder, content: <FileExplorerContent />, defaultSize: { width: 700, height: 500 }, x: 200, y: 200 },
-  { id: 'legal', title: 'Legal', icon: Folder, content: <LegalContent />, defaultSize: { width: 500, height: 300 }, x: 20, y: 450 },
-];
-
-
 interface WindowContextType {
   windows: WindowInstance[];
-  desktopIcons: AppConfig[];
-  openWindow: (app: AppConfig) => void;
+  desktopIcons: Omit<AppConfig, 'content'>[];
+  openWindow: (app: Omit<AppConfig, 'content'>) => void;
   closeWindow: (id: string) => void;
   focusWindow: (id: string) => void;
   toggleMinimize: (id: string) => void;
@@ -50,29 +24,25 @@ interface WindowContextType {
 
 const WindowContext = createContext<WindowContextType | undefined>(undefined);
 
-// Helper to save serializable window state to localStorage
 const saveWindowsState = (windowsToSave: WindowInstance[]) => {
   if (typeof window === 'undefined') return;
   const serializableWindows = windowsToSave.map(({ content, icon, ...rest }) => rest);
   localStorage.setItem(WINDOW_STATE_KEY, JSON.stringify(serializableWindows));
 };
 
-// Helper to save serializable icon state to localStorage
-const saveIconsState = (iconsToSave: AppConfig[]) => {
+const saveIconsState = (iconsToSave: Omit<AppConfig, 'content'>[]) => {
   if (typeof window === 'undefined') return;
   const serializableIcons = iconsToSave.map(({ id, x, y }) => ({ id, x, y }));
   localStorage.setItem(ICON_STATE_KEY, JSON.stringify(serializableIcons));
 };
 
-
 export const WindowProvider = ({ children }: { children: ReactNode }) => {
   const [windows, setWindows] = useState<WindowInstance[]>([]);
-  const [desktopIcons, setDesktopIcons] = useState<AppConfig[]>(initialAppsData);
+  const [desktopIcons, setDesktopIcons] = useState<Omit<AppConfig, 'content'>[]>(initialAppsData);
   const [zIndexCounter, setZIndexCounter] = useState(10);
   const [windowDimensions, setWindowDimensions] = useState({width: 0, height: 0});
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // Set up resize listener and initial dimensions
   useEffect(() => {
     const updateDims = () => setWindowDimensions({width: window.innerWidth, height: window.innerHeight});
     window.addEventListener('resize', updateDims);
@@ -80,11 +50,9 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
     return () => window.removeEventListener('resize', updateDims);
   }, []);
   
-  // Load state from localStorage once dimensions are available
   useEffect(() => {
     if (typeof window === 'undefined' || windowDimensions.width === 0 || isLoaded) return;
 
-    // Load Icon Positions
     try {
       const savedIconsJSON = localStorage.getItem(ICON_STATE_KEY);
       if (savedIconsJSON) {
@@ -102,7 +70,6 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
       localStorage.removeItem(ICON_STATE_KEY);
     }
 
-    // Load Window State
     try {
       const savedWindowsJSON = localStorage.getItem(WINDOW_STATE_KEY);
       if (savedWindowsJSON) {
@@ -111,13 +78,12 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
             const appConfig = initialAppsData.find(app => app.id === savedWin.id);
             if (!appConfig) return null;
             
-            // Clamp saved position to be within the current viewport
             const width = savedWin.width || appConfig.defaultSize?.width || 500;
             const height = savedWin.height || appConfig.defaultSize?.height || 400;
             const clampedX = Math.max(0, Math.min(savedWin.x, windowDimensions.width - width));
             const clampedY = Math.max(32, Math.min(savedWin.y, windowDimensions.height - height));
             
-            return { ...savedWin, ...appConfig, x: clampedX, y: clampedY };
+            return { ...savedWin, ...appConfig, content: <AppContent appId={savedWin.id} />, x: clampedX, y: clampedY };
         }).filter((w): w is WindowInstance => w !== null);
 
         setWindows(restoredWindows);
@@ -149,7 +115,7 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
-  const openWindow = (app: AppConfig) => {
+  const openWindow = (app: Omit<AppConfig, 'content'>) => {
     const existingWindowIndex = windows.findIndex(win => win.id === app.id);
     
     if (existingWindowIndex > -1) {
@@ -162,14 +128,14 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
         const width = app.defaultSize?.width || 500;
         const height = app.defaultSize?.height || 400;
 
-        // Cascade new windows to prevent perfect overlap
         const offset = (prev.length % 5) * 30;
 
         const newX = Math.max(0, (windowDimensions.width - width) / 2) + offset;
-        const newY = Math.max(32, (windowDimensions.height - height) / 2) + offset; // 32px for top bar
+        const newY = Math.max(32, (windowDimensions.height - height) / 2) + offset;
 
         const newWindow: WindowInstance = {
           ...app,
+          content: <AppContent appId={app.id} />,
           x: newX,
           y: newY,
           width,

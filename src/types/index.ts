@@ -4,13 +4,13 @@ export interface AppConfig {
   id: string;
   title: string;
   icon: ComponentType<{ className?: string }>;
-  content: ReactNode;
   defaultSize?: { width: number; height: number };
   x?: number;
   y?: number;
 }
 
 export interface WindowInstance extends AppConfig {
+  content: ReactNode;
   x: number;
   y: number;
   width: number;
