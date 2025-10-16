@@ -1,12 +1,56 @@
 import React from 'react';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { ExternalLink, Github } from 'lucide-react';
+import { Github, ExternalLink } from 'lucide-react';
 
 const projects = [
   {
-    id: 1,
+    title: "Lofi YouTube Stream",
+    description: "A custom player for lofi YouTube streams, offering a clean and focused listening experience without the clutter of YouTube's interface.",
+    imageUrl: "https://img.playbook.com/BTnl4TI0V6z7PfLw8FSSXEuViX5X3E-WyxuRMQL4Lmk/Z3M6Ly9wbGF5Ym9v/ay1hc3NldHMtcHVi/bGljLzI2NDQyZGM0/LTZiOTYtNGZmMi1i/YmMyLThmNDk4ZmY2/NTEyZA",
+    repoUrl: "https://github.com/rajath-hk/lofi-youtube-stream",
+    aiHint: "music player"
+  },
+  {
+    title: "Virtual Classroom",
+    description: "An online platform that simulates a classroom environment, designed to facilitate interactive learning between students and teachers.",
+    imageUrl: "https://img.playbook.com/IATitayq6KEgMGo1QHTGJvoFK4N8MxNf6Po9LFDM2EM/Z3M6Ly9wbGF5Ym9v/ay1hc3NldHMtcHVi/bGljLzZkNjE5MTlk/LWFlOTAtNGQ5My04/MWM5LWRhOTFlN2Mw/MmQ5ZA",
+    repoUrl: "https://github.com/rajath-hk/classroom",
+    aiHint: "online learning"
+  },
+  {
+    title: "Token Management System",
+    description: "A backend system for generating, validating, and managing authentication tokens to ensure secure access to applications.",
+    imageUrl: "https://img.playbook.com/MHi_VJ791_7Dm9-MZhssC17ApNtqu97RzZHCTot9izQ/Z3M6Ly9wbGF5Ym9v/ay1hc3NldHMtcHVi/bGljLzJhOWVhMGU1/LWZlMzgtNGEzNi04/OTRjLTJmZGMxYjMx/YTFjYg",
+    repoUrl: "https://github.com/rajath-hk/token",
+    aiHint: "security system"
+  },
+  {
+    title: "Demo Homepage",
+    description: "A live demonstration of a modern and responsive homepage, showcasing skills in front-end development and user interface design.",
+    imageUrl: "https://img.playbook.com/JxSuclTXT38ACmTwF6_Wp67qQyMHBfBAmChFlvQ0Tog/Z3M6Ly9wbGF5Ym9v/ay1hc3NldHMtcHVi/bGljLzBjYTY1NTRk/LWNmNzItNDcwOS1h/OGIwLWUyMzQwZjAw/MTU3Yg",
+    demoUrl: "https://rajath-hk.github.io/demo_homepage/",
+    aiHint: "web design"
+  }
+];
+
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+
+interface Project {
+  title: string;
+  year: string;
+  platform: string;
+  overview: string;
+  story: string;
+  challenges: string[];
+  impact: string;
+  techStack: string[];
+  link?: string;
+}
+
+const projectsList: Project[] = [
+  {
     title: "Portfolio OS",
     year: "2024",
     platform: "Web Application",
@@ -25,13 +69,9 @@ const projects = [
       "Framer Motion",
       "Shadcn UI",
     ],
-    links: [
-      { name: "GitHub", url: "https://github.com/rajath-hk/portfolio" },
-      { name: "Live Demo", url: "#" }
-    ]
+    link: "https://github.com/rajath-hk/portfolio"
   },
   {
-    id: 2,
     title: "AI Development Assistant",
     year: "2023",
     platform: "VS Code Extension",
@@ -50,142 +90,87 @@ const projects = [
       "Node.js",
       "TensorFlow",
     ],
-    links: [
-      { name: "GitHub", url: "https://github.com/rajath-hk/ai-assistant" },
-      { name: "Marketplace", url: "#" }
-    ]
+    link: "https://github.com/rajath-hk/ai-assistant"
   },
-  {
-    id: 3,
-    title: "Lofi YouTube Stream",
-    year: "2023",
-    platform: "Web Application",
-    overview: "A custom player for lofi YouTube streams with enhanced features and a clean interface",
-    story: "As a fan of lofi music, I noticed that existing YouTube players lacked features I wanted for a focused listening experience. I decided to build my own player with a clean interface and additional functionality.",
-    challenges: [
-      "Integrating with YouTube's API while respecting usage limits",
-      "Creating a clean, distraction-free interface",
-      "Implementing custom playback controls and features",
-    ],
-    impact: "The player has become my go-to for focused work sessions and has been shared with friends and colleagues who appreciate its simplicity.",
-    techStack: [
-      "React",
-      "Next.js",
-      "Tailwind CSS",
-      "YouTube API",
-    ],
-    links: [
-      { name: "GitHub", url: "https://github.com/rajath-hk/lofi-stream" },
-      { name: "Live Demo", url: "#" }
-    ]
-  },
-  {
-    id: 4,
-    title: "Virtual Classroom",
-    year: "2022",
-    platform: "Web Platform",
-    overview: "An online platform that simulates a classroom environment for remote learning",
-    story: "During the pandemic, I wanted to help educators create more engaging online learning experiences. I developed this platform to bring some of the interactivity of physical classrooms to the virtual environment.",
-    challenges: [
-      "Implementing real-time communication features",
-      "Ensuring smooth video conferencing with minimal latency",
-      "Creating interactive tools for both teachers and students",
-    ],
-    impact: "The platform was adopted by several educational institutions and helped facilitate more engaging remote learning experiences during challenging times.",
-    techStack: [
-      "React",
-      "Node.js",
-      "Socket.io",
-      "WebRTC",
-      "MongoDB",
-    ],
-    links: [
-      { name: "GitHub", url: "https://github.com/rajath-hk/virtual-classroom" },
-      { name: "Case Study", url: "#" }
-    ]
-  }
 ];
 
-const Projects = () => {
+const ProjectCard: React.FC<{ project: Project }> = ({ project }) => {
   return (
-    <div className="p-4 sm:p-6 space-y-6 max-w-4xl mx-auto">
-      <div className="space-y-2">
-        <h1 className="text-2xl sm:text-3xl font-bold">Projects</h1>
-        <p className="text-muted-foreground">
-          A selection of my recent work and projects.
-        </p>
+    <Card className="p-6 space-y-6">
+      <div className="space-y-4">
+        <div>
+          <div className="flex items-baseline justify-between mb-2">
+            <h3 className="text-2xl font-bold">{project.title}</h3>
+            <span className="text-sm text-muted-foreground">{project.year}</span>
+          </div>
+          <Badge variant="secondary">{project.platform}</Badge>
+        </div>
+        
+        <p className="text-lg font-medium">{project.overview}</p>
       </div>
 
       <div className="space-y-6">
-        {projects.map((project) => (
-          <Card key={project.id} className="p-4 sm:p-6 hover:shadow-lg transition-shadow">
-            <div className="space-y-4">
-              <div className="space-y-3">
-                <div className="flex flex-wrap items-baseline justify-between gap-2">
-                  <h2 className="text-xl sm:text-2xl font-bold">{project.title}</h2>
-                  <span className="text-sm text-muted-foreground">{project.year}</span>
-                </div>
-                <Badge variant="secondary">{project.platform}</Badge>
-              </div>
-              
-              <p className="text-base sm:text-lg font-medium">{project.overview}</p>
-              
-              <div className="space-y-4 text-sm sm:text-base">
-                <div>
-                  <h3 className="font-semibold mb-1">Story</h3>
-                  <p className="text-muted-foreground">{project.story}</p>
-                </div>
-                
-                <div>
-                  <h3 className="font-semibold mb-1">Challenges</h3>
-                  <ul className="list-disc list-inside space-y-1 text-muted-foreground">
-                    {project.challenges.map((challenge, index) => (
-                      <li key={index}>{challenge}</li>
-                    ))}
-                  </ul>
-                </div>
-                
-                <div>
-                  <h3 className="font-semibold mb-1">Impact</h3>
-                  <p className="text-muted-foreground">{project.impact}</p>
-                </div>
-                
-                <div>
-                  <h3 className="font-semibold mb-2">Tech Stack</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {project.techStack.map((tech, index) => (
-                      <Badge key={index} variant="outline">{tech}</Badge>
-                    ))}
-                  </div>
-                </div>
-              </div>
-              
-              <div className="flex flex-wrap gap-2 pt-2">
-                {project.links.map((link, index) => (
-                  <Button 
-                    key={index} 
-                    variant="outline" 
-                    size="sm"
-                    className="touch-manipulation"
-                    asChild
-                  >
-                    <a 
-                      href={link.url} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                    >
-                      {link.name === 'GitHub' ? (
-                        <Github className="w-4 h-4 mr-2" />
-                      ) : (
-                        <ExternalLink className="w-4 h-4 mr-2" />
-                      )}
-                      {link.name}
-                    </a>
-                  </Button>
-                ))}
-              </div>
-            </div>
-          </Card>
+        <section>
+          <h4 className="text-lg font-semibold mb-3">The Story</h4>
+          <p className="text-muted-foreground leading-relaxed">{project.story}</p>
+        </section>
+
+        <section>
+          <h4 className="text-lg font-semibold mb-3">Challenges & Solutions</h4>
+          <ul className="space-y-2 text-muted-foreground">
+            {project.challenges.map((challenge, index) => (
+              <li key={index} className="flex items-start gap-2">
+                <span className="text-primary">•</span>
+                <span>{challenge}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <section>
+          <h4 className="text-lg font-semibold mb-3">Impact & Results</h4>
+          <p className="text-muted-foreground leading-relaxed">{project.impact}</p>
+        </section>
+
+        <section>
+          <h4 className="text-lg font-semibold mb-3">Technologies Used</h4>
+          <div className="flex flex-wrap gap-2">
+            {project.techStack.map((tech, index) => (
+              <Badge key={index} variant="outline">
+                {tech}
+              </Badge>
+            ))}
+          </div>
+        </section>
+
+        {project.link && (
+          <a
+            href={project.link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center text-primary hover:underline"
+          >
+            View Project →
+          </a>
+        )}
+      </div>
+    </Card>
+  );
+};
+
+const Projects = () => {
+  return (
+    <div className="space-y-8">
+      <div className="space-y-4">
+        <h2 className="text-3xl font-bold tracking-tight">Featured Projects</h2>
+        <p className="text-lg text-muted-foreground">
+          A collection of projects that showcase my journey, skills, and passion for building impactful solutions.
+        </p>
+      </div>
+
+      <div className="grid gap-8">
+        {projectsList.map((project, index) => (
+          <ProjectCard key={index} project={project} />
         ))}
       </div>
     </div>

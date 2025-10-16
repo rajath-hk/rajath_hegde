@@ -1,116 +1,55 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
 import type { AppConfig } from '@/types';
 import { useWindows } from '@/contexts/window-context';
-import { motion } from 'framer-motion';
+import React, { useEffect } from 'react';
+import { motion, useMotionValue } from 'framer-motion';
 
 interface DesktopIconProps {
   app: AppConfig;
+  constraintsRef: React.RefObject<HTMLDivElement>;
 }
 
-const DesktopIcon = ({ app }: DesktopIconProps) => {
-  const { openWindow } = useWindows();
-  const [isDoubleClick, setIsDoubleClick] = React.useState(false);
-  const [position, setPosition] = useState({ x: app.x || 0, y: app.y || 0 });
-  const [isDragging, setIsDragging] = useState(false);
-  const iconRef = useRef<HTMLDivElement>(null);
-
-  const handleClick = () => {
-    if (!isDoubleClick) {
-      // Single click - focus or prepare for double click
-      setIsDoubleClick(true);
-      setTimeout(() => setIsDoubleClick(false), 300);
-    }
-  };
-
-  const handleDoubleClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setIsDoubleClick(false);
-    openWindow(app);
-  };
-
-  const handleMouseDown = (e: React.MouseEvent) => {
-    if (e.button !== 0) return; // Only left mouse button
-    setIsDragging(true);
-    e.stopPropagation();
-  };
-
-  const handleMouseMove = (e: MouseEvent) => {
-    if (isDragging) {
-      setPosition(prev => ({
-        x: prev.x + e.movementX,
-        y: prev.y + e.movementY
-      }));
-    }
-  };
-
-  const handleMouseUp = () => {
-    if (isDragging) {
-      setIsDragging(false);
-      // In a full implementation, you would update the icon position in context here
-    }
-  };
-
-  React.useEffect(() => {
-    if (isDragging) {
-      window.addEventListener('mousemove', handleMouseMove);
-      window.addEventListener('mouseup', handleMouseUp);
-    }
-    
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
-    };
-  }, [isDragging]);
-
+const DesktopIcon = ({ app, constraintsRef }: DesktopIconProps) => {
+  const { openWindow, updateIconPosition } = useWindows();
   const IconComponent = app.icon;
 
+  // Use motion values for a more robust drag implementation
+  const x = useMotionValue(app.x ?? 0);
+  const y = useMotionValue(app.y ?? 0);
+
+  // Sync motion values if the state from context changes (e.g., on initial load)
+  useEffect(() => {
+    x.set(app.x ?? 0);
+    y.set(app.y ?? 0);
+  }, [app.x, app.y, x, y]);
+
   return (
-    <div
-      ref={iconRef}
-      className={cn(
-        "flex flex-col items-center p-2 rounded-lg cursor-pointer transition-all duration-200 group relative select-none touch-manipulation",
-        "hover:bg-black/10 dark:hover:bg-white/10",
-        "active:scale-95",
-        "focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
-        isDragging && "opacity-50"
-      )}
-      style={{ 
-        position: 'absolute',
-        left: position?.x || 0, 
-        top: position?.y || 0,
-        touchAction: 'none'
+    <motion.button
+      // Use motion values for position via `style`. Framer Motion will manage this.
+      style={{ x, y, position: 'absolute' }}
+      className="flex flex-col items-center justify-center text-center focus:outline-none p-2 select-none w-24"
+      aria-label={`Open ${app.title}`}
+      onDoubleClick={(e) => {
+        e.stopPropagation();
+        openWindow(app);
       }}
-      draggable
-      onDragStart={handleDragStart}
-      onDragEnd={handleDragEnd}
-      onClick={handleClick}
-      onKeyDown={handleKeyDown}
-      onContextMenu={handleRightClick}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
-      role="button"
-      tabIndex={0}
-      aria-label={`${app.title} icon`}
+      drag
+      dragConstraints={constraintsRef}
+      dragMomentum={false}
+      onDragEnd={() => {
+        // On drag end, update the main state in the context with the final position.
+        updateIconPosition(app.id, x.get(), y.get());
+      }}
+      whileHover={{ scale: 1.1 }}
     >
-      <div className="bg-card border border-border rounded-lg p-3 shadow-sm w-12 h-12 flex items-center justify-center mb-1 touch-manipulation">
-        <Icon className="w-6 h-6 text-primary" />
+      <div className="w-16 h-16 rounded-xl bg-black/10 dark:bg-white/10 backdrop-blur-lg flex items-center justify-center shadow-lg border border-black/10 dark:border-white/10">
+        <IconComponent className="w-9 h-9 text-foreground" />
       </div>
-      <span 
-        className={cn(
-          "text-xs text-center px-1 py-0.5 rounded max-w-[100px] touch-manipulation",
-          "group-hover:bg-black/10 dark:group-hover:bg-white/10 truncate"
-        )}
-      >
+      <span className="text-xs mt-2 text-foreground font-semibold [text-shadow:0_1px_2px_rgba(255,255,255,0.2)] dark:[text-shadow:0_1px_2px_rgba(0,0,0,0.5)]">
         {app.title}
       </span>
-      
-      {isSelected && (
-        <div className="absolute inset-0 border-2 border-primary rounded-lg pointer-events-none" />
-      )}
-    </div>
+    </motion.button>
   );
 };
 

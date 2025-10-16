@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import type { WindowInstance } from '@/types';
 import { useWindows } from '@/contexts/window-context';
 import { cn } from '@/lib/utils';
-import { X, Minus, Square, Maximize, Minimize } from 'lucide-react';
+import { X, Minus, Square } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 type WindowProps = WindowInstance;
@@ -24,42 +24,11 @@ const Window = (props: WindowProps) => {
   } = useWindows();
 
   const [size, setSize] = useState({ width, height });
-  const [position, setPosition] = useState({ x, y });
   const [isResizing, setIsResizing] = useState(false);
-  const [isDragging, setIsDragging] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
   
   const windowRef = useRef<HTMLDivElement>(null);
-  const headerRef = useRef<HTMLDivElement>(null);
 
-  // Check if we're on mobile
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
-  // Adjust window size and position for mobile
-  useEffect(() => { 
-    if (isMobile) {
-      // On mobile, make windows take up most of the screen
-      setSize({ 
-        width: Math.min(window.innerWidth - 20, 600), 
-        height: Math.min(window.innerHeight - 100, 700) 
-      });
-      setPosition({ 
-        x: Math.max(0, (window.innerWidth - Math.min(window.innerWidth - 20, 600)) / 2),
-        y: 60 
-      });
-    } else {
-      setSize({ width, height }); 
-      setPosition({ x, y });
-    }
-  }, [width, height, x, y, isMobile]);
+  useEffect(() => { setSize({ width, height }); }, [width, height]);
 
   const handleResizeStart = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.button !== 0) return;
@@ -75,88 +44,25 @@ const Window = (props: WindowProps) => {
     toggleMaximize(id);
   }
 
-  const handleMouseDown = (e: React.MouseEvent) => {
-    if (e.button !== 0) return;
-    if (headerRef.current && headerRef.current.contains(e.target as Node)) {
-      focusWindow(id);
-      setIsDragging(true);
-    }
-  };
-
-  // Handle mouse events for desktop dragging and resizing
   const handleMouseMove = useCallback((e: MouseEvent) => {
     if (isResizing) {
       if (!windowRef.current) return;
       const rect = windowRef.current.getBoundingClientRect();
-      const newWidth = Math.max(300, e.clientX - rect.left);
-      const newHeight = Math.max(200, e.clientY - rect.top);
-      setSize({ 
-        width: newWidth, 
-        height: newHeight 
-      });
+      const newWidth = e.clientX - rect.left;
+      const newHeight = e.clientY - rect.top;
+      setSize({ width: Math.max(300, newWidth), height: Math.max(200, newHeight) });
     }
-    
-    if (isDragging) {
-      setPosition(prev => ({
-        x: prev.x + e.movementX,
-        y: prev.y + e.movementY
-      }));
-    }
-  }, [isResizing, isDragging]);
+  }, [isResizing]);
 
   const handleMouseUp = useCallback(() => {
     if (isResizing) {
       setIsResizing(false);
       updateWindowSize(id, size.width, size.height);
     }
-    
-    if (isDragging) {
-      setIsDragging(false);
-      updateWindowPosition(id, position.x, position.y);
-    }
-  }, [isResizing, isDragging, id, size, position, updateWindowSize, updateWindowPosition]);
+  }, [isResizing, id, size, updateWindowSize]);
 
-  // Handle touch events for mobile dragging
-  const handleTouchStart = (e: React.TouchEvent) => {
-    e.stopPropagation();
-    focusWindow(id);
-    setIsDragging(true);
-    
-    const touch = e.touches[0];
-    const windowRect = windowRef.current?.getBoundingClientRect();
-    if (!windowRect) return;
-    
-    const offsetX = touch.clientX - windowRect.left;
-    const offsetY = touch.clientY - windowRect.top;
-    
-    const handleTouchMove = (moveEvent: TouchEvent) => {
-      if (!isDragging || !windowRef.current) return;
-      
-      const moveTouch = moveEvent.touches[0];
-      const newX = moveTouch.clientX - offsetX;
-      const newY = moveTouch.clientY - offsetY;
-      
-      // Keep window within bounds
-      const boundedX = Math.max(0, Math.min(newX, window.innerWidth - windowRect.width));
-      const boundedY = Math.max(0, Math.min(newY, window.innerHeight - windowRect.height));
-      
-      setPosition({ x: boundedX, y: boundedY });
-    };
-    
-    const handleTouchEnd = () => {
-      setIsDragging(false);
-      updateWindowPosition(id, position.x, position.y);
-      window.removeEventListener('touchmove', handleTouchMove);
-      window.removeEventListener('touchend', handleTouchEnd);
-    };
-    
-    window.addEventListener('touchmove', handleTouchMove, { passive: false });
-    window.addEventListener('touchend', handleTouchEnd);
-  };
-
-  // Add or remove event listeners based on mouse and touch activity
   useEffect(() => {
-    if (isResizing || isDragging) {
+    if (isResizing) {
       window.addEventListener('mousemove', handleMouseMove);
       window.addEventListener('mouseup', handleMouseUp);
     }
@@ -164,93 +70,63 @@ const Window = (props: WindowProps) => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [isResizing, isDragging, handleMouseMove, handleMouseUp]);
+  }, [isResizing, handleMouseMove, handleMouseUp]);
 
 
   return (
     <motion.div
       ref={windowRef}
-      className={cn(
-        "absolute bg-white/20 dark:bg-gray-700/20 backdrop-blur-lg border border-white/30 dark:border-gray-600/30 rounded-lg flex flex-col shadow-xl",
-        isFocused ? "ring-2 ring-gray-500/30" : ""
-      )}
+      className="absolute bg-card/80 dark:bg-card/60 backdrop-blur-xl border rounded-lg flex flex-col shadow-lg"
       style={{
         width: size.width,
         height: size.height,
-        left: position.x,
-        top: position.y,
         zIndex,
       }}
-      onDoubleClick={handleDoubleClick}
-      onTouchStart={handleTouchStart}
-      style={{ cursor: isMaximized ? 'default' : 'grab', WebkitAppRegion: 'drag' }}
+      layout
+      initial={{ opacity: 0, scale: 0.9, x, y: y + 20 }}
+      animate={{ opacity: 1, scale: 1, x, y }}
+      exit={{ opacity: 0, scale: 0.9, y: y + 20 }}
+      transition={{ type: 'spring', stiffness: 500, damping: 40 }}
+      onMouseDown={() => focusWindow(id)}
+      drag={!isMaximized && !isResizing}
+      dragMomentum={false}
+      onDragEnd={(e, info) => {
+        updateWindowPosition(id, x + info.offset.x, y + info.offset.y);
+      }}
     >
       <header
-        ref={headerRef}
-        className={cn(
-          "flex items-center justify-center relative px-4 h-8 flex-shrink-0 rounded-t-lg",
-          isFocused 
-            ? "bg-gray-500/80 dark:bg-gray-600/80" 
-            : "bg-gray-300/50 dark:bg-gray-700/50"
-        )}
+        className="flex items-center justify-center relative px-3 h-9 flex-shrink-0 border-b bg-black/5 dark:bg-white/5"
         onDoubleClick={handleDoubleClick}
-        style={{ cursor: isMaximized ? 'default' : 'grab', WebkitAppRegion: 'drag' }}
+        style={{ cursor: isMaximized ? 'default' : isResizing ? 'default' : 'grab' }}
       >
-        {/* Ubuntu-style traffic lights */}
         <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
-          <button 
-            onClick={(e) => { 
-              e.stopPropagation(); 
-              closeWindow(id);
-            }} 
-            className="w-3 h-3 rounded-full bg-red-500 flex items-center justify-center group/btn hover:bg-red-600 transition-colors"
-            aria-label="Close"
-            style={{ WebkitAppRegion: 'no-drag' }}
-          >
-          </button>
-          <button 
-            onClick={(e) => { 
-              e.stopPropagation(); 
-              toggleMinimize(id);
-            }} 
-            className="w-3 h-3 rounded-full bg-yellow-500 flex items-center justify-center group/btn hover:bg-yellow-600 transition-colors"
-            aria-label="Minimize"
-            style={{ WebkitAppRegion: 'no-drag' }}
-          >
-          </button>
-          <button 
-            onClick={(e) => { 
-              e.stopPropagation(); 
-              toggleMaximize(id);
-            }} 
-            className="w-3 h-3 rounded-full bg-green-500 flex items-center justify-center group/btn hover:bg-green-600 transition-colors"
-            aria-label="Maximize"
-            style={{ WebkitAppRegion: 'no-drag' }}
-          >
-          </button>
+            <button onClick={(e) => { e.stopPropagation(); closeWindow(id) }} className="w-3.5 h-3.5 rounded-full bg-[#ff5f57] flex items-center justify-center group/btn" aria-label="Close">
+                <X className="w-2 h-2 text-[#9d252b] opacity-0 group-hover/btn:opacity-100 transition-opacity" />
+            </button>
+            <button onClick={(e) => { e.stopPropagation(); toggleMinimize(id) }} className="w-3.5 h-3.5 rounded-full bg-[#febc2e] flex items-center justify-center group/btn" aria-label="Minimize">
+                <Minus className="w-2 h-2 text-[#9a542c] opacity-0 group-hover/btn:opacity-100 transition-opacity" />
+            </button>
+            <button onClick={(e) => { e.stopPropagation(); toggleMaximize(id) }} className="w-3.5 h-3.5 rounded-full bg-[#28c840] flex items-center justify-center group/btn" aria-label="Maximize">
+                <Square className="w-1.5 h-1.5 fill-current text-[#226534] opacity-0 group-hover/btn:opacity-100 transition-opacity" />
+            </button>
         </div>
         <span className={cn(
-            "font-medium text-sm truncate max-w-md",
-            isFocused ? "text-white" : "text-gray-800 dark:text-gray-200"
-          )}>
-          {title}
-        </span>
+            "font-medium text-sm truncate transition-colors",
+            isFocused ? "text-foreground" : "text-muted-foreground/80"
+          )}>{title}</span>
       </header>
       <div className="flex-1 rounded-b-lg overflow-hidden">
         <div className="w-full h-full overflow-auto">
           {content}
         </div>
       </div>
-      <div
+       <div
         className={cn(
-          "absolute bottom-0 right-0 w-5 h-5 cursor-se-resize flex items-end justify-end p-1",
+          "absolute bottom-0 right-0 w-4 h-4 cursor-se-resize",
           isMaximized && "hidden"
         )}
         onMouseDown={handleResizeStart}
-        style={{ WebkitAppRegion: 'no-drag' }}
-      >
-        <div className="w-2.5 h-2.5 border-r-2 border-b-2 border-gray-600 dark:border-gray-400"></div>
-      </div>
+      />
     </motion.div>
   );
 };

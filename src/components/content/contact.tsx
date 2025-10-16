@@ -1,7 +1,7 @@
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Linkedin, Github, Mail, Twitter } from 'lucide-react';
-import ContactForm from '../contact-form';
+import { ContactForm } from '../contact-form';
 
 const socialLinks = [
   {
