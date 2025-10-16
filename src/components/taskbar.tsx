@@ -1,96 +1,197 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { X, Minimize2, Square, Play, Search, Bell, Wifi, Battery, Calendar, User, Power, Settings, HelpCircle, Monitor } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { useWindows } from '@/contexts/window-context';
-import StartMenu from './start-menu';
-import { cn } from '@/lib/utils';
-import { useTheme } from 'next-themes';
-import { Minus, Battery, Wifi, Volume2 } from 'lucide-react';
+import StartMenu from '@/components/start-menu';
+import NotificationCenter from '@/components/notification-center';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 const Taskbar = () => {
-  const { windows, focusWindow, toggleMinimize } = useWindows();
-  const { theme } = useTheme();
-  const [time, setTime] = useState('');
-  const [date, setDate] = useState('');
+  const { windows, closeWindow, toggleMinimize, toggleMaximize, focusWindow } = useWindows();
+  const [startMenuOpen, setStartMenuOpen] = React.useState(false);
+  const [notificationCenterOpen, setNotificationCenterOpen] = React.useState(false);
+  const [time, setTime] = React.useState(new Date());
+  const [contextMenuOpen, setContextMenuOpen] = React.useState(false);
+  const [contextWindowId, setContextWindowId] = React.useState<string | null>(null);
 
-  useEffect(() => {
-    const updateDateTime = () => {
-      const now = new Date();
-      setTime(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
-      setDate(now.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' }));
-    };
-
-    updateDateTime();
-    const intervalId = setInterval(updateDateTime, 60000);
-
-    return () => clearInterval(intervalId);
+  React.useEffect(() => {
+    const timer = setInterval(() => setTime(new Date()), 1000);
+    return () => clearInterval(timer);
   }, []);
 
-  // Only show non-minimized windows in the taskbar
-  const visibleWindows = windows.filter(window => !window.isMinimized);
+  const formatTime = (date: Date) => {
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  };
+
+  const formatDate = (date: Date) => {
+    return date.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' });
+  };
+
+  const handleContextMenu = (e: React.MouseEvent, windowId: string) => {
+    e.preventDefault();
+    setContextWindowId(windowId);
+    setContextMenuOpen(true);
+  };
+
+  const closeAllWindows = () => {
+    windows.forEach(win => closeWindow(win.id));
+  };
+
+  const showDesktop = () => {
+    windows.forEach(win => {
+      if (!win.isMinimized) {
+        toggleMinimize(win.id);
+      }
+    });
+  };
 
   return (
-    <div className={cn(
-      "fixed bottom-0 left-0 right-0 h-10 bg-background/80 backdrop-blur-lg border-t flex items-center justify-between px-2 z-[1000]",
-      "dark:bg-black/50"
-    )}>
-      <div className="flex items-center h-full">
-        {/* Start Menu */}
-        <StartMenu />
-        
-        {/* Running Applications */}
-        <div className="flex items-center h-full ml-2 gap-1">
-          {visibleWindows.map((window) => (
-            <button
-              key={window.id}
-              onClick={() => {
-                if (window.isFocused) {
-                  toggleMinimize(window.id);
-                } else {
-                  focusWindow(window.id);
-                }
-              }}
-              className={cn(
-                "flex items-center gap-2 px-3 py-1 rounded-sm text-sm h-full",
-                window.isFocused 
-                  ? "bg-primary/20 text-primary" 
-                  : "hover:bg-accent"
-              )}
+    <>
+      <div className="fixed bottom-0 left-0 right-0 h-10 bg-background/80 backdrop-blur-sm border-t flex items-center px-2 z-50">
+        {/* Start Button */}
+        <DropdownMenu open={startMenuOpen} onOpenChange={setStartMenuOpen}>
+          <DropdownMenuTrigger asChild>
+            <button 
+              className="h-8 px-3 flex items-center gap-2 hover:bg-accent rounded mr-2"
+              aria-label="Start menu"
             >
-              <window.icon className="h-4 w-4" />
-              <span className="max-w-[120px] truncate">{window.title}</span>
+              <div className="w-4 h-4 bg-[#E0553B] rounded-sm flex items-center justify-center">
+                <div className="w-2 h-2 border border-white rotate-45"></div>
+              </div>
+              <span className="font-medium">Start</span>
             </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent 
+            className="p-0 w-[500px] h-[400px] ml-2 mb-2 rounded-sm" 
+            align="start"
+            side="top"
+          >
+            <StartMenu />
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        {/* Running Windows */}
+        <div className="flex-1 flex items-center gap-1 h-full">
+          {windows.map((win) => (
+            <DropdownMenu key={win.id} open={contextMenuOpen && contextWindowId === win.id} onOpenChange={(open) => {
+              if (!open) setContextMenuOpen(false);
+            }}>
+              <DropdownMenuTrigger asChild>
+                <button
+                  onContextMenu={(e) => handleContextMenu(e, win.id)}
+                  onClick={() => {
+                    if (win.isMinimized) {
+                      toggleMinimize(win.id);
+                    }
+                    focusWindow(win.id);
+                  }}
+                  className={`h-8 px-3 flex items-center gap-2 rounded transition-colors ${
+                    win.isFocused 
+                      ? 'bg-primary text-primary-foreground' 
+                      : 'hover:bg-accent'
+                  }`}
+                >
+                  <win.icon className="w-4 h-4" />
+                  <span className="text-sm truncate max-w-[120px]">{win.title}</span>
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-48">
+                <DropdownMenuGroup>
+                  <DropdownMenuItem onClick={() => toggleMinimize(win.id)}>
+                    <Minimize2 className="mr-2 h-4 w-4" />
+                    <span>Minimize</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => toggleMaximize(win.id)}>
+                    <Square className="mr-2 h-4 w-4" />
+                    <span>Maximize</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => closeWindow(win.id)}>
+                    <X className="mr-2 h-4 w-4" />
+                    <span>Close</span>
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => {
+                  // Restore and focus window
+                  if (win.isMinimized) {
+                    toggleMinimize(win.id);
+                  }
+                  focusWindow(win.id);
+                }}>
+                  <Monitor className="mr-2 h-4 w-4" />
+                  <span>Restore</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           ))}
         </div>
-      </div>
 
-      {/* System Tray */}
-      <div className="flex items-center gap-4">
-        <div className="flex items-center gap-1 text-xs">
-          <Wifi className="h-4 w-4" />
-          <Volume2 className="h-4 w-4" />
-          <Battery className="h-4 w-4" />
+        {/* System Tray */}
+        <div className="flex items-center gap-1 h-full">
+          <button 
+            onClick={showDesktop}
+            className="h-8 px-2 hover:bg-accent rounded flex items-center"
+            aria-label="Show desktop"
+          >
+            <Square className="w-4 h-4" />
+          </button>
+          
+          <div className="h-5 w-px bg-border mx-1"></div>
+          
+          <NotificationCenter open={notificationCenterOpen} onOpenChange={setNotificationCenterOpen} />
+          
+          <div className="h-5 w-px bg-border mx-1"></div>
+          
+          <div className="flex items-center gap-2 px-2 text-sm">
+            <Wifi className="w-4 h-4" />
+            <Battery className="w-4 h-4" />
+            <div className="flex flex-col">
+              <span>{formatTime(time)}</span>
+              <span className="text-xs text-muted-foreground">{formatDate(time)}</span>
+            </div>
+          </div>
         </div>
-        <div className="flex flex-col items-end text-xs">
-          <div>{time}</div>
-          <div>{date}</div>
-        </div>
-        <button 
-          onClick={() => {
-            // Minimize all windows
-            windows.forEach(window => {
-              if (!window.isMinimized) {
-                toggleMinimize(window.id);
-              }
-            });
-          }}
-          className="p-1 rounded hover:bg-accent"
-          aria-label="Show Desktop"
-        >
-          <Minus className="h-4 w-4" />
-        </button>
       </div>
-    </div>
+      
+      {/* Right-click menu for desktop */}
+      <DropdownMenu open={contextMenuOpen} onOpenChange={setContextMenuOpen}>
+        <DropdownMenuTrigger asChild>
+          <div className="fixed inset-0 z-40" />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="w-48">
+          <DropdownMenuGroup>
+            <DropdownMenuItem onClick={closeAllWindows}>
+              <X className="mr-2 h-4 w-4" />
+              <span>Close All Windows</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={showDesktop}>
+              <Square className="mr-2 h-4 w-4" />
+              <span>Show Desktop</span>
+            </DropdownMenuItem>
+          </DropdownMenuGroup>
+          <DropdownMenuSeparator />
+          <DropdownMenuGroup>
+            <DropdownMenuItem onClick={() => {}}>
+              <Settings className="mr-2 h-4 w-4" />
+              <span>Taskbar Settings</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => {}}>
+              <HelpCircle className="mr-2 h-4 w-4" />
+              <span>Taskbar Help</span>
+            </DropdownMenuItem>
+          </DropdownMenuGroup>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </>
   );
 };
 
