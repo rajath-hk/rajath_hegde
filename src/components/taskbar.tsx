@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import { useWindows } from '@/contexts/window-context';
 import StartMenu from './start-menu';
-import TaskbarItemContextMenu from './taskbar-item-context-menu';
 import { cn } from '@/lib/utils';
 import { useTheme } from 'next-themes';
 import { Minus, Battery, Wifi, Volume2 } from 'lucide-react';
@@ -42,26 +41,25 @@ const Taskbar = () => {
         {/* Running Applications */}
         <div className="flex items-center h-full ml-2 gap-1">
           {visibleWindows.map((window) => (
-            <TaskbarItemContextMenu key={window.id} windowInstance={window}>
-              <button
-                onClick={() => {
-                  if (window.isFocused) {
-                    toggleMinimize(window.id);
-                  } else {
-                    focusWindow(window.id);
-                  }
-                }}
-                className={cn(
-                  "flex items-center gap-2 px-3 py-1 rounded-sm text-sm h-full",
-                  window.isFocused 
-                    ? "bg-primary/20 text-primary" 
-                    : "hover:bg-accent"
-                )}
-              >
-                <window.icon className="h-4 w-4" />
-                <span className="max-w-[120px] truncate">{window.title}</span>
-              </button>
-            </TaskbarItemContextMenu>
+            <button
+              key={window.id}
+              onClick={() => {
+                if (window.isFocused) {
+                  toggleMinimize(window.id);
+                } else {
+                  focusWindow(window.id);
+                }
+              }}
+              className={cn(
+                "flex items-center gap-2 px-3 py-1 rounded-sm text-sm h-full",
+                window.isFocused 
+                  ? "bg-primary/20 text-primary" 
+                  : "hover:bg-accent"
+              )}
+            >
+              <window.icon className="h-4 w-4" />
+              <span className="max-w-[120px] truncate">{window.title}</span>
+            </button>
           ))}
         </div>
       </div>

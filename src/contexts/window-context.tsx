@@ -9,19 +9,7 @@ import ContactContent from '@/components/content/contact';
 import ResumeContent from '@/components/content/resume';
 import MyWorkContent from '@/components/content/my-work';
 import SocialsContent from '@/components/content/socials';
-import TerminalContent from '@/components/content/terminal';
-import FileExplorerContent from '@/components/content/file-explorer';
-import SettingsContent from '@/components/content/settings';
-import MediaPlayerContent from '@/components/content/media-player';
-import CalculatorContent from '@/components/content/calculator';
-import BrowserContent from '@/components/content/browser';
-import TextEditorContent from '@/components/content/text-editor';
-import NotesContent from '@/components/content/notes';
-import SystemInfoContent from '@/components/content/system-info';
-import WeatherContent from '@/components/content/weather';
-import CalendarContent from '@/components/content/calendar';
-import HelpContent from '@/components/content/help';
-import { FileText, Folder, Mail, Briefcase, Terminal, Settings, Play, Calculator, Globe, StickyNote, Info, Cloud, CalendarIcon, HelpCircle } from 'lucide-react';
+import { FileText, Folder, Mail, Briefcase } from 'lucide-react';
 
 const ICON_STATE_KEY = 'retrofolio-icons-v2';
 const WINDOW_STATE_KEY = 'retrofolio-windows-v2';
@@ -36,18 +24,6 @@ const initialAppsData: AppConfig[] = [
   { id: 'resume', title: 'My Resume', icon: FileText, content: <ResumeContent />, defaultSize: { width: 700, height: 800 }, x: 130, y: 50 },
   { id: 'contact', title: 'Contact Me', icon: Mail, content: <ContactContent />, defaultSize: { width: 450, height: 580 }, x: 130, y: 150 },
   { id: 'socials', title: 'Socials', icon: Folder, content: <SocialsContent />, defaultSize: { width: 450, height: 350 }, x: 130, y: 250 },
-  { id: 'terminal', title: 'Terminal', icon: Terminal, content: <TerminalContent />, defaultSize: { width: 600, height: 400 }, x: 100, y: 100 },
-  { id: 'explorer', title: 'File Explorer', icon: Folder, content: <FileExplorerContent />, defaultSize: { width: 700, height: 500 }, x: 150, y: 150 },
-  { id: 'settings', title: 'Settings', icon: Settings, content: <SettingsContent />, defaultSize: { width: 600, height: 500 }, x: 200, y: 200 },
-  { id: 'media', title: 'Media Player', icon: Play, content: <MediaPlayerContent />, defaultSize: { width: 600, height: 500 }, x: 250, y: 250 },
-  { id: 'calculator', title: 'Calculator', icon: Calculator, content: <CalculatorContent />, defaultSize: { width: 300, height: 400 }, x: 300, y: 300 },
-  { id: 'browser', title: 'Web Browser', icon: Globe, content: <BrowserContent />, defaultSize: { width: 800, height: 600 }, x: 100, y: 100 },
-  { id: 'editor', title: 'Text Editor', icon: FileText, content: <TextEditorContent />, defaultSize: { width: 700, height: 500 }, x: 150, y: 150 },
-  { id: 'notes', title: 'Notes', icon: StickyNote, content: <NotesContent />, defaultSize: { width: 700, height: 500 }, x: 200, y: 200 },
-  { id: 'system', title: 'System Info', icon: Info, content: <SystemInfoContent />, defaultSize: { width: 700, height: 500 }, x: 250, y: 250 },
-  { id: 'weather', title: 'Weather', icon: Cloud, content: <WeatherContent />, defaultSize: { width: 700, height: 500 }, x: 300, y: 300 },
-  { id: 'calendar', title: 'Calendar', icon: CalendarIcon, content: <CalendarContent />, defaultSize: { width: 700, height: 500 }, x: 350, y: 350 },
-  { id: 'help', title: 'Help', icon: HelpCircle, content: <HelpContent />, defaultSize: { width: 700, height: 500 }, x: 400, y: 400 },
   { id: 'legal', title: 'Legal', icon: Folder, content: <LegalContent />, defaultSize: { width: 500, height: 300 }, x: 20, y: 450 },
 ];
 
