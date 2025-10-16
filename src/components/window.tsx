@@ -4,16 +4,8 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import type { WindowInstance } from '@/types';
 import { useWindows } from '@/contexts/window-context';
 import { cn } from '@/lib/utils';
-import { X, Minus, Square, Maximize } from 'lucide-react';
+import { X, Minus, Square } from 'lucide-react';
 import { motion } from 'framer-motion';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 
 type WindowProps = WindowInstance;
 
@@ -35,7 +27,6 @@ const Window = (props: WindowProps) => {
   const [position, setPosition] = useState({ x, y });
   const [isResizing, setIsResizing] = useState(false);
   const [resizeDirection, setResizeDirection] = useState<string | null>(null);
-  const [contextMenuOpen, setContextMenuOpen] = useState(false);
   
   const windowRef = useRef<HTMLDivElement>(null);
 
@@ -65,11 +56,6 @@ const Window = (props: WindowProps) => {
       return;
     }
     toggleMaximize(id);
-  };
-
-  const handleContextMenu = (e: React.MouseEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    setContextMenuOpen(true);
   };
 
   const handleMouseMove = useCallback((e: MouseEvent) => {
@@ -138,32 +124,29 @@ const Window = (props: WindowProps) => {
   }
 
   return (
-    <DropdownMenu open={contextMenuOpen} onOpenChange={setContextMenuOpen}>
-      <DropdownMenuTrigger asChild>
-        <motion.div
-          ref={windowRef}
-          className="absolute bg-card/80 dark:bg-card/60 backdrop-blur-xl border rounded-lg flex flex-col shadow-lg"
-          style={{
-            width: size.width,
-            height: size.height,
-            zIndex,
-            left: position.x,
-            top: position.y,
-          }}
-          layout
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.9 }}
-          transition={{ type: 'spring', stiffness: 500, damping: 40 }}
-          onMouseDown={() => focusWindow(id)}
-          onContextMenu={handleContextMenu}
-          drag={!isMaximized && !isResizing}
-          dragMomentum={false}
-          onDragStart={handleDragStart}
-          onDragEnd={(e, info) => {
-            updateWindowPosition(id, position.x + info.offset.x, position.y + info.offset.y);
-          }}
-        >
+    <motion.div
+      ref={windowRef}
+      className="absolute bg-card/80 dark:bg-card/60 backdrop-blur-xl border rounded-lg flex flex-col shadow-lg"
+      style={{
+        width: size.width,
+        height: size.height,
+        zIndex,
+        left: position.x,
+        top: position.y,
+      }}
+      layout
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.9 }}
+      transition={{ type: 'spring', stiffness: 500, damping: 40 }}
+      onMouseDown={() => focusWindow(id)}
+      drag={!isMaximized && !isResizing}
+      dragMomentum={false}
+      onDragStart={handleDragStart}
+      onDragEnd={(e, info) => {
+        updateWindowPosition(id, position.x + info.offset.x, position.y + info.offset.y);
+      }}
+    >
       <header
         className="flex items-center justify-center relative px-3 h-9 flex-shrink-0 border-b bg-black/5 dark:bg-white/5"
         onDoubleClick={handleDoubleClick}
@@ -231,43 +214,7 @@ const Window = (props: WindowProps) => {
           />
         </>
       )}
-        </motion.div>
-      </DropdownMenuTrigger>
-      
-      <DropdownMenuContent className="w-48">
-        <DropdownMenuGroup>
-          <DropdownMenuItem onClick={() => toggleMinimize(id)}>
-            <Minus className="mr-2 h-4 w-4" />
-            <span>Minimize</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => toggleMaximize(id)}>
-            <Maximize className="mr-2 h-4 w-4" />
-            <span>{isMaximized ? 'Restore' : 'Maximize'}</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => closeWindow(id)}>
-            <X className="mr-2 h-4 w-4" />
-            <span>Close</span>
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => {
-          // Reset to default size
-          const defaultWidth = 500;
-          const defaultHeight = 400;
-          const newWidth = Math.max(300, defaultWidth);
-          const newHeight = Math.max(200, defaultHeight);
-          updateWindowSize(id, newWidth, newHeight);
-          
-          // Center the window
-          const centerX = (window.innerWidth - newWidth) / 2;
-          const centerY = (window.innerHeight - newHeight) / 2;
-          updateWindowPosition(id, centerX, centerY);
-        }}>
-          <Square className="mr-2 h-4 w-4" />
-          <span>Reset Size & Position</span>
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    </motion.div>
   );
 };
 

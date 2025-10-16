@@ -21,8 +21,7 @@ import SystemInfoContent from '@/components/content/system-info';
 import WeatherContent from '@/components/content/weather';
 import CalendarContent from '@/components/content/calendar';
 import HelpContent from '@/components/content/help';
-import SystemMonitorContent from '@/components/content/system-monitor';
-import { FileText, Folder, Mail, Briefcase, Terminal, Settings, Play, Calculator, Globe, StickyNote, Info, Cloud, CalendarIcon, HelpCircle, Activity } from 'lucide-react';
+import { FileText, Folder, Mail, Briefcase, Terminal, Settings, Play, Calculator, Globe, StickyNote, Info, Cloud, CalendarIcon, HelpCircle } from 'lucide-react';
 
 const ICON_STATE_KEY = 'retrofolio-icons-v2';
 const WINDOW_STATE_KEY = 'retrofolio-windows-v2';
@@ -49,7 +48,6 @@ const initialAppsData: AppConfig[] = [
   { id: 'weather', title: 'Weather', icon: Cloud, content: <WeatherContent />, defaultSize: { width: 700, height: 500 }, x: 300, y: 300 },
   { id: 'calendar', title: 'Calendar', icon: CalendarIcon, content: <CalendarContent />, defaultSize: { width: 700, height: 500 }, x: 350, y: 350 },
   { id: 'help', title: 'Help', icon: HelpCircle, content: <HelpContent />, defaultSize: { width: 700, height: 500 }, x: 400, y: 400 },
-  { id: 'monitor', title: 'System Monitor', icon: Activity, content: <SystemMonitorContent />, defaultSize: { width: 800, height: 600 }, x: 100, y: 100 },
   { id: 'legal', title: 'Legal', icon: Folder, content: <LegalContent />, defaultSize: { width: 500, height: 300 }, x: 20, y: 450 },
 ];
 
