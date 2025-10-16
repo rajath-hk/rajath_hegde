@@ -17,7 +17,9 @@ import CalculatorContent from '@/components/content/calculator';
 import BrowserContent from '@/components/content/browser';
 import TextEditorContent from '@/components/content/text-editor';
 import NotesContent from '@/components/content/notes';
-import { FileText, Folder, Mail, Briefcase, Terminal, Settings, Play, Calculator, Globe, Edit } from 'lucide-react';
+import SystemInfoContent from '@/components/content/system-info';
+import WeatherContent from '@/components/content/weather';
+import { FileText, Folder, Mail, Briefcase, Terminal, Settings, Play, Calculator, Globe, StickyNote, Info, Cloud } from 'lucide-react';
 
 const ICON_STATE_KEY = 'retrofolio-icons-v2';
 const WINDOW_STATE_KEY = 'retrofolio-windows-v2';
@@ -38,8 +40,10 @@ const initialAppsData: AppConfig[] = [
   { id: 'media', title: 'Media Player', icon: Play, content: <MediaPlayerContent />, defaultSize: { width: 600, height: 500 }, x: 250, y: 250 },
   { id: 'calculator', title: 'Calculator', icon: Calculator, content: <CalculatorContent />, defaultSize: { width: 300, height: 400 }, x: 300, y: 300 },
   { id: 'browser', title: 'Web Browser', icon: Globe, content: <BrowserContent />, defaultSize: { width: 800, height: 600 }, x: 100, y: 100 },
-  { id: 'text-editor', title: 'Text Editor', icon: FileText, content: <TextEditorContent />, defaultSize: { width: 700, height: 500 }, x: 150, y: 150 },
-  { id: 'notes', title: 'Notes', icon: Edit, content: <NotesContent />, defaultSize: { width: 400, height: 500 }, x: 200, y: 200 },
+  { id: 'editor', title: 'Text Editor', icon: FileText, content: <TextEditorContent />, defaultSize: { width: 700, height: 500 }, x: 150, y: 150 },
+  { id: 'notes', title: 'Notes', icon: StickyNote, content: <NotesContent />, defaultSize: { width: 700, height: 500 }, x: 200, y: 200 },
+  { id: 'system', title: 'System Info', icon: Info, content: <SystemInfoContent />, defaultSize: { width: 700, height: 500 }, x: 250, y: 250 },
+  { id: 'weather', title: 'Weather', icon: Cloud, content: <WeatherContent />, defaultSize: { width: 700, height: 500 }, x: 300, y: 300 },
   { id: 'legal', title: 'Legal', icon: Folder, content: <LegalContent />, defaultSize: { width: 500, height: 300 }, x: 20, y: 450 },
 ];
 

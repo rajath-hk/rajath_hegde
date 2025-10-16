@@ -1,72 +1,74 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
-import { Save, FileText, FolderOpen, Plus, Trash2, Download } from 'lucide-react';
+import { Save, FileText, FolderOpen, Copy, Scissors, Clipboard, Undo, Redo } from 'lucide-react';
 
 const TextEditor = () => {
-  const [content, setContent] = useState('# Welcome to Text Editor\n\nThis is a simple text editor application.\n\n## Features:\n- Create new documents\n- Edit text\n- Save documents\n- Open existing files\n\nTry editing this text!');
-  const [fileName, setFileName] = useState('document.md');
-  const [isEditingFileName, setIsEditingFileName] = useState(false);
+  const [content, setContent] = useState(`Welcome to Portfolio OS Text Editor!
+
+This is a simple text editor application. You can use it to:
+- Write notes and documentation
+- Edit code snippets
+- Keep track of ideas
+- Create todo lists
+
+Features:
+- Basic text editing
+- Cut, copy, paste functionality
+- Undo/redo operations
+- Save and open documents
+
+Try typing something here to get started.`);
+  const [fileName, setFileName] = useState('untitled.txt');
+  const [isModified, setIsModified] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+  const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setContent(e.target.value);
+    setIsModified(true);
+  };
+
   const handleSave = () => {
-    // In a real implementation, this would save to the file system
-    alert(`Document "${fileName}" saved successfully!\n\nContent:\n${content}`);
+    // In a real app, this would save to the file system
+    setIsModified(false);
+    alert(`File "${fileName}" saved successfully!`);
   };
 
-  const handleNewDocument = () => {
-    if (confirm('Are you sure you want to create a new document? Unsaved changes will be lost.')) {
-      setContent('# New Document\n\nStart writing here...');
-      setFileName('new-document.md');
+  const handleCopy = () => {
+    if (textareaRef.current) {
+      textareaRef.current.select();
+      document.execCommand('copy');
     }
   };
 
-  const handleOpen = () => {
-    // In a real implementation, this would open a file dialog
-    alert('In a full implementation, this would open a file dialog to select a document.');
-  };
-
-  const handleDownload = () => {
-    const blob = new Blob([content], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = fileName;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  };
-
-  const handleFileNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFileName(e.target.value);
-  };
-
-  const handleFileNameBlur = () => {
-    setIsEditingFileName(false);
-    if (!fileName.trim()) {
-      setFileName('untitled.md');
+  const handleCut = () => {
+    if (textareaRef.current) {
+      textareaRef.current.select();
+      document.execCommand('cut');
+      setIsModified(true);
     }
+  };
+
+  const handlePaste = () => {
+    // Paste is handled natively by the textarea
+    setIsModified(true);
+  };
+
+  const handleUndo = () => {
+    // Basic undo simulation
+    // In a real app, you'd implement a proper undo stack
+    alert('Undo functionality would be implemented in a full version');
+  };
+
+  const handleRedo = () => {
+    // Basic redo simulation
+    alert('Redo functionality would be implemented in a full version');
   };
 
   return (
     <div className="h-full flex flex-col">
       {/* Toolbar */}
-      <div className="flex items-center gap-2 p-2 border-b bg-gray-100 dark:bg-gray-800">
-        <button 
-          onClick={handleNewDocument}
-          className="flex items-center gap-1 px-2 py-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 text-sm"
-        >
-          <Plus size={16} />
-          New
-        </button>
-        <button 
-          onClick={handleOpen}
-          className="flex items-center gap-1 px-2 py-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 text-sm"
-        >
-          <FolderOpen size={16} />
-          Open
-        </button>
+      <div className="flex items-center gap-1 p-2 border-b bg-gray-100 dark:bg-gray-800">
         <button 
           onClick={handleSave}
           className="flex items-center gap-1 px-2 py-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 text-sm"
@@ -74,36 +76,55 @@ const TextEditor = () => {
           <Save size={16} />
           Save
         </button>
+        <div className="w-px h-6 bg-gray-300 dark:bg-gray-600 mx-1"></div>
         <button 
-          onClick={handleDownload}
+          onClick={handleCut}
           className="flex items-center gap-1 px-2 py-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 text-sm"
         >
-          <Download size={16} />
-          Download
+          <Scissors size={16} />
+          Cut
+        </button>
+        <button 
+          onClick={handleCopy}
+          className="flex items-center gap-1 px-2 py-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 text-sm"
+        >
+          <Copy size={16} />
+          Copy
+        </button>
+        <button 
+          onClick={handlePaste}
+          className="flex items-center gap-1 px-2 py-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 text-sm"
+        >
+          <Clipboard size={16} />
+          Paste
+        </button>
+        <div className="w-px h-6 bg-gray-300 dark:bg-gray-600 mx-1"></div>
+        <button 
+          onClick={handleUndo}
+          className="flex items-center gap-1 px-2 py-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 text-sm"
+        >
+          <Undo size={16} />
+          Undo
+        </button>
+        <button 
+          onClick={handleRedo}
+          className="flex items-center gap-1 px-2 py-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 text-sm"
+        >
+          <Redo size={16} />
+          Redo
         </button>
       </div>
       
-      {/* File Name Bar */}
-      <div className="flex items-center gap-2 p-2 border-b">
-        {isEditingFileName ? (
-          <input
-            type="text"
-            value={fileName}
-            onChange={handleFileNameChange}
-            onBlur={handleFileNameBlur}
-            onKeyDown={(e) => e.key === 'Enter' && handleFileNameBlur()}
-            className="px-2 py-1 border rounded w-full"
-            autoFocus
-          />
-        ) : (
-          <div 
-            className="flex items-center gap-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 px-2 py-1 rounded w-full"
-            onClick={() => setIsEditingFileName(true)}
-          >
-            <FileText size={16} className="text-blue-500" />
-            <span className="truncate">{fileName}</span>
-          </div>
-        )}
+      {/* File Info */}
+      <div className="px-3 py-2 border-b flex items-center justify-between text-sm">
+        <div className="flex items-center gap-2">
+          <FileText size={16} className="text-blue-500" />
+          <span className="font-medium">{fileName}</span>
+          {isModified && <span className="w-2 h-2 rounded-full bg-orange-500"></span>}
+        </div>
+        <div className="text-gray-500 dark:text-gray-400">
+          {content.split(/\r\n|\r|\n/).length} lines
+        </div>
       </div>
       
       {/* Editor Area */}
@@ -111,18 +132,16 @@ const TextEditor = () => {
         <textarea
           ref={textareaRef}
           value={content}
-          onChange={(e) => setContent(e.target.value)}
-          className="w-full h-full p-4 font-mono text-sm bg-white dark:bg-gray-900 resize-none focus:outline-none"
+          onChange={handleContentChange}
+          className="w-full h-full p-4 bg-white dark:bg-gray-900 text-foreground resize-none focus:outline-none font-mono text-sm"
           spellCheck={false}
         />
       </div>
       
       {/* Status Bar */}
       <div className="px-3 py-1 text-xs border-t bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 flex justify-between">
-        <div>Text Editor</div>
-        <div>
-          {textareaRef.current ? `${textareaRef.current.value.length} characters` : '0 characters'}
-        </div>
+        <div>UTF-8</div>
+        <div>Plain Text</div>
       </div>
     </div>
   );

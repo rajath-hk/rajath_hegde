@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Plus, Save, Trash2, Edit3 } from 'lucide-react';
+import { Plus, Search, Pin, Trash2, Edit3 } from 'lucide-react';
 
 interface Note {
   id: string;
@@ -9,6 +9,7 @@ interface Note {
   content: string;
   createdAt: Date;
   updatedAt: Date;
+  isPinned: boolean;
 }
 
 const Notes = () => {
@@ -19,175 +20,304 @@ const Notes = () => {
       content: 'This is your first note. You can edit or delete it, or create new notes using the + button.',
       createdAt: new Date(),
       updatedAt: new Date(),
+      isPinned: true
+    },
+    {
+      id: '2',
+      title: 'Project Ideas',
+      content: 'Here are some project ideas:\n\n1. Portfolio OS (in progress)\n2. AI Assistant\n3. Self-hosted video platform\n4. RTSP Loop Recorder',
+      createdAt: new Date(Date.now() - 86400000),
+      updatedAt: new Date(Date.now() - 86400000),
+      isPinned: true
     }
   ]);
   
-  const [activeNoteId, setActiveNoteId] = useState('1');
+  const [selectedNote, setSelectedNote] = useState<Note | null>(notes[0]);
   const [isEditing, setIsEditing] = useState(false);
-  
-  const activeNote = notes.find(note => note.id === activeNoteId) || notes[0];
+  const [editTitle, setEditTitle] = useState('');
+  const [editContent, setEditContent] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
 
-  const createNewNote = () => {
+  const handleCreateNote = () => {
     const newNote: Note = {
       id: Date.now().toString(),
       title: 'Untitled Note',
       content: '',
       createdAt: new Date(),
       updatedAt: new Date(),
+      isPinned: false
     };
     
     setNotes([newNote, ...notes]);
-    setActiveNoteId(newNote.id);
+    setSelectedNote(newNote);
     setIsEditing(true);
+    setEditTitle(newNote.title);
+    setEditContent(newNote.content);
   };
 
-  const updateNote = (id: string, updates: Partial<Note>) => {
+  const handleSelectNote = (note: Note) => {
+    setSelectedNote(note);
+    setIsEditing(false);
+  };
+
+  const handleEditNote = () => {
+    if (selectedNote) {
+      setIsEditing(true);
+      setEditTitle(selectedNote.title);
+      setEditContent(selectedNote.content);
+    }
+  };
+
+  const handleSaveNote = () => {
+    if (selectedNote) {
+      setNotes(notes.map(note => 
+        note.id === selectedNote.id 
+          ? { 
+              ...note, 
+              title: editTitle, 
+              content: editContent,
+              updatedAt: new Date()
+            } 
+          : note
+      ));
+      
+      setSelectedNote({
+        ...selectedNote,
+        title: editTitle,
+        content: editContent,
+        updatedAt: new Date()
+      });
+      
+      setIsEditing(false);
+    }
+  };
+
+  const handleDeleteNote = (id: string) => {
+    setNotes(notes.filter(note => note.id !== id));
+    if (selectedNote?.id === id) {
+      setSelectedNote(notes.length > 1 ? notes[0] : null);
+    }
+  };
+
+  const handlePinNote = (id: string) => {
     setNotes(notes.map(note => 
-      note.id === id 
-        ? { ...note, ...updates, updatedAt: new Date() } 
-        : note
+      note.id === id ? { ...note, isPinned: !note.isPinned } : note
     ));
   };
 
-  const deleteNote = (id: string) => {
-    if (notes.length <= 1) {
-      alert('You must have at least one note.');
-      return;
-    }
-    
-    if (confirm('Are you sure you want to delete this note?')) {
-      const updatedNotes = notes.filter(note => note.id !== id);
-      setNotes(updatedNotes);
-      
-      if (activeNoteId === id) {
-        setActiveNoteId(updatedNotes[0].id);
-      }
-    }
+  const formatDate = (date: Date) => {
+    return date.toLocaleDateString([], { 
+      month: 'short', 
+      day: 'numeric',
+      year: date.getFullYear() !== new Date().getFullYear() ? 'numeric' : undefined
+    });
   };
 
-  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (activeNote) {
-      updateNote(activeNote.id, { title: e.target.value });
-    }
-  };
+  const filteredNotes = notes.filter(note => 
+    note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    note.content.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
-  const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    if (activeNote) {
-      updateNote(activeNote.id, { content: e.target.value });
-    }
-  };
+  const pinnedNotes = filteredNotes.filter(note => note.isPinned);
+  const unpinnedNotes = filteredNotes.filter(note => !note.isPinned);
 
   return (
     <div className="h-full flex">
       {/* Sidebar */}
       <div className="w-1/3 border-r flex flex-col">
-        <div className="p-3 border-b flex justify-between items-center">
-          <h2 className="font-semibold">Notes</h2>
-          <button 
-            onClick={createNewNote}
-            className="p-1.5 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
-            aria-label="New note"
-          >
-            <Plus size={18} />
-          </button>
+        {/* Header */}
+        <div className="p-4 border-b">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-bold">Notes</h2>
+            <button 
+              onClick={handleCreateNote}
+              className="p-2 rounded-full bg-primary text-primary-foreground hover:bg-primary/90"
+              aria-label="New note"
+            >
+              <Plus size={16} />
+            </button>
+          </div>
+          
+          {/* Search */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <input
+              type="text"
+              placeholder="Search notes..."
+              className="w-full pl-10 pr-4 py-2 rounded-lg bg-muted text-sm"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
         </div>
         
+        {/* Notes List */}
         <div className="flex-1 overflow-y-auto">
-          {notes.map(note => (
+          {pinnedNotes.length > 0 && (
+            <div className="px-2 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              Pinned
+            </div>
+          )}
+          {pinnedNotes.map(note => (
             <div 
               key={note.id}
-              onClick={() => setActiveNoteId(note.id)}
+              onClick={() => handleSelectNote(note)}
               className={`p-3 border-b cursor-pointer ${
-                activeNoteId === note.id 
-                  ? 'bg-blue-500/20 border-l-4 border-l-blue-500' 
-                  : 'hover:bg-gray-100 dark:hover:bg-gray-800'
+                selectedNote?.id === note.id 
+                  ? 'bg-primary/10' 
+                  : 'hover:bg-muted'
               }`}
             >
-              <div className="font-medium truncate">{note.title}</div>
-              <div className="text-xs text-gray-500 dark:text-gray-400 mt-1 truncate">
-                {note.content.substring(0, 50)}{note.content.length > 50 ? '...' : ''}
+              <div className="flex justify-between">
+                <h3 className="font-medium truncate">{note.title}</h3>
+                <button 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handlePinNote(note.id);
+                  }}
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  <Pin size={14} className={note.isPinned ? 'fill-current' : ''} />
+                </button>
               </div>
-              <div className="text-xs text-gray-400 dark:text-gray-500 mt-2">
-                {note.updatedAt.toLocaleDateString()}
+              <p className="text-sm text-muted-foreground truncate mt-1">
+                {note.content.substring(0, 100)}
+                {note.content.length > 100 ? '...' : ''}
+              </p>
+              <div className="text-xs text-muted-foreground mt-2">
+                {formatDate(note.updatedAt)}
               </div>
             </div>
           ))}
+          
+          {unpinnedNotes.length > 0 && (
+            <div className="px-2 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              Others
+            </div>
+          )}
+          {unpinnedNotes.map(note => (
+            <div 
+              key={note.id}
+              onClick={() => handleSelectNote(note)}
+              className={`p-3 border-b cursor-pointer ${
+                selectedNote?.id === note.id 
+                  ? 'bg-primary/10' 
+                  : 'hover:bg-muted'
+              }`}
+            >
+              <div className="flex justify-between">
+                <h3 className="font-medium truncate">{note.title}</h3>
+                <button 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handlePinNote(note.id);
+                  }}
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  <Pin size={14} className={note.isPinned ? 'fill-current' : ''} />
+                </button>
+              </div>
+              <p className="text-sm text-muted-foreground truncate mt-1">
+                {note.content.substring(0, 100)}
+                {note.content.length > 100 ? '...' : ''}
+              </p>
+              <div className="text-xs text-muted-foreground mt-2">
+                {formatDate(note.updatedAt)}
+              </div>
+            </div>
+          ))}
+          
+          {filteredNotes.length === 0 && (
+            <div className="p-8 text-center text-muted-foreground">
+              No notes found
+            </div>
+          )}
         </div>
       </div>
       
       {/* Note Editor */}
       <div className="flex-1 flex flex-col">
-        {activeNote ? (
+        {selectedNote ? (
           <>
-            <div className="p-4 border-b">
-              <div className="flex justify-between items-start">
-                {isEditing ? (
-                  <input
-                    type="text"
-                    value={activeNote.title}
-                    onChange={handleTitleChange}
-                    className="text-xl font-bold w-full p-2 mb-2 border rounded"
-                    onBlur={() => setIsEditing(false)}
-                    onKeyDown={(e) => e.key === 'Enter' && setIsEditing(false)}
-                    autoFocus
-                  />
-                ) : (
-                  <h2 
-                    className="text-xl font-bold cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 p-2 rounded"
-                    onClick={() => setIsEditing(true)}
-                  >
-                    {activeNote.title}
-                  </h2>
-                )}
-                
-                <div className="flex space-x-2">
-                  <button 
-                    onClick={() => deleteNote(activeNote.id)}
-                    className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
-                    aria-label="Delete note"
-                  >
-                    <Trash2 size={16} />
-                  </button>
-                  <button 
-                    onClick={() => updateNote(activeNote.id, { 
-                      title: activeNote.title, 
-                      content: activeNote.content 
-                    })}
-                    className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
-                    aria-label="Save note"
-                  >
-                    <Save size={16} />
-                  </button>
-                </div>
-              </div>
+            {/* Note Header */}
+            <div className="p-4 border-b flex justify-between items-start">
+              {isEditing ? (
+                <input
+                  type="text"
+                  className="text-xl font-bold w-full bg-transparent focus:outline-none"
+                  value={editTitle}
+                  onChange={(e) => setEditTitle(e.target.value)}
+                />
+              ) : (
+                <h2 className="text-xl font-bold">{selectedNote.title}</h2>
+              )}
               
-              <div className="text-sm text-gray-500 dark:text-gray-400">
-                Last updated: {activeNote.updatedAt.toLocaleString()}
+              <div className="flex space-x-2">
+                {isEditing ? (
+                  <button 
+                    onClick={handleSaveNote}
+                    className="px-3 py-1.5 rounded bg-primary text-primary-foreground text-sm hover:bg-primary/90"
+                  >
+                    Save
+                  </button>
+                ) : (
+                  <>
+                    <button 
+                      onClick={handleEditNote}
+                      className="p-2 rounded hover:bg-muted"
+                      aria-label="Edit note"
+                    >
+                      <Edit3 size={16} />
+                    </button>
+                    <button 
+                      onClick={() => handleDeleteNote(selectedNote.id)}
+                      className="p-2 rounded hover:bg-muted text-red-500"
+                      aria-label="Delete note"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </>
+                )}
               </div>
             </div>
             
-            <div className="flex-1 p-4">
-              <textarea
-                value={activeNote.content}
-                onChange={handleContentChange}
-                className="w-full h-full p-2 resize-none focus:outline-none bg-transparent"
-                placeholder="Start writing your note here..."
-              />
+            {/* Note Content */}
+            <div className="flex-1 overflow-auto p-4">
+              {isEditing ? (
+                <textarea
+                  className="w-full h-full bg-transparent focus:outline-none resize-none"
+                  value={editContent}
+                  onChange={(e) => setEditContent(e.target.value)}
+                />
+              ) : (
+                <div className="whitespace-pre-wrap">
+                  {selectedNote.content || (
+                    <span className="text-muted-foreground italic">
+                      This note is empty
+                    </span>
+                  )}
+                </div>
+              )}
+            </div>
+            
+            {/* Note Footer */}
+            <div className="p-4 border-t text-xs text-muted-foreground">
+              Created {formatDate(selectedNote.createdAt)} · 
+              Last updated {formatDate(selectedNote.updatedAt)}
             </div>
           </>
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
-            <Edit3 size={48} className="text-gray-300 mb-4" />
-            <h3 className="text-xl font-medium mb-2">No Note Selected</h3>
-            <p className="text-gray-500 mb-4">
-              Select a note from the sidebar or create a new one
+            <Edit3 className="h-12 w-12 text-muted-foreground mb-4" />
+            <h3 className="text-lg font-medium mb-1">No note selected</h3>
+            <p className="text-muted-foreground">
+              Select a note from the list or create a new one
             </p>
-            <button
-              onClick={createNewNote}
-              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 flex items-center"
+            <button 
+              onClick={handleCreateNote}
+              className="mt-4 px-4 py-2 rounded bg-primary text-primary-foreground hover:bg-primary/90"
             >
-              <Plus size={16} className="mr-2" />
-              Create New Note
+              Create Note
             </button>
           </div>
         )}
