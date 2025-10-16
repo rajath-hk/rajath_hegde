@@ -2,6 +2,7 @@
   "name": "nextn",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://rajath.github.io/rajath_hegde",
   "scripts": {
     "dev": "next dev --turbopack -p 9002",
     "genkit:dev": "genkit start -- tsx src/ai/dev.ts",
@@ -40,7 +41,7 @@
     "date-fns": "^3.6.0",
     "dotenv": "^16.5.0",
     "firebase": "^11.9.1",
-    "framer-motion": "^11.2.12",
+    "framer-motion": "^11.18.2",
     "genkit": "^1.8.0",
     "lucide-react": "^0.475.0",
     "next": "15.3.3",

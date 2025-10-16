@@ -1,9 +1,9 @@
-# This workflow is designed to build and deploy your Next.js project to GitHub Pages.
+# This workflow will build and deploy your Next.js project to GitHub Pages
 name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [ main ] # Or your default branch, e.g., master
+    branches: [ main ]
   workflow_dispatch:
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
@@ -12,7 +12,8 @@ permissions:
   pages: write
   id-token: write
 
-# Allow only one concurrent deployment
+# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
+# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
 concurrency:
   group: "pages"
   cancel-in-progress: false
@@ -23,25 +24,26 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "20"
           cache: 'npm'
+
       - name: Install dependencies
         run: npm install
-      - name: Build
+
+      - name: Build with Next.js
         run: npm run build
         env:
-          # The name of the repository becomes the basePath
-          BASE_PATH: /${{ github.event.repository.name }}
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
+          BASE_PATH: /rajath_hegde
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './out'
-  
+          path: ./out
+
   deploy:
     environment:
       name: github-pages
