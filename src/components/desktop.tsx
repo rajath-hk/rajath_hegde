@@ -1,4 +1,3 @@
-
 'use client';
 
 import React from 'react';
@@ -17,6 +16,8 @@ import {
 import { useWindows } from '@/contexts/window-context';
 import DesktopIcon from '@/components/desktop-icon';
 import Window from '@/components/window';
+import Taskbar from '@/components/taskbar';
+import TopBar from '@/components/top-bar';
 import {
   ArrowDownUp,
   RefreshCw,
@@ -44,10 +45,11 @@ const Desktop = () => {
 
   return (
     <>
+      <TopBar />
       <div
         ref={desktopRef}
         id="desktop-area"
-        className="absolute inset-0 pt-8"
+        className="absolute inset-0 pt-8 pb-10"
         onContextMenu={handleContextMenu}
       >
         <DropdownMenu open={contextMenuOpen} onOpenChange={setContextMenuOpen}>
@@ -99,6 +101,8 @@ const Desktop = () => {
           !win.isMinimized && <Window key={win.id} {...win} />
         ))}
       </AnimatePresence>
+      
+      <Taskbar />
     </>
   );
 };

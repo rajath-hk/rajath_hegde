@@ -11,7 +11,8 @@ import MyWorkContent from '@/components/content/my-work';
 import SocialsContent from '@/components/content/socials';
 import TerminalContent from '@/components/content/terminal';
 import FileExplorerContent from '@/components/content/file-explorer';
-import { FileText, Folder, Mail, Briefcase, Terminal } from 'lucide-react';
+import SettingsContent from '@/components/content/settings';
+import { FileText, Folder, Mail, Briefcase, Terminal, Settings } from 'lucide-react';
 
 const ICON_STATE_KEY = 'retrofolio-icons-v2';
 const WINDOW_STATE_KEY = 'retrofolio-windows-v2';
@@ -28,6 +29,7 @@ const initialAppsData: AppConfig[] = [
   { id: 'socials', title: 'Socials', icon: Folder, content: <SocialsContent />, defaultSize: { width: 450, height: 350 }, x: 130, y: 250 },
   { id: 'terminal', title: 'Terminal', icon: Terminal, content: <TerminalContent />, defaultSize: { width: 600, height: 400 }, x: 100, y: 100 },
   { id: 'explorer', title: 'File Explorer', icon: Folder, content: <FileExplorerContent />, defaultSize: { width: 700, height: 500 }, x: 150, y: 150 },
+  { id: 'settings', title: 'Settings', icon: Settings, content: <SettingsContent />, defaultSize: { width: 600, height: 500 }, x: 200, y: 200 },
   { id: 'legal', title: 'Legal', icon: Folder, content: <LegalContent />, defaultSize: { width: 500, height: 300 }, x: 20, y: 450 },
 ];
 
