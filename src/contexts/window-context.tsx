@@ -12,7 +12,10 @@ import SocialsContent from '@/components/content/socials';
 import TerminalContent from '@/components/content/terminal';
 import FileExplorerContent from '@/components/content/file-explorer';
 import SettingsContent from '@/components/content/settings';
-import { FileText, Folder, Mail, Briefcase, Terminal, Settings } from 'lucide-react';
+import MediaPlayerContent from '@/components/content/media-player';
+import CalculatorContent from '@/components/content/calculator';
+import BrowserContent from '@/components/content/browser';
+import { FileText, Folder, Mail, Briefcase, Terminal, Settings, Play, Calculator, Globe } from 'lucide-react';
 
 const ICON_STATE_KEY = 'retrofolio-icons-v2';
 const WINDOW_STATE_KEY = 'retrofolio-windows-v2';
@@ -30,6 +33,9 @@ const initialAppsData: AppConfig[] = [
   { id: 'terminal', title: 'Terminal', icon: Terminal, content: <TerminalContent />, defaultSize: { width: 600, height: 400 }, x: 100, y: 100 },
   { id: 'explorer', title: 'File Explorer', icon: Folder, content: <FileExplorerContent />, defaultSize: { width: 700, height: 500 }, x: 150, y: 150 },
   { id: 'settings', title: 'Settings', icon: Settings, content: <SettingsContent />, defaultSize: { width: 600, height: 500 }, x: 200, y: 200 },
+  { id: 'media', title: 'Media Player', icon: Play, content: <MediaPlayerContent />, defaultSize: { width: 600, height: 500 }, x: 250, y: 250 },
+  { id: 'calculator', title: 'Calculator', icon: Calculator, content: <CalculatorContent />, defaultSize: { width: 300, height: 400 }, x: 300, y: 300 },
+  { id: 'browser', title: 'Web Browser', icon: Globe, content: <BrowserContent />, defaultSize: { width: 800, height: 600 }, x: 100, y: 100 },
   { id: 'legal', title: 'Legal', icon: Folder, content: <LegalContent />, defaultSize: { width: 500, height: 300 }, x: 20, y: 450 },
 ];
 
