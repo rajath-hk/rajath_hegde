@@ -2,21 +2,8 @@
 
 import React from 'react';
 import { useTheme } from 'next-themes';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Expand, Shrink, Sun, Moon, Bell, Power } from 'lucide-react';
-
-const notifications = [
-    { title: "Welcome!", description: "Thanks for checking out my portfolio." },
-    { title: "New Feature", description: "You can drag icons and windows around." },
-    { title: "Tip", description: "Right-click the desktop for more options." }
-];
+import { Expand, Shrink, Sun, Moon, Power } from 'lucide-react';
+import NotificationCenter from '@/components/notification-center';
 
 const TopBar = () => {
   const { theme, setTheme } = useTheme();
@@ -75,30 +62,7 @@ const TopBar = () => {
         {mounted ? time : ''}
       </div>
       <div className="flex items-center gap-4">
-        <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                <button className="relative p-1 rounded-md" aria-label="Open Notifications">
-                    <Bell size={16} />
-                    {notifications.length > 0 && (
-                        <span className="absolute top-1 right-1 block h-1.5 w-1.5 rounded-full bg-primary ring-1 ring-background" />
-                    )}
-                </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-80">
-                <DropdownMenuLabel>Notifications</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                {notifications.length > 0 ? (
-                    notifications.map((notif, index) => (
-                        <DropdownMenuItem key={index} className="flex-col items-start gap-1 cursor-default">
-                            <div className="font-medium">{notif.title}</div>
-                            <div className="text-xs text-muted-foreground">{notif.description}</div>
-                        </DropdownMenuItem>
-                    ))
-                ) : (
-                    <DropdownMenuItem disabled>No new notifications</DropdownMenuItem>
-                )}
-            </DropdownMenuContent>
-        </DropdownMenu>
+        <NotificationCenter />
         <Power size={16} className="cursor-pointer" />
       </div>
     </div>

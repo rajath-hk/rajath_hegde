@@ -18,6 +18,7 @@ import DesktopIcon from '@/components/desktop-icon';
 import Window from '@/components/window';
 import Taskbar from '@/components/taskbar';
 import TopBar from '@/components/top-bar';
+import SystemSearch from '@/components/system-search';
 import {
   ArrowDownUp,
   RefreshCw,
@@ -103,6 +104,7 @@ const Desktop = () => {
       </AnimatePresence>
       
       <Taskbar />
+      <SystemSearch />
     </>
   );
 };
