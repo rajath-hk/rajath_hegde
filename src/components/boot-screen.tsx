@@ -103,8 +103,12 @@ const BootScreen = ({ onComplete }: BootScreenProps) => {
         animate={{ opacity: 1, scale: 1 }}
         className="text-center mb-12"
       >
-        <div className="w-24 h-24 rounded-full bg-blue-500 mx-auto mb-6 flex items-center justify-center">
-          <span className="text-4xl">🖥️</span>
+        <div className="w-24 h-24 rounded-full bg-blue-500 mx-auto mb-6 flex items-center justify-center overflow-hidden">
+          <img 
+            src="/api/placeholder/96/96" 
+            alt="PortfolioOS Logo" 
+            className="w-full h-full object-cover"
+          />
         </div>
         <h1 className="text-5xl font-bold mb-2">PortfolioOS</h1>
         <p className="text-gray-400">Version 1.0.0</p>

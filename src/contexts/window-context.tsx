@@ -110,55 +110,42 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
   // Load state from localStorage once dimensions are available
   useEffect(() => {
     if (typeof window === 'undefined' || windowDimensions.width === 0 || isLoaded) return;
-
-    // Load Icon Positions
+    
+    // Load windows state
     try {
-      const savedIconsJSON = localStorage.getItem(ICON_STATE_KEY);
-      if (savedIconsJSON) {
-        const savedIcons = JSON.parse(savedIconsJSON) as { id: string; x: number; y: number }[];
-        setDesktopIcons(prevIcons => {
-            const updatedIcons = prevIcons.map(icon => {
-                const savedIcon = savedIcons.find(s => s.id === icon.id);
-                return savedIcon ? { ...icon, x: savedIcon.x, y: savedIcon.y } : icon;
-            });
-            return updatedIcons;
-        });
+      const savedWindows = localStorage.getItem(WINDOW_STATE_KEY);
+      if (savedWindows) {
+        const parsedWindows = JSON.parse(savedWindows);
+        setWindows(parsedWindows.map((win: any) => {
+          const appConfig = initialAppsData.find(app => app.id === win.id);
+          return {
+            ...win,
+            icon: appConfig?.icon || FileText,
+            content: appConfig?.content || <div>Application not found</div>,
+            defaultSize: appConfig?.defaultSize
+          };
+        }));
       }
-    } catch (error) {
-      console.error("Failed to load icon state from localStorage", error);
-      localStorage.removeItem(ICON_STATE_KEY);
+    } catch (e) {
+      console.warn('Failed to load window state from localStorage:', e);
     }
-
-    // Load Window State
+    
+    // Load icons state
     try {
-      const savedWindowsJSON = localStorage.getItem(WINDOW_STATE_KEY);
-      if (savedWindowsJSON) {
-        const savedWindows = JSON.parse(savedWindowsJSON) as Omit<WindowInstance, 'content' | 'icon'>[];
-        const restoredWindows = savedWindows.map(savedWin => {
-            const appConfig = initialAppsData.find(app => app.id === savedWin.id);
-            if (!appConfig) return null;
-            
-            // Clamp saved position to be within the current viewport
-            const width = savedWin.width || appConfig.defaultSize?.width || 500;
-            const height = savedWin.height || appConfig.defaultSize?.height || 400;
-            const clampedX = Math.max(0, Math.min(savedWin.x, windowDimensions.width - width));
-            const clampedY = Math.max(32, Math.min(savedWin.y, windowDimensions.height - height));
-            
-            return { ...savedWin, ...appConfig, x: clampedX, y: clampedY };
-        }).filter((w): w is WindowInstance => w !== null);
-
-        setWindows(restoredWindows);
-
-        if (restoredWindows.length > 0) {
-            const maxZIndex = Math.max(...restoredWindows.map(w => w.zIndex), 10);
-            setZIndexCounter(maxZIndex + 1);
-        }
+      const savedIcons = localStorage.getItem(ICON_STATE_KEY);
+      if (savedIcons) {
+        const parsedIcons = JSON.parse(savedIcons);
+        setDesktopIcons(prevIcons => 
+          prevIcons.map(icon => {
+            const savedIcon = parsedIcons.find((si: any) => si.id === icon.id);
+            return savedIcon ? { ...icon, x: savedIcon.x, y: savedIcon.y } : icon;
+          })
+        );
       }
-    } catch (error) {
-        console.error("Failed to load window state from localStorage", error);
-        localStorage.removeItem(WINDOW_STATE_KEY);
+    } catch (e) {
+      console.warn('Failed to load icon state from localStorage:', e);
     }
-
+    
     setIsLoaded(true);
   }, [windowDimensions, isLoaded]);
 

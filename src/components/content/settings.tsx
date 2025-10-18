@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useTheme } from 'next-themes';
 import { 
   Monitor, 
   Palette, 
@@ -10,7 +11,7 @@ import {
   Info,
   Sun,
   Moon,
-  Desktop,
+  Laptop,
   Save
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -20,9 +21,9 @@ import { Slider } from '@/components/ui/slider';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const Settings = () => {
+  const { theme, setTheme } = useTheme();
   const [activeTab, setActiveTab] = useState('system');
-  const [theme, setTheme] = useState('dark');
-  const [wallpaper, setWallpaper] = useState('/wallpapers/default.jpg');
+  const [wallpaper, setWallpaper] = useState('/logo.png');
   const [volume, setVolume] = useState(80);
   const [notifications, setNotifications] = useState(true);
   const [sound, setSound] = useState(true);
@@ -31,37 +32,35 @@ const Settings = () => {
 
   // Load settings from localStorage
   useEffect(() => {
-    const savedTheme = localStorage.getItem('portfolio-theme') || 'dark';
-    const savedWallpaper = localStorage.getItem('portfolio-wallpaper') || '/wallpapers/default.jpg';
+    const savedWallpaper = localStorage.getItem('portfolio-wallpaper') || '/logo.png';
     const savedVolume = localStorage.getItem('portfolio-volume') || '80';
     const savedNotifications = localStorage.getItem('portfolio-notifications') || 'true';
     const savedSound = localStorage.getItem('portfolio-sound') || 'true';
     const savedAutoSave = localStorage.getItem('portfolio-auto-save') || 'true';
     const savedStartupAnimation = localStorage.getItem('portfolio-startup-animation') || 'true';
     
-    setTheme(savedTheme);
     setWallpaper(savedWallpaper);
     setVolume(parseInt(savedVolume));
     setNotifications(savedNotifications === 'true');
     setSound(savedSound === 'true');
     setAutoSave(savedAutoSave === 'true');
     setStartupAnimation(savedStartupAnimation === 'true');
-    
-    // Apply theme to document
-    document.documentElement.classList.remove('light', 'dark');
-    document.documentElement.classList.add(savedTheme);
   }, []);
 
   // Save settings to localStorage
   const saveSetting = (key: string, value: string | number | boolean) => {
     localStorage.setItem(`portfolio-${key}`, String(value));
+    
+    // Special handling for wallpaper
+    if (key === 'wallpaper') {
+      const event = new CustomEvent('wallpaperChange', { detail: value });
+      window.dispatchEvent(event);
+    }
   };
 
   const handleThemeChange = (newTheme: string) => {
     setTheme(newTheme);
     saveSetting('theme', newTheme);
-    document.documentElement.classList.remove('light', 'dark');
-    document.documentElement.classList.add(newTheme);
   };
 
   const handleWallpaperChange = (newWallpaper: string) => {
@@ -95,16 +94,16 @@ const Settings = () => {
   };
 
   const wallpaperOptions = [
-    { id: 'default', name: 'Default', url: '/wallpapers/default.jpg' },
-    { id: 'space', name: 'Space', url: '/wallpapers/space.jpg' },
-    { id: 'mountains', name: 'Mountains', url: '/wallpapers/mountains.jpg' },
-    { id: 'city', name: 'City', url: '/wallpapers/city.jpg' },
+    { id: 'default', name: 'Default', url: '/logo.png' },
+    { id: 'space', name: 'Space', url: '/logo.png' },
+    { id: 'mountains', name: 'Mountains', url: '/logo.png' },
+    { id: 'city', name: 'City', url: '/logo.png' },
   ];
 
   const themeOptions = [
     { id: 'light', name: 'Light', icon: Sun },
     { id: 'dark', name: 'Dark', icon: Moon },
-    { id: 'system', name: 'System', icon: Desktop },
+    { id: 'system', name: 'System', icon: Laptop },
   ];
 
   return (
@@ -138,7 +137,7 @@ const Settings = () => {
                   value="personalization" 
                   className="w-full justify-start data-[state=active]:bg-accent"
                 >
-                  <Desktop className="w-4 h-4 mr-2" />
+                  <Laptop className="w-4 h-4 mr-2" />
                   Personalization
                 </TabsTrigger>
                 <TabsTrigger 

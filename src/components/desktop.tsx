@@ -35,7 +35,7 @@ const Desktop = () => {
   const desktopRef = React.useRef<HTMLDivElement>(null);
   const [contextMenuOpen, setContextMenuOpen] = React.useState(false);
   const [contextMenuPosition, setContextMenuPosition] = React.useState({ x: 0, y: 0 });
-  const [wallpaper, setWallpaper] = useState('/wallpapers/default.jpg');
+  const [wallpaper, setWallpaper] = useState('/logo.png');
   const [showNotificationCenter, setShowNotificationCenter] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -73,6 +73,17 @@ const Desktop = () => {
     if (savedWallpaper) {
       setWallpaper(savedWallpaper);
     }
+  }, []);
+
+  // Listen for wallpaper changes from settings
+  useEffect(() => {
+    const handleWallpaperChange = (event: Event) => {
+      const customEvent = event as CustomEvent;
+      setWallpaper(customEvent.detail);
+    };
+
+    window.addEventListener('wallpaperChange', handleWallpaperChange);
+    return () => window.removeEventListener('wallpaperChange', handleWallpaperChange);
   }, []);
 
   // Filter minimized windows for the dock
@@ -127,22 +138,14 @@ const Desktop = () => {
               </DropdownMenuSubTrigger>
               <DropdownMenuPortal>
                 <DropdownMenuSubContent>
-                  <DropdownMenuItem onClick={() => { changeWallpaper('/wallpapers/default.jpg'); setContextMenuOpen(false); }}>
+                  <DropdownMenuItem onClick={() => { changeWallpaper('/logo.png'); setContextMenuOpen(false); }}>
                     <Image className="mr-2 h-4 w-4" />
                     <span>Default</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => { changeWallpaper('/wallpapers/dark-blue.jpg'); setContextMenuOpen(false); }}>
-                    <Palette className="mr-2 h-4 w-4" />
-                    <span>Dark Blue</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => { changeWallpaper('/wallpapers/gradient.jpg'); setContextMenuOpen(false); }}>
-                    <Monitor className="mr-2 h-4 w-4" />
-                    <span>Gradient</span>
                   </DropdownMenuItem>
                 </DropdownMenuSubContent>
               </DropdownMenuPortal>
             </DropdownMenuSub>
-            
+
             <DropdownMenuItem disabled>
               <Folder className="mr-2 h-4 w-4" />
               <span>New Folder</span>
@@ -182,10 +185,8 @@ const Desktop = () => {
       )}
       
       <SystemSearch />
-      <NotificationCenter 
-        open={showNotificationCenter} 
-        onOpenChange={setShowNotificationCenter} 
-      />
+      <NotificationCenter />
+
     </>
   );
 };
