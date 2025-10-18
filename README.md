@@ -4,7 +4,7 @@ A cutting-edge, operating system-inspired portfolio showcasing the skills and pr
 
 ## Overview
 
-PortfolioOS transforms the traditional developer portfolio into an interactive operating system experience. Visitors can explore projects, skills, and personal information through familiar OS interfaces including windows, desktop icons, a taskbar, start menu, and multiple applications.
+PortfolioOS transforms the traditional developer portfolio into an interactive operating system experience. Visitors can explore projects, skills, and personal information through familiar OS interfaces including windows, desktop icons, a dock, and multiple applications.
 
 ## Key Features
 
@@ -37,7 +37,7 @@ PortfolioOS transforms the traditional developer portfolio into an interactive o
 13. **Gallery** - Visual showcase of projects and achievements
 
 ### UI Components
-- Taskbar with system tray and clock
+- Top bar with system controls and minimized window dock
 - Start menu with application search
 - Notification center
 - System search functionality
@@ -98,9 +98,16 @@ Customize the PortfolioOS experience:
 ## Responsive Design
 
 PortfolioOS is fully responsive and adapts to different screen sizes:
-- **Desktop**: Full OS experience with multiple windows
+- **Desktop**: Full OS experience with multiple windows and top bar controls
 - **Tablet**: Optimized window sizes and touch targets
-- **Mobile**: Single window mode with touch-friendly controls
+- **Mobile**: Single window mode with touch-friendly controls and bottom navigation for minimized windows
+
+## Window Management
+
+Windows can be managed through:
+- **Top bar dock**: Shows minimized windows on desktop
+- **Mobile bottom navigation**: Shows minimized windows on mobile devices
+- **Direct window controls**: Minimize, maximize, and close buttons within each window
 
 ## Local Storage Features
 
@@ -116,6 +123,13 @@ User preferences and settings are persisted using localStorage:
 2. Install dependencies: `npm install`
 3. Run development server: `npm run dev`
 4. Build for production: `npm run build`
+
+## Login Information
+
+The PortfolioOS features a boot screen with a simulated login:
+- No specific password is required
+- Enter any value or click "Guest" to access the system
+- This is purely for visual effect and demonstration purposes
 
 ## Future Enhancements
 

@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { WindowProvider } from '@/contexts/window-context';
-import Dock from './dock';
 import TopBar from './top-bar';
 import Desktop from './desktop';
 import BootScreen from './boot-screen';
@@ -39,7 +38,6 @@ const OsUi = () => {
       <div className="fixed inset-0 bg-background font-body select-none">
         <TopBar />
         <Desktop />
-        <Dock />
       </div>
     </WindowProvider>
   );

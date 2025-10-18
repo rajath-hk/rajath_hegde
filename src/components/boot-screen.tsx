@@ -67,9 +67,10 @@ const BootScreen = ({ onComplete }: BootScreenProps) => {
             </div>
             
             <div className="mb-6">
+              <p className="text-gray-400 text-sm mb-2 text-center">Enter any password or click Guest</p>
               <input
                 type="password"
-                placeholder="Enter password"
+                placeholder="Password (any value)"
                 className="w-full bg-gray-800 text-white rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 defaultValue=""
               />

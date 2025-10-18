@@ -45,13 +45,13 @@ const Window = (props: WindowProps) => {
   // Adjust window size and position for mobile
   useEffect(() => { 
     if (isMobile) {
-      // On mobile, make windows take up most of the screen
-      setSize({ 
-        width: Math.min(window.innerWidth - 20, 600), 
-        height: Math.min(window.innerHeight - 100, 700) 
-      });
+      // On mobile, make windows take up most of the screen with proper margins
+      const newWidth = Math.min(window.innerWidth - 20, 600);
+      const newHeight = Math.min(window.innerHeight - 100, 700);
+      
+      setSize({ width: newWidth, height: newHeight });
       setPosition({ 
-        x: Math.max(0, (window.innerWidth - Math.min(window.innerWidth - 20, 600)) / 2),
+        x: Math.max(0, (window.innerWidth - newWidth) / 2),
         y: 60 
       });
     } else {
