@@ -117,378 +117,330 @@ const Settings = () => {
         {/* Sidebar Navigation */}
         <div className="w-48 border-r bg-muted/30">
           <nav className="p-2">
-            <Tabs value={activeTab} onValueChange={setActiveTab} orientation="vertical">
-              <TabsList className="flex flex-col h-auto bg-transparent space-y-1">
-                <TabsTrigger 
-                  value="system" 
-                  className="w-full justify-start data-[state=active]:bg-accent"
-                >
-                  <Monitor className="w-4 h-4 mr-2" />
-                  System
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="appearance" 
-                  className="w-full justify-start data-[state=active]:bg-accent"
-                >
-                  <Palette className="w-4 h-4 mr-2" />
-                  Appearance
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="personalization" 
-                  className="w-full justify-start data-[state=active]:bg-accent"
-                >
-                  <Laptop className="w-4 h-4 mr-2" />
-                  Personalization
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="sound" 
-                  className="w-full justify-start data-[state=active]:bg-accent"
-                >
-                  <Volume2 className="w-4 h-4 mr-2" />
-                  Sound
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="notifications" 
-                  className="w-full justify-start data-[state=active]:bg-accent"
-                >
-                  <Bell className="w-4 h-4 mr-2" />
-                  Notifications
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="privacy" 
-                  className="w-full justify-start data-[state=active]:bg-accent"
-                >
-                  <Shield className="w-4 h-4 mr-2" />
-                  Privacy
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="about" 
-                  className="w-full justify-start data-[state=active]:bg-accent"
-                >
-                  <Info className="w-4 h-4 mr-2" />
-                  About
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
+            <div className="flex flex-col h-auto bg-transparent space-y-1">
+              <Button 
+                variant={activeTab === "system" ? "secondary" : "ghost"}
+                className="w-full justify-start"
+                onClick={() => setActiveTab("system")}
+              >
+                <Monitor className="w-4 h-4 mr-2" />
+                System
+              </Button>
+              <Button 
+                variant={activeTab === "appearance" ? "secondary" : "ghost"}
+                className="w-full justify-start"
+                onClick={() => setActiveTab("appearance")}
+              >
+                <Palette className="w-4 h-4 mr-2" />
+                Appearance
+              </Button>
+              <Button 
+                variant={activeTab === "personalization" ? "secondary" : "ghost"}
+                className="w-full justify-start"
+                onClick={() => setActiveTab("personalization")}
+              >
+                <Laptop className="w-4 h-4 mr-2" />
+                Personalization
+              </Button>
+              <Button 
+                variant={activeTab === "sound" ? "secondary" : "ghost"}
+                className="w-full justify-start"
+                onClick={() => setActiveTab("sound")}
+              >
+                <Volume2 className="w-4 h-4 mr-2" />
+                Sound
+              </Button>
+              <Button 
+                variant={activeTab === "notifications" ? "secondary" : "ghost"}
+                className="w-full justify-start"
+                onClick={() => setActiveTab("notifications")}
+              >
+                <Bell className="w-4 h-4 mr-2" />
+                Notifications
+              </Button>
+              <Button 
+                variant={activeTab === "privacy" ? "secondary" : "ghost"}
+                className="w-full justify-start"
+                onClick={() => setActiveTab("privacy")}
+              >
+                <Shield className="w-4 h-4 mr-2" />
+                Privacy
+              </Button>
+              <Button 
+                variant={activeTab === "about" ? "secondary" : "ghost"}
+                className="w-full justify-start"
+                onClick={() => setActiveTab("about")}
+              >
+                <Info className="w-4 h-4 mr-2" />
+                About
+              </Button>
+            </div>
           </nav>
         </div>
         
         {/* Main Content */}
         <div className="flex-1 overflow-y-auto">
-          <Tabs value={activeTab} onValueChange={setActiveTab}>
-            {/* System Settings */}
-            <TabsContent value="system" className="p-6">
-              <h2 className="text-xl font-semibold mb-6">System</h2>
-              
-              <div className="space-y-6">
-                <div>
-                  <h3 className="text-lg font-medium mb-3">Performance</h3>
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <Label className="text-base">Auto-save Layout</Label>
-                        <p className="text-sm text-muted-foreground">Save window positions automatically</p>
-                      </div>
-                      <Switch
-                        checked={autoSave}
-                        onCheckedChange={handleAutoSaveChange}
-                      />
-                    </div>
-                    
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <Label className="text-base">Startup Animation</Label>
-                        <p className="text-sm text-muted-foreground">Show boot animation on page load</p>
-                      </div>
-                      <Switch
-                        checked={startupAnimation}
-                        onCheckedChange={handleStartupAnimationChange}
-                      />
-                    </div>
-                  </div>
-                </div>
-                
-                <div>
-                  <h3 className="text-lg font-medium mb-3">Preferences</h3>
+          <div className={activeTab === "system" ? "block p-6" : "hidden"}>
+            <h2 className="text-xl font-semibold mb-6">System</h2>
+            
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-lg font-medium mb-3">Performance</h3>
+                <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <Label className="text-base">Default Language</Label>
-                      <p className="text-sm text-muted-foreground">Select your preferred language</p>
+                      <Label className="text-base">Auto-save Layout</Label>
+                      <p className="text-sm text-muted-foreground">Save window positions automatically</p>
                     </div>
-                    <Button variant="outline">
-                      English
-                    </Button>
+                    <Switch
+                      checked={autoSave}
+                      onCheckedChange={handleAutoSaveChange}
+                    />
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label className="text-base">Startup Animation</Label>
+                      <p className="text-sm text-muted-foreground">Show boot animation on page load</p>
+                    </div>
+                    <Switch
+                      checked={startupAnimation}
+                      onCheckedChange={handleStartupAnimationChange}
+                    />
                   </div>
                 </div>
               </div>
-            </TabsContent>
-            
-            {/* Appearance Settings */}
-            <TabsContent value="appearance" className="p-6">
-              <h2 className="text-xl font-semibold mb-6">Appearance</h2>
               
-              <div className="space-y-6">
-                <div>
-                  <h3 className="text-lg font-medium mb-3">Theme</h3>
+              <div>
+                <h3 className="text-lg font-medium mb-3">Power</h3>
+                <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <Label className="text-base">Color scheme</Label>
-                      <p className="text-sm text-muted-foreground">Select your preferred color scheme</p>
-                    </div>
-                    <div className="flex space-x-2">
-                      {themeOptions.map((option) => (
-                        <Button
-                          key={option.id}
-                          variant={theme === option.id ? "default" : "outline"}
-                          size="sm"
-                          onClick={() => handleThemeChange(option.id)}
-                          className="gap-1"
-                        >
-                          <option.icon className="w-3 h-3" />
-                          {option.name}
-                        </Button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-                
-                <div>
-                  <h3 className="text-lg font-medium mb-3">Animations</h3>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <Label className="text-base">Enable Animations</Label>
-                      <p className="text-sm text-muted-foreground">Smooth transitions between views</p>
-                    </div>
-                    <Switch defaultChecked />
-                  </div>
-                </div>
-              </div>
-            </TabsContent>
-            
-            {/* Personalization Settings */}
-            <TabsContent value="personalization" className="p-6">
-              <h2 className="text-xl font-semibold mb-6">Personalization</h2>
-              
-              <div className="space-y-6">
-                <div>
-                  <h3 className="text-lg font-medium mb-3">Wallpaper</h3>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {wallpaperOptions.map((option) => (
-                      <div
-                        key={option.id}
-                        className={`relative rounded-lg overflow-hidden cursor-pointer border-2 ${
-                          wallpaper === option.url ? 'border-primary' : 'border-transparent'
-                        }`}
-                        onClick={() => handleWallpaperChange(option.url)}
-                      >
-                        <div 
-                          className="h-24 bg-cover bg-center"
-                          style={{ backgroundImage: `url(${option.url})` }}
-                        />
-                        <div className="p-2 text-sm text-center bg-muted">
-                          {option.name}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                
-                <div>
-                  <h3 className="text-lg font-medium mb-3">Taskbar</h3>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <Label className="text-base">Position</Label>
-                      <p className="text-sm text-muted-foreground">Where to show the taskbar</p>
-                    </div>
-                    <div className="flex space-x-1">
-                      {['bottom', 'top', 'left', 'right'].map((position) => (
-                        <Button
-                          key={position}
-                          variant="outline"
-                          size="sm"
-                          className={position === 'bottom' ? 'bg-accent' : ''}
-                        >
-                          {position.charAt(0).toUpperCase() + position.slice(1)}
-                        </Button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </TabsContent>
-            
-            {/* Sound Settings */}
-            <TabsContent value="sound" className="p-6">
-              <h2 className="text-xl font-semibold mb-6">Sound</h2>
-              
-              <div className="space-y-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label className="text-base">Sound effects</Label>
-                    <p className="text-sm text-muted-foreground">Play sound effects for system events</p>
-                  </div>
-                  <Switch
-                    checked={sound}
-                    onCheckedChange={handleSoundChange}
-                  />
-                </div>
-                
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <Label className="text-base">Volume</Label>
-                    <span className="text-sm font-medium">{volume}%</span>
-                  </div>
-                  <Slider
-                    value={[volume]}
-                    onValueChange={handleVolumeChange}
-                    max={100}
-                    step={1}
-                  />
-                </div>
-                
-                <div>
-                  <h3 className="text-lg font-medium mb-3">Sound scheme</h3>
-                  <div className="grid grid-cols-2 gap-3">
-                    <Button variant="outline">Default</Button>
-                    <Button variant="outline">Classic</Button>
-                    <Button variant="outline">Quiet</Button>
-                    <Button variant="outline">Disabled</Button>
-                  </div>
-                </div>
-              </div>
-            </TabsContent>
-            
-            {/* Notification Settings */}
-            <TabsContent value="notifications" className="p-6">
-              <h2 className="text-xl font-semibold mb-6">Notifications</h2>
-              
-              <div className="space-y-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label className="text-base">Notifications</Label>
-                    <p className="text-sm text-muted-foreground">Show notifications from applications</p>
-                  </div>
-                  <Switch
-                    checked={notifications}
-                    onCheckedChange={handleNotificationsChange}
-                  />
-                </div>
-                
-                <div>
-                  <h3 className="text-lg font-medium mb-3">Notification preferences</h3>
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <Label>System notifications</Label>
-                      <Switch defaultChecked />
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <Label>Application notifications</Label>
-                      <Switch defaultChecked />
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <Label>Email notifications</Label>
-                      <Switch />
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <Label>Social media notifications</Label>
-                      <Switch />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </TabsContent>
-            
-            {/* Privacy Settings */}
-            <TabsContent value="privacy" className="p-6">
-              <h2 className="text-xl font-semibold mb-6">Privacy</h2>
-              
-              <div className="space-y-6">
-                <div>
-                  <h3 className="text-lg font-medium mb-3">Data collection</h3>
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <Label className="text-base">Usage analytics</Label>
-                        <p className="text-sm text-muted-foreground">Help improve PortfolioOS by sending usage data</p>
-                      </div>
-                      <Switch />
-                    </div>
-                    
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <Label className="text-base">Diagnostic data</Label>
-                        <p className="text-sm text-muted-foreground">Send diagnostic data to help fix issues</p>
-                      </div>
-                      <Switch defaultChecked />
-                    </div>
-                  </div>
-                </div>
-                
-                <div>
-                  <h3 className="text-lg font-medium mb-3">Location</h3>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <Label className="text-base">Location services</Label>
-                      <p className="text-sm text-muted-foreground">Allow applications to access your location</p>
+                      <Label className="text-base">Hibernate after inactivity</Label>
+                      <p className="text-sm text-muted-foreground">Put system to sleep after 30 minutes</p>
                     </div>
                     <Switch />
                   </div>
                 </div>
               </div>
-            </TabsContent>
+            </div>
+          </div>
+          
+          <div className={activeTab === "appearance" ? "block p-6" : "hidden"}>
+            <h2 className="text-xl font-semibold mb-6">Appearance</h2>
             
-            {/* About Section */}
-            <TabsContent value="about" className="p-6">
-              <h2 className="text-xl font-semibold mb-6">About PortfolioOS</h2>
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-lg font-medium mb-3">Theme</h3>
+                <div className="grid grid-cols-3 gap-4">
+                  {themeOptions.map((option) => (
+                    <Button
+                      key={option.id}
+                      variant={theme === option.id ? "default" : "outline"}
+                      className="flex flex-col h-24 items-center justify-center"
+                      onClick={() => handleThemeChange(option.id)}
+                    >
+                      <option.icon className="w-6 h-6 mb-2" />
+                      <span>{option.name}</span>
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div className={activeTab === "personalization" ? "block p-6" : "hidden"}>
+            <h2 className="text-xl font-semibold mb-6">Personalization</h2>
+            
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-lg font-medium mb-3">Wallpaper</h3>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                  {wallpaperOptions.map((option) => (
+                    <Button
+                      key={option.id}
+                      variant={wallpaper === option.url ? "default" : "outline"}
+                      className="flex flex-col h-24 items-center justify-center p-2"
+                      onClick={() => handleWallpaperChange(option.url)}
+                    >
+                      <div className="w-12 h-12 rounded bg-muted mb-2 flex items-center justify-center">
+                        <Palette className="w-6 h-6" />
+                      </div>
+                      <span className="text-xs">{option.name}</span>
+                    </Button>
+                  ))}
+                </div>
+              </div>
               
-              <div className="space-y-6">
-                <div className="flex items-center">
-                  <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mr-4">
-                    <span className="text-2xl">💻</span>
+              <div>
+                <h3 className="text-lg font-medium mb-3">Colors</h3>
+                <div className="flex items-center space-x-4">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-8 h-8 rounded-full bg-blue-500"></div>
+                    <span>Blue</span>
                   </div>
-                  <div>
-                    <h3 className="text-2xl font-bold">PortfolioOS</h3>
-                    <p className="text-muted-foreground">Version 1.0.0</p>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-8 h-8 rounded-full bg-green-500"></div>
+                    <span>Green</span>
                   </div>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="border rounded-lg p-4">
-                    <h4 className="font-medium mb-2">System information</h4>
-                    <ul className="text-sm space-y-1 text-muted-foreground">
-                      <li>Kernel: PortfolioOS 1.0.0</li>
-                      <li>Architecture: Web-based</li>
-                      <li>Browser: {typeof navigator !== 'undefined' ? navigator.userAgent.split(' ')[0] : 'Unknown'}</li>
-                    </ul>
-                  </div>
-                  
-                  <div className="border rounded-lg p-4">
-                    <h4 className="font-medium mb-2">Developer</h4>
-                    <ul className="text-sm space-y-1 text-muted-foreground">
-                      <li>Rajath Hegde</li>
-                      <li>MCA Student</li>
-                      <li>Karnataka, India</li>
-                    </ul>
-                  </div>
-                </div>
-                
-                <div>
-                  <h4 className="font-medium mb-2">Links</h4>
-                  <div className="flex space-x-3">
-                    <Button variant="outline" size="sm">
-                      Documentation
-                    </Button>
-                    <Button variant="outline" size="sm">
-                      GitHub Repository
-                    </Button>
-                    <Button variant="outline" size="sm">
-                      Report Issue
-                    </Button>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-8 h-8 rounded-full bg-purple-500"></div>
+                    <span>Purple</span>
                   </div>
                 </div>
               </div>
-            </TabsContent>
-          </Tabs>
+            </div>
+          </div>
+          
+          <div className={activeTab === "sound" ? "block p-6" : "hidden"}>
+            <h2 className="text-xl font-semibold mb-6">Sound</h2>
+            
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-lg font-medium mb-3">Volume</h3>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <Volume2 className="w-5 h-5" />
+                      <Label className="text-base">System Volume</Label>
+                    </div>
+                    <Slider 
+                      className="w-40" 
+                      value={[volume]} 
+                      onValueChange={handleVolumeChange}
+                      max={100}
+                      step={1}
+                    />
+                    <span className="w-12 text-right">{volume}%</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div>
+                <h3 className="text-lg font-medium mb-3">Sound Preferences</h3>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label className="text-base">System Sounds</Label>
+                      <p className="text-sm text-muted-foreground">Play sounds for system events</p>
+                    </div>
+                    <Switch
+                      checked={sound}
+                      onCheckedChange={handleSoundChange}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div className={activeTab === "notifications" ? "block p-6" : "hidden"}>
+            <h2 className="text-xl font-semibold mb-6">Notifications</h2>
+            
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label className="text-base">Enable Notifications</Label>
+                  <p className="text-sm text-muted-foreground">Show alerts and notifications</p>
+                </div>
+                <Switch
+                  checked={notifications}
+                  onCheckedChange={handleNotificationsChange}
+                />
+              </div>
+              
+              <div>
+                <h3 className="text-lg font-medium mb-3">Notification Types</h3>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-base">Messages</Label>
+                    <Switch />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label className="text-base">System Updates</Label>
+                    <Switch defaultChecked />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label className="text-base">App Notifications</Label>
+                    <Switch defaultChecked />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div className={activeTab === "privacy" ? "block p-6" : "hidden"}>
+            <h2 className="text-xl font-semibold mb-6">Privacy</h2>
+            
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-lg font-medium mb-3">Data Collection</h3>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label className="text-base">Usage Analytics</Label>
+                      <p className="text-sm text-muted-foreground">Help improve PortfolioOS by sending usage data</p>
+                    </div>
+                    <Switch />
+                  </div>
+                </div>
+              </div>
+              
+              <div>
+                <h3 className="text-lg font-medium mb-3">Location</h3>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label className="text-base">Location Services</Label>
+                      <p className="text-sm text-muted-foreground">Allow apps to access your location</p>
+                    </div>
+                    <Switch />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div className={activeTab === "about" ? "block p-6" : "hidden"}>
+            <h2 className="text-xl font-semibold mb-6">About</h2>
+            
+            <div className="space-y-6">
+              <div className="text-center">
+                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                  <Info className="w-8 h-8 text-primary" />
+                </div>
+                <h3 className="text-2xl font-bold">PortfolioOS</h3>
+                <p className="text-muted-foreground">Version 1.0.0</p>
+                <p className="mt-2 text-sm">Your personal portfolio operating system</p>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="border rounded-lg p-4">
+                  <h4 className="font-medium mb-2">System Information</h4>
+                  <div className="space-y-1 text-sm text-muted-foreground">
+                    <p>OS Build: PortfolioOS 1.0.0</p>
+                    <p>Architecture: Web-based</p>
+                    <p>Kernel: React.js</p>
+                  </div>
+                </div>
+                
+                <div className="border rounded-lg p-4">
+                  <h4 className="font-medium mb-2">Support</h4>
+                  <div className="space-y-1 text-sm text-muted-foreground">
+                    <p>Documentation: Available online</p>
+                    <p>Support: rajath@example.com</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex justify-center pt-4">
+                <Button>
+                  <Save className="w-4 h-4 mr-2" />
+                  Check for Updates
+                </Button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

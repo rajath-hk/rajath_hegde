@@ -68,7 +68,7 @@ const Window = (props: WindowProps) => {
     setResizeDirection(direction);
   };
 
-  const handleDragStart = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleDragStart = (e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
     if (isMaximized) return;
     if ((e.target as HTMLElement).closest('button')) {
       return;
@@ -203,7 +203,14 @@ const Window = (props: WindowProps) => {
       onMouseDown={() => focusWindow(id)}
       drag={!isMaximized && !isResizing && !isMobile}
       dragMomentum={false}
-      onDragStart={handleDragStart}
+      onDragStart={(event, info) => {
+        if (isMaximized) return;
+        // Check if the target is a button
+        if ((event.target as HTMLElement).closest('button')) {
+          return;
+        }
+        focusWindow(id);
+      }}
       onDragEnd={(e, info) => {
         updateWindowPosition(id, position.x + info.offset.x, position.y + info.offset.y);
       }}
@@ -216,21 +223,21 @@ const Window = (props: WindowProps) => {
       >
         <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
             <button 
-              onClick={(e) => { e.stopPropagation(); closeWindow(id) }} 
+              onClick={(e) => { e.stopPropagation(); closeWindow(id); }} 
               className="w-6 h-6 rounded-full bg-[#ff5f57] flex items-center justify-center group/btn hover:bg-[#ff3b30] transition-colors"
               aria-label="Close"
             >
                 <X className="w-3 h-3 text-[#9d252b] group-hover/btn:text-white transition-colors" />
             </button>
             <button 
-              onClick={(e) => { e.stopPropagation(); toggleMinimize(id) }} 
+              onClick={(e) => { e.stopPropagation(); toggleMinimize(id); }} 
               className="w-6 h-6 rounded-full bg-[#febc2e] flex items-center justify-center group/btn hover:bg-[#ff9500] transition-colors"
               aria-label="Minimize"
             >
                 <Minus className="w-3 h-3 text-[#9a542c] group-hover/btn:text-white transition-colors" />
             </button>
             <button 
-              onClick={(e) => { e.stopPropagation(); toggleMaximize(id) }} 
+              onClick={(e) => { e.stopPropagation(); toggleMaximize(id); }} 
               className="w-6 h-6 rounded-full bg-[#28c840] flex items-center justify-center group/btn hover:bg-[#00c700] transition-colors"
               aria-label={isMaximized ? "Restore" : "Maximize"}
             >
