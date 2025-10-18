@@ -1,73 +1,135 @@
-# RetroFolio: An Interactive Portfolio
+# PortfolioOS
 
-This is an interactive portfolio built with Next.js and styled to look like a retro desktop operating system. It was created in Firebase Studio.
+A cutting-edge, operating system-inspired portfolio showcasing the skills and projects of Rajath Hegde, an MCA student and aspiring full-stack web developer from Karnataka, India.
 
-## Features
-- Interactive desktop UI with movable icons and resizable windows.
-- Dark and light mode support.
-- Responsive design for different screen sizes.
-- Pre-configured for easy deployment.
+## Overview
+
+PortfolioOS transforms the traditional developer portfolio into an interactive operating system experience. Visitors can explore projects, skills, and personal information through familiar OS interfaces including windows, desktop icons, a taskbar, start menu, and multiple applications.
+
+## Key Features
+
+### Desktop Environment
+- Fully interactive desktop with draggable icons
+- Context menu for desktop customization
+- Wallpaper selection system
+- Responsive design for all device sizes
+
+### Window Management System
+- Draggable and resizable application windows
+- Minimize, maximize, and close functionality
+- Window focus management with z-index handling
+- Smooth animations using Framer Motion
+
+### Applications Suite
+
+1. **About Me** - Personal story and background
+2. **Projects** - Detailed showcase of development projects
+3. **Skills** - Interactive visualization of technical skills
+4. **Terminal** - Command-line interface with custom commands
+5. **Settings** - System customization options
+6. **File Explorer** - Browse through projects and documents
+7. **Web Browser** - Embedded browser for external sites
+8. **Media Player** - Showcase project demos and videos
+9. **Calculator** - Functional calculator application
+10. **Weather** - Location-based weather information
+11. **Notes** - Personal note-taking application
+12. **System Info** - Detailed system statistics
+13. **Gallery** - Visual showcase of projects and achievements
+
+### UI Components
+- Taskbar with system tray and clock
+- Start menu with application search
+- Notification center
+- System search functionality
+- Boot screen with login interface
+
+## Technical Implementation
+
+### Core Technologies
+- **Framework**: Next.js 14 with App Router
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **UI Components**: Radix UI primitives
+- **State Management**: React Context API
+- **Animations**: Framer Motion
+- **Icons**: Lucide React
+
+### Key Features Implemented
+- Local storage for persisting user preferences
+- Responsive design for mobile, tablet, and desktop
+- Keyboard navigation support
+- Touch gesture support for mobile devices
+- Custom theming system
+- Performance optimized with code splitting
+
+## Applications in Detail
+
+### Terminal Application
+A fully functional terminal emulator with commands like:
+- `help` - Show available commands
+- `about` - Display personal information
+- `projects` - List development projects
+- `skills` - Show technical skills
+- `contact` - Display contact information
+- `neofetch` - Display system information with ASCII art
+
+### File Explorer
+Browse through a structured file system representing projects and documents:
+- Desktop shortcuts
+- Documents folder with resume and certificates
+- Projects folder with detailed subfolders
+- Applications folder
+
+### Media Player
+Showcase project demos and videos:
+- Playlist management
+- Playback controls
+- Volume adjustment
+- Visual album art display
+
+### Settings Application
+Customize the PortfolioOS experience:
+- Theme selection (light/dark/system)
+- Wallpaper selection
+- Sound preferences
+- Notification settings
+- Privacy controls
+
+## Responsive Design
+
+PortfolioOS is fully responsive and adapts to different screen sizes:
+- **Desktop**: Full OS experience with multiple windows
+- **Tablet**: Optimized window sizes and touch targets
+- **Mobile**: Single window mode with touch-friendly controls
+
+## Local Storage Features
+
+User preferences and settings are persisted using localStorage:
+- Window positions and sizes
+- Desktop icon positions
+- Theme and wallpaper preferences
+- System settings
 
 ## Getting Started
 
-To run this project locally, follow these steps:
+1. Clone the repository
+2. Install dependencies: `npm install`
+3. Run development server: `npm run dev`
+4. Build for production: `npm run build`
 
-1.  **Clone the repository:**
-    ```bash
-    git clone <your-repository-url>
-    cd <repository-folder>
-    ```
+## Future Enhancements
 
-2.  **Install dependencies:**
-    ```bash
-    npm install
-    ```
+- Integration with actual GitHub API for live project data
+- Additional applications (calendar, email client)
+- Multi-language support
+- Enhanced accessibility features
+- Progressive Web App capabilities
+- Advanced theming options
 
-3.  **Run the development server:**
-    ```bash
-    npm run dev
-    ```
-    Open [http://localhost:9002](http://localhost:9002) in your browser to see the result.
+## Author
 
----
+Rajath Hegde - Full-Stack Web Developer & MCA Student
 
-## How to Deploy to GitHub Pages
+## License
 
-This project is already configured for a simple, automated deployment to GitHub Pages. Just follow these steps:
-
-### Step 1: Create a GitHub Repository
-
-If you haven't already, create a new, empty repository on your GitHub account. Do **not** initialize it with a README or .gitignore file, as your project already has these.
-
-### Step 2: Push Your Project Code
-
-In your project folder on your computer, connect your local project to the GitHub repository and push your code.
-
-```bash
-# Make sure you are in your project directory
-
-# Set the remote origin to your new repository's URL
-# Replace YOUR_USERNAME and YOUR_REPOSITORY with your actual details
-git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPOSITORY.git
-
-# Rename your primary branch to 'main' if it isn't already
-git branch -M main
-
-# Push your code to the 'main' branch on GitHub
-git push -u origin main
-```
-
-### Step 3: Configure GitHub Pages Settings
-
-This is the final and most important step to enable the automated deployment.
-
-1.  Go to your new repository on the GitHub website.
-2.  Click on the **`Settings`** tab.
-3.  In the left sidebar, click on **`Pages`**.
-4.  Under the "Build and deployment" section, for the **`Source`**, select **`GitHub Actions`**.
-
-### That's It!
-
-You're all set! The deployment workflow (defined in `.github/workflows/deploy.yml`) will automatically run every time you push a change to your `main` branch.
-
-After the first push, the action will start. You can monitor its progress in the **`Actions`** tab of your repository. Once it's complete (it usually takes a couple of minutes), your portfolio will be live at the URL shown in the `Settings > Pages` screen. The URL will look something like this: `https://YOUR_USERNAME.github.io/YOUR_REPOSITORY/`.
+This project is licensed under the MIT License - see the LICENSE file for details.

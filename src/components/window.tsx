@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import type { WindowInstance } from '@/types';
 import { useWindows } from '@/contexts/window-context';
 import { cn } from '@/lib/utils';
-import { X, Minus, Square } from 'lucide-react';
+import { X, Minus, Square, Maximize, Minimize } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 type WindowProps = WindowInstance;
@@ -27,13 +27,38 @@ const Window = (props: WindowProps) => {
   const [position, setPosition] = useState({ x, y });
   const [isResizing, setIsResizing] = useState(false);
   const [resizeDirection, setResizeDirection] = useState<string | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
   
   const windowRef = useRef<HTMLDivElement>(null);
 
+  // Check if we're on mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Adjust window size and position for mobile
   useEffect(() => { 
-    setSize({ width, height }); 
-    setPosition({ x, y });
-  }, [width, height, x, y]);
+    if (isMobile) {
+      // On mobile, make windows take up most of the screen
+      setSize({ 
+        width: Math.min(window.innerWidth - 20, 600), 
+        height: Math.min(window.innerHeight - 100, 700) 
+      });
+      setPosition({ 
+        x: Math.max(0, (window.innerWidth - Math.min(window.innerWidth - 20, 600)) / 2),
+        y: 60 
+      });
+    } else {
+      setSize({ width, height }); 
+      setPosition({ x, y });
+    }
+  }, [width, height, x, y, isMobile]);
 
   const handleResizeStart = (e: React.MouseEvent<HTMLDivElement>, direction: string) => {
     if (e.button !== 0) return;
@@ -56,6 +81,42 @@ const Window = (props: WindowProps) => {
       return;
     }
     toggleMaximize(id);
+  };
+
+  // Handle touch events for mobile dragging
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (isMaximized) return;
+    focusWindow(id);
+    
+    const touch = e.touches[0];
+    const windowRect = windowRef.current?.getBoundingClientRect();
+    if (!windowRect) return;
+    
+    const offsetX = touch.clientX - windowRect.left;
+    const offsetY = touch.clientY - windowRect.top;
+    
+    const handleTouchMove = (moveEvent: TouchEvent) => {
+      if (!windowRef.current) return;
+      
+      const moveTouch = moveEvent.touches[0];
+      const newX = moveTouch.clientX - offsetX;
+      const newY = moveTouch.clientY - offsetY;
+      
+      // Keep window within bounds
+      const boundedX = Math.max(0, Math.min(newX, window.innerWidth - windowRect.width));
+      const boundedY = Math.max(0, Math.min(newY, window.innerHeight - windowRect.height));
+      
+      setPosition({ x: boundedX, y: boundedY });
+    };
+    
+    const handleTouchEnd = () => {
+      updateWindowPosition(id, position.x, position.y);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchend', handleTouchEnd);
+    };
+    
+    window.addEventListener('touchmove', handleTouchMove);
+    window.addEventListener('touchend', handleTouchEnd);
   };
 
   const handleMouseMove = useCallback((e: MouseEvent) => {
@@ -140,7 +201,7 @@ const Window = (props: WindowProps) => {
       exit={{ opacity: 0, scale: 0.9 }}
       transition={{ type: 'spring', stiffness: 500, damping: 40 }}
       onMouseDown={() => focusWindow(id)}
-      drag={!isMaximized && !isResizing}
+      drag={!isMaximized && !isResizing && !isMobile}
       dragMomentum={false}
       onDragStart={handleDragStart}
       onDragEnd={(e, info) => {
@@ -148,25 +209,45 @@ const Window = (props: WindowProps) => {
       }}
     >
       <header
-        className="flex items-center justify-center relative px-3 h-9 flex-shrink-0 border-b bg-black/5 dark:bg-white/5"
+        className="flex items-center justify-between relative px-3 h-9 flex-shrink-0 border-b bg-black/5 dark:bg-white/5 cursor-move"
         onDoubleClick={handleDoubleClick}
+        onTouchStart={handleTouchStart}
         style={{ cursor: isMaximized ? 'default' : isResizing ? 'default' : 'grab' }}
       >
         <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
-            <button onClick={(e) => { e.stopPropagation(); closeWindow(id) }} className="w-3.5 h-3.5 rounded-full bg-[#ff5f57] flex items-center justify-center group/btn" aria-label="Close">
-                <X className="w-2 h-2 text-[#9d252b] opacity-0 group-hover/btn:opacity-100 transition-opacity" />
+            <button 
+              onClick={(e) => { e.stopPropagation(); closeWindow(id) }} 
+              className="w-6 h-6 rounded-full bg-[#ff5f57] flex items-center justify-center group/btn hover:bg-[#ff3b30] transition-colors"
+              aria-label="Close"
+            >
+                <X className="w-3 h-3 text-[#9d252b] group-hover/btn:text-white transition-colors" />
             </button>
-            <button onClick={(e) => { e.stopPropagation(); toggleMinimize(id) }} className="w-3.5 h-3.5 rounded-full bg-[#febc2e] flex items-center justify-center group/btn" aria-label="Minimize">
-                <Minus className="w-2 h-2 text-[#9a542c] opacity-0 group-hover/btn:opacity-100 transition-opacity" />
+            <button 
+              onClick={(e) => { e.stopPropagation(); toggleMinimize(id) }} 
+              className="w-6 h-6 rounded-full bg-[#febc2e] flex items-center justify-center group/btn hover:bg-[#ff9500] transition-colors"
+              aria-label="Minimize"
+            >
+                <Minus className="w-3 h-3 text-[#9a542c] group-hover/btn:text-white transition-colors" />
             </button>
-            <button onClick={(e) => { e.stopPropagation(); toggleMaximize(id) }} className="w-3.5 h-3.5 rounded-full bg-[#28c840] flex items-center justify-center group/btn" aria-label="Maximize">
-                <Square className="w-1.5 h-1.5 fill-current text-[#226534] opacity-0 group-hover/btn:opacity-100 transition-opacity" />
+            <button 
+              onClick={(e) => { e.stopPropagation(); toggleMaximize(id) }} 
+              className="w-6 h-6 rounded-full bg-[#28c840] flex items-center justify-center group/btn hover:bg-[#00c700] transition-colors"
+              aria-label={isMaximized ? "Restore" : "Maximize"}
+            >
+              {isMaximized ? (
+                <Minimize className="w-3 h-3 text-[#226534] group-hover/btn:text-white transition-colors" />
+              ) : (
+                <Square className="w-3 h-3 text-[#226534] group-hover/btn:text-white transition-colors" />
+              )}
             </button>
         </div>
         <span className={cn(
-            "font-medium text-sm truncate transition-colors",
+            "font-medium text-sm truncate transition-colors max-w-[60%] sm:max-w-[70%]",
             isFocused ? "text-foreground" : "text-muted-foreground/80"
-          )}>{title}</span>
+          )}>
+          {title}
+        </span>
+        <div className="absolute right-3 top-1/2 -translate-y-1/2 w-3 h-3"></div>
       </header>
       <div className="flex-1 rounded-b-lg overflow-hidden">
         <div className="w-full h-full overflow-auto">
@@ -174,8 +255,8 @@ const Window = (props: WindowProps) => {
         </div>
       </div>
       
-      {/* Resize handles */}
-      {!isMaximized && (
+      {/* Resize handles - hidden on mobile */}
+      {!isMaximized && !isMobile && (
         <>
           {/* Edges */}
           <div 

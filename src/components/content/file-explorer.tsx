@@ -1,174 +1,229 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Folder, File, FileText, Image, Film } from 'lucide-react';
-import { fileSystem, type FileSystemEntry } from '@/lib/file-system';
+import { 
+  Folder, 
+  FileText, 
+  Code, 
+  Image, 
+  Video, 
+  Music, 
+  Archive,
+  ChevronRight,
+  ChevronDown,
+  HardDrive,
+  User,
+  Briefcase,
+  Award,
+  Mail,
+  Settings,
+  Terminal
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const FileExplorer = () => {
-  const [currentPath, setCurrentPath] = useState<FileSystemEntry[]>([fileSystem]);
-  const [selectedItem, setSelectedItem] = useState<FileSystemEntry | null>(null);
-  
-  const currentFolder = currentPath[currentPath.length - 1];
-  
-  const handleFolderClick = (folder: FileSystemEntry) => {
-    if (folder.type === 'folder') {
-      setCurrentPath([...currentPath, folder]);
-      setSelectedItem(null);
-    }
+  const [expandedFolders, setExpandedFolders] = useState<Record<string, boolean>>({
+    'desktop': true,
+    'documents': true,
+    'projects': true,
+  });
+
+  const toggleFolder = (folderId: string) => {
+    setExpandedFolders(prev => ({
+      ...prev,
+      [folderId]: !prev[folderId]
+    }));
   };
-  
-  const handleBackClick = () => {
-    if (currentPath.length > 1) {
-      const newPath = [...currentPath];
-      newPath.pop();
-      setCurrentPath(newPath);
-      setSelectedItem(null);
+
+  // File structure
+  const fileStructure = [
+    {
+      id: 'desktop',
+      name: 'Desktop',
+      icon: <HardDrive className="w-4 h-4" />,
+      type: 'folder',
+      children: [
+        { id: 'about-shortcut', name: 'About Me.lnk', icon: <User className="w-4 h-4" />, type: 'shortcut' },
+        { id: 'projects-shortcut', name: 'Projects.lnk', icon: <Briefcase className="w-4 h-4" />, type: 'shortcut' },
+      ]
+    },
+    {
+      id: 'documents',
+      name: 'Documents',
+      icon: <Folder className="w-4 h-4" />,
+      type: 'folder',
+      children: [
+        { id: 'resume', name: 'Resume.pdf', icon: <FileText className="w-4 h-4" />, type: 'file' },
+        { id: 'cover-letter', name: 'Cover Letter.docx', icon: <FileText className="w-4 h-4" />, type: 'file' },
+        { id: 'certificates', name: 'Certificates', icon: <Award className="w-4 h-4" />, type: 'folder', children: [
+          { id: 'aws-cert', name: 'AWS_Certification.pdf', icon: <FileText className="w-4 h-4" />, type: 'file' },
+          { id: 'ml-cert', name: 'ML_Course.pdf', icon: <FileText className="w-4 h-4" />, type: 'file' },
+        ]},
+      ]
+    },
+    {
+      id: 'projects',
+      name: 'Projects',
+      icon: <Briefcase className="w-4 h-4" />,
+      type: 'folder',
+      children: [
+        { 
+          id: 'rtsp-recorder', 
+          name: 'RTSP Loop Recorder', 
+          icon: <Folder className="w-4 h-4" />, 
+          type: 'folder',
+          children: [
+            { id: 'rtsp-readme', name: 'README.md', icon: <FileText className="w-4 h-4" />, type: 'file' },
+            { id: 'rtsp-src', name: 'src', icon: <Code className="w-4 h-4" />, type: 'folder' },
+            { id: 'rtsp-demo', name: 'demo.mp4', icon: <Video className="w-4 h-4" />, type: 'file' },
+          ]
+        },
+        { 
+          id: 'self-hosted', 
+          name: 'Self-Hosted Platform', 
+          icon: <Folder className="w-4 h-4" />, 
+          type: 'folder',
+          children: [
+            { id: 'self-readme', name: 'README.md', icon: <FileText className="w-4 h-4" />, type: 'file' },
+            { id: 'self-docker', name: 'docker-compose.yml', icon: <FileText className="w-4 h-4" />, type: 'file' },
+            { id: 'self-config', name: 'config.json', icon: <FileText className="w-4 h-4" />, type: 'file' },
+          ]
+        },
+        { 
+          id: 'getgo-app', 
+          name: 'GetGo Web App', 
+          icon: <Folder className="w-4 h-4" />, 
+          type: 'folder',
+          children: [
+            { id: 'getgo-readme', name: 'README.md', icon: <FileText className="w-4 h-4" />, type: 'file' },
+            { id: 'getgo-src', name: 'src', icon: <Code className="w-4 h-4" />, type: 'folder' },
+          ]
+        },
+      ]
+    },
+    {
+      id: 'downloads',
+      name: 'Downloads',
+      icon: <Folder className="w-4 h-4" />,
+      type: 'folder',
+      children: [
+        { id: 'portfolio-zip', name: 'portfolio.zip', icon: <Archive className="w-4 h-4" />, type: 'file' },
+      ]
+    },
+    {
+      id: 'applications',
+      name: 'Applications',
+      icon: <Folder className="w-4 h-4" />,
+      type: 'folder',
+      children: [
+        { id: 'terminal-app', name: 'Terminal.exe', icon: <Terminal className="w-4 h-4" />, type: 'file' },
+        { id: 'settings-app', name: 'Settings.exe', icon: <Settings className="w-4 h-4" />, type: 'file' },
+        { id: 'contact-app', name: 'Contact.exe', icon: <Mail className="w-4 h-4" />, type: 'file' },
+      ]
+    },
+  ];
+
+  const getFileIcon = (file: any) => {
+    if (file.type === 'folder') {
+      return expandedFolders[file.id] ? 
+        <ChevronDown className="w-4 h-4" /> : 
+        <ChevronRight className="w-4 h-4" />;
     }
+    return file.icon;
   };
-  
-  const handleItemClick = (item: FileSystemEntry) => {
-    setSelectedItem(item);
-  };
-  
-  const formatDate = (date?: Date) => {
-    if (!date) return '';
-    return date.toLocaleDateString();
-  };
-  
-  const formatSize = (bytes?: number) => {
-    if (!bytes) return '';
-    if (bytes < 1024) return bytes + ' B';
-    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
-    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
-  };
-  
-  const getFileIcon = (item: FileSystemEntry) => {
-    if (item.type === 'folder') {
-      return <Folder className="w-5 h-5 text-blue-500" />;
-    }
-    
-    if (item.name.endsWith('.md') || item.name.endsWith('.txt')) {
-      return <FileText className="w-5 h-5 text-gray-500" />;
-    }
-    
-    if (item.name.endsWith('.png') || item.name.endsWith('.jpg') || item.name.endsWith('.jpeg')) {
-      return <Image className="w-5 h-5 text-purple-500" />;
-    }
-    
-    if (item.name.endsWith('.mp4') || item.name.endsWith('.mov')) {
-      return <Film className="w-5 h-5 text-red-500" />;
-    }
-    
-    return <File className="w-5 h-5 text-gray-500" />;
+
+  const renderFileTree = (items: any[], level = 0) => {
+    return (
+      <div className={`ml-${level * 4}`}>
+        {items.map((item) => (
+          <div key={item.id}>
+            <div 
+              className="flex items-center py-1 px-2 hover:bg-accent rounded cursor-pointer"
+              onClick={() => {
+                if (item.type === 'folder') {
+                  toggleFolder(item.id);
+                }
+              }}
+            >
+              <span className="mr-2">
+                {getFileIcon(item)}
+              </span>
+              <span className="mr-2">{item.icon}</span>
+              <span className="text-sm">{item.name}</span>
+            </div>
+            
+            {item.type === 'folder' && expandedFolders[item.id] && item.children && (
+              <div className="ml-4">
+                {renderFileTree(item.children, level + 1)}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    );
   };
 
   return (
     <div className="h-full flex flex-col">
-      {/* Breadcrumb Navigation */}
-      <div className="p-3 border-b flex items-center gap-2 text-sm">
-        <button 
-          onClick={handleBackClick}
-          disabled={currentPath.length <= 1}
-          className="px-2 py-1 rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-200 dark:hover:bg-gray-700"
-        >
-          ← Back
-        </button>
-        <div className="flex items-center gap-1">
-          {currentPath.map((folder, index) => (
-            <div key={folder.id} className="flex items-center gap-1">
-              {index > 0 && <span>/</span>}
-              <button
-                onClick={() => setCurrentPath(currentPath.slice(0, index + 1))}
-                className="hover:underline"
-              >
-                {folder.name}
-              </button>
-            </div>
-          ))}
-        </div>
+      <div className="border-b p-2 flex items-center">
+        <h2 className="text-lg font-semibold">File Explorer</h2>
       </div>
       
       <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar - Folder Tree */}
-        <div className="w-1/4 border-r p-2 overflow-y-auto">
-          <div className="font-semibold mb-2">Folders</div>
-          <div className="space-y-1">
-            {fileSystem.children?.filter(item => item.type === 'folder').map(folder => (
-              <button
-                key={folder.id}
-                onClick={() => handleFolderClick(folder)}
-                className={`flex items-center gap-2 w-full text-left p-2 rounded ${
-                  currentFolder.id === folder.id 
-                    ? 'bg-blue-100 dark:bg-blue-900' 
-                    : 'hover:bg-gray-100 dark:hover:bg-gray-800'
-                }`}
-              >
-                <Folder className="w-4 h-4 text-blue-500" />
-                <span>{folder.name}</span>
-              </button>
-            ))}
+        {/* Sidebar - Quick Access */}
+        <div className="w-48 border-r bg-muted/30">
+          <div className="p-2">
+            <h3 className="text-sm font-medium mb-2 px-2">Quick Access</h3>
+            <div className="space-y-1">
+              <Button variant="ghost" size="sm" className="w-full justify-start">
+                <User className="w-4 h-4 mr-2" />
+                About Me
+              </Button>
+              <Button variant="ghost" size="sm" className="w-full justify-start">
+                <Briefcase className="w-4 h-4 mr-2" />
+                Projects
+              </Button>
+              <Button variant="ghost" size="sm" className="w-full justify-start">
+                <Award className="w-4 h-4 mr-2" />
+                Skills
+              </Button>
+              <Button variant="ghost" size="sm" className="w-full justify-start">
+                <Mail className="w-4 h-4 mr-2" />
+                Contact
+              </Button>
+            </div>
           </div>
         </div>
         
-        {/* Main Content Area */}
-        <div className="flex-1 flex flex-col">
-          {/* File List */}
-          <div className="flex-1 overflow-y-auto">
-            <div className="grid grid-cols-[auto,1fr,120px,100px] gap-2 p-2 text-sm font-medium border-b">
-              <div className="w-8"></div>
-              <div>Name</div>
-              <div className="text-right">Modified</div>
-              <div className="text-right">Size</div>
-            </div>
-            
-            <div className="divide-y">
-              {currentFolder.children?.map(item => (
-                <div 
-                  key={item.id}
-                  onClick={() => handleItemClick(item)}
-                  onDoubleClick={() => item.type === 'folder' && handleFolderClick(item)}
-                  className={`grid grid-cols-[auto,1fr,120px,100px] gap-2 p-2 text-sm cursor-pointer ${
-                    selectedItem?.id === item.id 
-                      ? 'bg-blue-100 dark:bg-blue-900' 
-                      : 'hover:bg-gray-100 dark:hover:bg-gray-800'
-                  }`}
-                >
-                  <div className="flex items-center justify-center">
-                    {getFileIcon(item)}
-                  </div>
-                  <div className="flex items-center">
-                    {item.name}
-                  </div>
-                  <div className="flex items-center justify-end text-gray-500 dark:text-gray-400">
-                    {formatDate(item.modified)}
-                  </div>
-                  <div className="flex items-center justify-end text-gray-500 dark:text-gray-400">
-                    {item.type === 'file' ? formatSize(item.size) : ''}
-                  </div>
-                </div>
-              ))}
-            </div>
+        {/* Main Content */}
+        <div className="flex-1 flex">
+          {/* File Tree */}
+          <div className="w-64 border-r">
+            <ScrollArea className="h-full">
+              <div className="p-2">
+                {renderFileTree(fileStructure)}
+              </div>
+            </ScrollArea>
           </div>
           
-          {/* Preview Panel */}
-          {selectedItem && (
-            <div className="h-1/3 border-t p-4 overflow-auto">
-              <div className="font-semibold mb-2">{selectedItem.name}</div>
-              {selectedItem.type === 'file' && selectedItem.content ? (
-                <div className="whitespace-pre-wrap">
-                  {selectedItem.content}
-                </div>
-              ) : selectedItem.type === 'file' ? (
-                <div className="text-gray-500 italic">
-                  This file cannot be previewed. {selectedItem.name.endsWith('.pdf') && 'Open with PDF viewer.'}
-                </div>
-              ) : (
-                <div className="text-gray-500 italic">
-                  Double-click to open folder
-                </div>
-              )}
+          {/* File Preview */}
+          <div className="flex-1 flex flex-col">
+            <div className="p-4 border-b">
+              <h3 className="font-medium">Portfolio Files</h3>
+              <p className="text-sm text-muted-foreground">Browse through my projects and documents</p>
             </div>
-          )}
+            
+            <div className="flex-1 flex items-center justify-center">
+              <div className="text-center">
+                <Folder className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
+                <h3 className="text-xl font-semibold mb-2">Select a file or folder</h3>
+                <p className="text-muted-foreground">
+                  Choose an item from the file tree to view its contents
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

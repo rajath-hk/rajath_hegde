@@ -1,135 +1,165 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
-import { ArrowLeft, ArrowRight, RotateCw, Home, ExternalLink } from 'lucide-react';
+import { 
+  ArrowLeft, 
+  ArrowRight, 
+  RotateCw, 
+  Home,
+  Star,
+  Bookmark,
+  Menu,
+  X,
+  Globe
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 const Browser = () => {
   const [url, setUrl] = useState('https://github.com/rajath-hk');
-  const [canGoBack, setCanGoBack] = useState(false);
-  const [canGoForward, setCanGoForward] = useState(false);
+  const [bookmarks, setBookmarks] = useState([
+    { id: 1, name: 'GitHub', url: 'https://github.com/rajath-hk' },
+    { id: 2, name: 'LinkedIn', url: 'https://linkedin.com/in/rajath-hegde' },
+    { id: 3, name: 'Portfolio', url: 'https://rajath.github.io/rajath_hegde' },
+  ]);
+  const [showBookmarks, setShowBookmarks] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   const handleNavigate = (newUrl: string) => {
+    if (!newUrl.startsWith('http')) {
+      newUrl = 'https://' + newUrl;
+    }
     setUrl(newUrl);
-  };
-
-  const handleBack = () => {
-    if (iframeRef.current && canGoBack) {
-      iframeRef.current.contentWindow?.history.back();
-    }
-  };
-
-  const handleForward = () => {
-    if (iframeRef.current && canGoForward) {
-      iframeRef.current.contentWindow?.history.forward();
-    }
   };
 
   const handleRefresh = () => {
     if (iframeRef.current) {
-      iframeRef.current.contentWindow?.location.reload();
+      iframeRef.current.src = iframeRef.current.src;
     }
   };
 
   const handleHome = () => {
-    handleNavigate('https://github.com/rajath-hk');
+    setUrl('https://github.com/rajath-hk');
   };
 
-  const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUrl(e.target.value);
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      let newUrl = url;
-      if (!url.startsWith('http://') && !url.startsWith('https://')) {
-        newUrl = 'https://' + url;
-      }
-      handleNavigate(newUrl);
-    }
+  const addBookmark = () => {
+    const newBookmark = {
+      id: bookmarks.length + 1,
+      name: url.replace('https://', '').replace('http://', '').split('/')[0],
+      url: url
+    };
+    setBookmarks([...bookmarks, newBookmark]);
   };
 
   return (
     <div className="h-full flex flex-col">
       {/* Browser Toolbar */}
-      <div className="flex items-center gap-2 p-2 border-b bg-gray-100 dark:bg-gray-800">
+      <div className="border-b bg-muted/30 p-2 flex items-center gap-2">
         <div className="flex gap-1">
-          <button 
-            onClick={handleBack}
-            disabled={!canGoBack}
-            className="p-1.5 rounded hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
-            aria-label="Go back"
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={() => iframeRef.current?.contentWindow?.history.back()}
+            disabled={!url}
           >
-            <ArrowLeft size={16} />
-          </button>
-          <button 
-            onClick={handleForward}
-            disabled={!canGoForward}
-            className="p-1.5 rounded hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
-            aria-label="Go forward"
+            <ArrowLeft className="w-4 h-4" />
+          </Button>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={() => iframeRef.current?.contentWindow?.history.forward()}
+            disabled={!url}
           >
-            <ArrowRight size={16} />
-          </button>
-          <button 
+            <ArrowRight className="w-4 h-4" />
+          </Button>
+          <Button 
+            variant="ghost" 
+            size="sm" 
             onClick={handleRefresh}
-            className="p-1.5 rounded hover:bg-gray-200 dark:hover:bg-gray-700"
-            aria-label="Refresh"
           >
-            <RotateCw size={16} />
-          </button>
-          <button 
+            <RotateCw className="w-4 h-4" />
+          </Button>
+          <Button 
+            variant="ghost" 
+            size="sm" 
             onClick={handleHome}
-            className="p-1.5 rounded hover:bg-gray-200 dark:hover:bg-gray-700"
-            aria-label="Home"
           >
-            <Home size={16} />
-          </button>
+            <Home className="w-4 h-4" />
+          </Button>
         </div>
         
-        <div className="flex-1 flex">
-          <input
+        <div className="flex-1 flex items-center">
+          <Input
             type="text"
             value={url}
-            onChange={handleUrlChange}
-            onKeyPress={handleKeyPress}
-            className="flex-1 px-3 py-1 text-sm rounded-l border bg-white dark:bg-gray-900"
+            onChange={(e) => setUrl(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleNavigate(url)}
+            className="w-full"
             placeholder="Enter URL"
           />
-          <button 
-            onClick={() => window.open(url, '_blank')}
-            className="px-3 py-1 text-sm bg-white dark:bg-gray-900 border-y border-r rounded-r hover:bg-gray-100 dark:hover:bg-gray-800"
-            aria-label="Open in new tab"
+        </div>
+        
+        <div className="flex gap-1">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={addBookmark}
           >
-            <ExternalLink size={14} />
-          </button>
+            <Bookmark className="w-4 h-4" />
+          </Button>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={() => setShowBookmarks(!showBookmarks)}
+          >
+            {showBookmarks ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+          </Button>
         </div>
       </div>
       
-      {/* Browser Content */}
-      <div className="flex-1 bg-white dark:bg-gray-900">
-        <div className="w-full h-full flex items-center justify-center">
-          {/* Placeholder for iframe */}
-          <div className="text-center p-8">
-            <div className="bg-gray-200 border-2 border-dashed rounded-xl w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-              <ExternalLink className="text-gray-500" />
-            </div>
-            <h3 className="text-lg font-medium mb-1">Browser</h3>
-            <p className="text-gray-500 text-sm">
-              Web content would be displayed here in an iframe
-            </p>
-            <p className="text-gray-500 text-sm mt-2">
-              Current URL: {url}
-            </p>
+      {/* Bookmarks Bar */}
+      {showBookmarks && (
+        <div className="border-b p-2 flex items-center gap-2 bg-muted/20">
+          <Star className="w-4 h-4 text-yellow-500" />
+          <div className="flex gap-2 overflow-x-auto">
+            {bookmarks.map((bookmark) => (
+              <Button
+                key={bookmark.id}
+                variant="ghost"
+                size="sm"
+                onClick={() => handleNavigate(bookmark.url)}
+                className="whitespace-nowrap"
+              >
+                {bookmark.name}
+              </Button>
+            ))}
           </div>
         </div>
-      </div>
+      )}
       
-      {/* Status Bar */}
-      <div className="px-3 py-1 text-xs border-t bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400">
-        <div className="flex justify-between">
-          <span>Ready</span>
-          <span>Portfolio Browser</span>
-        </div>
+      {/* Browser Content */}
+      <div className="flex-1 relative">
+        {url ? (
+          <iframe
+            ref={iframeRef}
+            src={url}
+            className="w-full h-full"
+            title="Browser"
+            sandbox="allow-same-origin allow-scripts allow-forms allow-popups"
+          />
+        ) : (
+          <div className="flex items-center justify-center h-full">
+            <div className="text-center">
+              <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mx-auto mb-4">
+                <Globe className="w-8 h-8 text-muted-foreground" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Welcome to Portfolio Browser</h3>
+              <p className="text-muted-foreground">
+                Enter a URL in the address bar to start browsing
+              </p>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

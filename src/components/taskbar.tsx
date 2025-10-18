@@ -2,93 +2,99 @@
 
 import React, { useState, useEffect } from 'react';
 import { useWindows } from '@/contexts/window-context';
-import StartMenu from './start-menu';
-import { cn } from '@/lib/utils';
-import { useTheme } from 'next-themes';
-import { Minus, Battery, Wifi, Volume2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { 
+  ChevronUp, 
+  Wifi, 
+  Battery, 
+  Volume2, 
+  Search,
+  Bell,
+  Calendar,
+  User
+} from 'lucide-react';
+import { format } from 'date-fns';
 
 const Taskbar = () => {
-  const { windows, focusWindow, toggleMinimize } = useWindows();
-  const { theme } = useTheme();
-  const [time, setTime] = useState('');
-  const [date, setDate] = useState('');
+  const { windows, closeWindow } = useWindows();
+  const [time, setTime] = useState(new Date());
+  const [showSystemTray, setShowSystemTray] = useState(false);
 
   useEffect(() => {
-    const updateDateTime = () => {
-      const now = new Date();
-      setTime(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
-      setDate(now.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' }));
-    };
-
-    updateDateTime();
-    const intervalId = setInterval(updateDateTime, 60000);
-
-    return () => clearInterval(intervalId);
+    const timer = setInterval(() => {
+      setTime(new Date());
+    }, 1000);
+    
+    return () => clearInterval(timer);
   }, []);
 
-  // Only show non-minimized windows in the taskbar
-  const visibleWindows = windows.filter(window => !window.isMinimized);
-
   return (
-    <div className={cn(
-      "fixed bottom-0 left-0 right-0 h-10 bg-background/80 backdrop-blur-lg border-t flex items-center justify-between px-2 z-[1000]",
-      "dark:bg-black/50"
-    )}>
-      <div className="flex items-center h-full">
-        {/* Start Menu */}
-        <StartMenu />
-        
-        {/* Running Applications */}
-        <div className="flex items-center h-full ml-2 gap-1">
-          {visibleWindows.map((window) => (
-            <button
-              key={window.id}
-              onClick={() => {
-                if (window.isFocused) {
-                  toggleMinimize(window.id);
-                } else {
-                  focusWindow(window.id);
-                }
-              }}
-              className={cn(
-                "flex items-center gap-2 px-3 py-1 rounded-sm text-sm h-full",
-                window.isFocused 
-                  ? "bg-primary/20 text-primary" 
-                  : "hover:bg-accent"
-              )}
+    <div className="fixed bottom-0 left-0 right-0 h-10 bg-background/80 backdrop-blur-xl border-t flex items-center justify-between px-2 z-50">
+      {/* Start Button */}
+      <Button 
+        variant="ghost" 
+        size="sm" 
+        className="h-8 px-2 hover:bg-accent"
+        aria-label="Start menu"
+      >
+        <span className="font-bold text-lg">_portfolio</span>
+      </Button>
+
+      {/* Open Windows */}
+      <div className="flex items-center space-x-1 flex-1 justify-center">
+        {windows
+          .filter(win => !win.isMinimized)
+          .map((win) => (
+            <Button
+              key={win.id}
+              variant="ghost"
+              size="sm"
+              className="h-8 px-2 text-xs hover:bg-accent"
+              onClick={() => closeWindow(win.id)}
             >
-              <window.icon className="h-4 w-4" />
-              <span className="max-w-[120px] truncate">{window.title}</span>
-            </button>
+              <win.icon className="w-4 h-4 mr-1" />
+              <span className="max-w-[80px] truncate">{win.title}</span>
+              <ChevronUp className="w-3 h-3 ml-1" />
+            </Button>
           ))}
-        </div>
       </div>
 
       {/* System Tray */}
-      <div className="flex items-center gap-4">
-        <div className="flex items-center gap-1 text-xs">
-          <Wifi className="h-4 w-4" />
-          <Volume2 className="h-4 w-4" />
-          <Battery className="h-4 w-4" />
-        </div>
-        <div className="flex flex-col items-end text-xs">
-          <div>{time}</div>
-          <div>{date}</div>
-        </div>
-        <button 
-          onClick={() => {
-            // Minimize all windows
-            windows.forEach(window => {
-              if (!window.isMinimized) {
-                toggleMinimize(window.id);
-              }
-            });
-          }}
-          className="p-1 rounded hover:bg-accent"
-          aria-label="Show Desktop"
+      <div className="flex items-center space-x-1">
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          className="h-8 w-8 p-0 hover:bg-accent"
+          aria-label="Search"
         >
-          <Minus className="h-4 w-4" />
-        </button>
+          <Search className="w-4 h-4" />
+        </Button>
+        
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          className="h-8 w-8 p-0 hover:bg-accent"
+          aria-label="Notifications"
+        >
+          <Bell className="w-4 h-4" />
+        </Button>
+        
+        <div className="flex items-center px-2 text-sm">
+          <Wifi className="w-4 h-4 mr-1 text-muted-foreground" />
+          <Battery className="w-4 h-4 mr-1 text-muted-foreground" />
+          <Volume2 className="w-4 h-4 mr-2 text-muted-foreground" />
+          <Calendar className="w-4 h-4 mr-1 text-muted-foreground" />
+          <span>{format(time, 'h:mm aa')}</span>
+        </div>
+        
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          className="h-8 w-8 p-0 hover:bg-accent"
+          aria-label="User profile"
+        >
+          <User className="w-4 h-4" />
+        </Button>
       </div>
     </div>
   );

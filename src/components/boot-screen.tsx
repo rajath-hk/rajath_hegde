@@ -7,106 +7,124 @@ interface BootScreenProps {
   onComplete: () => void;
 }
 
-const BootScreen: React.FC<BootScreenProps> = ({ onComplete }) => {
-  const [bootStep, setBootStep] = useState(0);
+const BootScreen = ({ onComplete }: BootScreenProps) => {
   const [progress, setProgress] = useState(0);
+  const [currentMessage, setCurrentMessage] = useState('Initializing system...');
+  const [showLogin, setShowLogin] = useState(false);
 
-  const bootSteps = [
+  const bootMessages = [
     'Initializing system...',
     'Loading kernel...',
     'Mounting filesystems...',
     'Starting services...',
-    'Loading user interface...',
-    'Welcome to Portfolio OS'
+    'Loading user profile...',
+    'Preparing desktop environment...',
+    'Welcome to PortfolioOS'
   ];
 
   useEffect(() => {
     const timer = setInterval(() => {
       setProgress(prev => {
-        if (prev >= 100) {
+        const newProgress = prev + Math.floor(Math.random() * 10) + 5;
+        
+        // Update message based on progress
+        const messageIndex = Math.floor((newProgress / 100) * bootMessages.length);
+        if (messageIndex < bootMessages.length && bootMessages[messageIndex]) {
+          setCurrentMessage(bootMessages[messageIndex]);
+        }
+        
+        if (newProgress >= 100) {
           clearInterval(timer);
-          // Add a small delay before completing to show the final message
-          setTimeout(onComplete, 1000);
+          setTimeout(() => setShowLogin(true), 500);
           return 100;
         }
-        return prev + Math.random() * 10;
+        return newProgress;
       });
-      
-      if (progress >= 20 * (bootStep + 1) && bootStep < bootSteps.length - 1) {
-        setBootStep(prev => prev + 1);
-      }
     }, 200);
 
     return () => clearInterval(timer);
-  }, [bootStep, progress, onComplete]);
+  }, []);
 
-  return (
-    <div className="fixed inset-0 bg-black flex flex-col items-center justify-center z-[9999]">
-      {/* Loading Spinner */}
-      <motion.div
-        className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full mb-8"
-        animate={{ rotate: 360 }}
-        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-      />
-      
-      {/* Branding */}
-      <div className="text-center mb-8">
-        <motion.h1 
-          className="text-4xl font-bold text-white mb-2"
+  const handleLogin = () => {
+    onComplete();
+  };
+
+  if (showLogin) {
+    return (
+      <div className="fixed inset-0 bg-black flex items-center justify-center z-[9999]">
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
+          className="text-center"
         >
-          PORTFOLIO OS
-        </motion.h1>
-        <motion.p 
-          className="text-gray-400"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1 }}
-        >
-          Rajath Hegde Edition
-        </motion.p>
+          <h1 className="text-4xl font-bold text-white mb-8">PortfolioOS</h1>
+          <div className="bg-gray-900 rounded-lg p-8 max-w-md w-full mx-4">
+            <div className="mb-6">
+              <div className="w-16 h-16 rounded-full bg-blue-500 mx-auto mb-4 flex items-center justify-center">
+                <span className="text-2xl">👤</span>
+              </div>
+              <h2 className="text-xl text-white">Rajath Hegde</h2>
+            </div>
+            
+            <div className="mb-6">
+              <input
+                type="password"
+                placeholder="Enter password"
+                className="w-full bg-gray-800 text-white rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                defaultValue=""
+              />
+            </div>
+            
+            <div className="flex justify-between">
+              <button 
+                onClick={handleLogin}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded transition-colors"
+              >
+                Login
+              </button>
+              <button 
+                onClick={handleLogin}
+                className="bg-gray-700 hover:bg-gray-600 text-white px-6 py-2 rounded transition-colors"
+              >
+                Guest
+              </button>
+            </div>
+          </div>
+        </motion.div>
       </div>
-      
-      {/* Progress Bar */}
-      <div className="w-64 h-2 bg-gray-800 rounded-full mb-4 overflow-hidden">
-        <motion.div 
-          className="h-full bg-blue-500 rounded-full"
-          initial={{ width: 0 }}
-          animate={{ width: `${progress}%` }}
-          transition={{ duration: 0.3 }}
-        />
-      </div>
-      
-      {/* Status Text */}
+    );
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black flex flex-col items-center justify-center text-white z-[9999]">
       <motion.div
-        key={bootStep}
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -10 }}
-        className="text-gray-300 text-sm min-h-[20px]"
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="text-center mb-12"
       >
-        {bootSteps[bootStep]}
+        <div className="w-24 h-24 rounded-full bg-blue-500 mx-auto mb-6 flex items-center justify-center">
+          <span className="text-4xl">🖥️</span>
+        </div>
+        <h1 className="text-5xl font-bold mb-2">PortfolioOS</h1>
+        <p className="text-gray-400">Version 1.0.0</p>
       </motion.div>
-      
-      {/* Loading Dots */}
-      <div className="flex space-x-1 mt-8">
-        {[0, 1, 2].map(i => (
-          <motion.div
-            key={i}
-            className="w-2 h-2 bg-gray-500 rounded-full"
-            animate={{ 
-              opacity: [0.4, 1, 0.4],
-              scale: [1, 1.2, 1]
-            }}
-            transition={{ 
-              duration: 1.5, 
-              repeat: Infinity, 
-              delay: i * 0.2 
-            }}
+
+      <div className="w-96 max-w-full px-4">
+        <div className="h-2 bg-gray-800 rounded-full mb-2 overflow-hidden">
+          <motion.div 
+            className="h-full bg-blue-500"
+            initial={{ width: 0 }}
+            animate={{ width: `${progress}%` }}
+            transition={{ duration: 0.3 }}
           />
-        ))}
+        </div>
+        <p className="text-center text-gray-400">{currentMessage}</p>
+      </div>
+
+      <div className="absolute bottom-8 w-full text-center">
+        <p className="text-gray-600 text-sm">
+          Press Ctrl+Alt+Del to restart • PortfolioOS © 2024 Rajath Hegde
+        </p>
       </div>
     </div>
   );

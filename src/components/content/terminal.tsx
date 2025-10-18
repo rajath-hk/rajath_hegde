@@ -1,144 +1,146 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { useWindows } from '@/contexts/window-context';
+import { Terminal as TerminalIcon, User, Folder, FileText } from 'lucide-react';
 
 const Terminal = () => {
   const [input, setInput] = useState('');
-  const [history, setHistory] = useState<string[]>([
-    'Welcome to Rajath Hegde\'s Portfolio Terminal!',
-    'Type "help" to see available commands.',
-    ''
-  ]);
+  const [history, setHistory] = useState<string[]>([]);
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
-  const inputRef = useRef<HTMLInputElement>(null);
   const terminalRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  const { windows } = useWindows();
-  const currentWindow = windows.find(w => w.id === 'terminal');
-  
-  // Focus the input when the terminal is focused
+  const commands = {
+    help: () => [
+      'Available commands:',
+      '  help         - Show this help message',
+      '  about        - Display information about me',
+      '  projects     - List my projects',
+      '  skills       - Show my technical skills',
+      '  contact      - Display contact information',
+      '  resume       - View my resume',
+      '  socials      - Show my social media links',
+      '  clear        - Clear the terminal screen',
+      '  date         - Show current date and time',
+      '  neofetch     - Display system information',
+    ],
+    about: () => [
+      'Rajath Hegde - Full-Stack Web Developer & MCA Student',
+      'From Karnataka, India',
+      '',
+      'I\'m passionate about web development, Python, AWS cloud services,',
+      'AI integration, and self-hosted solutions. I enjoy creating',
+      'innovative solutions and sharing knowledge with the developer community.',
+    ],
+    projects: () => [
+      'My Projects:',
+      '  1. RTSP Loop Recorder - Android application for recording RTSP streams',
+      '  2. Self-Hosted Video Meeting Platform - Direct meeting solution',
+      '  3. GetGo Web Application - Task management web app',
+      '',
+      'Type "projects <name>" for more details about a specific project.',
+    ],
+    skills: () => [
+      'Technical Skills:',
+      '  Expert:     HTML, CSS, JavaScript, Python',
+      '  Advanced:   React, Node.js, AWS, Docker',
+      '  Familiar:   TypeScript, Next.js, MongoDB',
+      '  Learning:   Machine Learning, Kubernetes',
+    ],
+    contact: () => [
+      'Contact Information:',
+      '  Email:    rajath@example.com',
+      '  GitHub:   https://github.com/rajath-hk',
+      '  LinkedIn: https://linkedin.com/in/rajath-hegde',
+    ],
+    resume: () => [
+      'To view my resume, please visit:',
+      '  https://rajath.github.io/rajath_hegde/resume.pdf',
+    ],
+    socials: () => [
+      'Connect with me:',
+      '  GitHub:   https://github.com/rajath-hk',
+      '  LinkedIn: https://linkedin.com/in/rajath-hegde',
+      '  Twitter:  https://twitter.com/rajath_hk',
+      '  Instagram: https://instagram.com/rajath_hk',
+    ],
+    date: () => [
+      new Date().toString(),
+    ],
+    neofetch: () => [
+      '┌────────────────────────────────────────────────────────────┐',
+      '│  ██████╗ ███████╗████████╗██████╗  ██████╗ ████████╗      │',
+      '│  ██╔══██╗██╔════╝╚══██╔══╝██╔══██╗██╔═══██╗╚══██╔══╝      │',
+      '│  ██████╔╝█████╗     ██║   ██████╔╝██║   ██║   ██║         │',
+      '│  ██╔═══╝ ██╔══╝     ██║   ██╔══██╗██║   ██║   ██║         │',
+      '│  ██║     ███████╗   ██║   ██║  ██║╚██████╔╝   ██║         │',
+      '│  ╚═╝     ╚══════╝   ╚═╝   ╚═╝  ╚═╝ ╚═════╝    ╚═╝         │',
+      '└────────────────────────────────────────────────────────────┘',
+      '',
+      '  Rajath Hegde@PortfolioOS',
+      '  -----------------------',
+      '  OS: PortfolioOS 1.0.0',
+      '  Kernel: Linux 5.15.0',
+      '  Shell: zsh 5.8',
+      '  Terminal: Portfolio Terminal',
+      '  CPU: Intel i7-1165G7 (8) @ 4.700GHz',
+      '  Memory: 16GB',
+      '  Location: Karnataka, India',
+    ],
+    clear: () => {
+      setHistory([]);
+      return [];
+    },
+    default: (cmd: string) => [
+      `Command not found: ${cmd}. Type 'help' for available commands.`,
+    ],
+  };
+
   useEffect(() => {
-    if (currentWindow?.isFocused && inputRef.current) {
+    // Initial welcome message
+    const welcomeMessage = [
+      'Welcome to PortfolioOS Terminal v1.0.0',
+      'Type "help" for available commands.',
+      '',
+    ];
+    setHistory(welcomeMessage);
+    
+    // Focus input on mount
+    if (inputRef.current) {
       inputRef.current.focus();
     }
-  }, [currentWindow?.isFocused]);
+  }, []);
 
-  // Scroll to bottom when history changes
   useEffect(() => {
+    // Scroll to bottom when history changes
     if (terminalRef.current) {
       terminalRef.current.scrollTop = terminalRef.current.scrollHeight;
     }
   }, [history]);
 
-  const executeCommand = (cmd: string) => {
-    const command = cmd.trim().toLowerCase();
-    const newHistory = [...history, `visitor@portfolio:~$ ${cmd}`];
-    
-    switch (command) {
-      case '':
-        setHistory(newHistory);
-        break;
-      case 'help':
-        setHistory([
-          ...newHistory,
-          'Available commands:',
-          '  help        - Show this help message',
-          '  about       - Display information about me',
-          '  projects    - List my projects',
-          '  skills      - Show my technical skills',
-          '  contact     - Display contact information',
-          '  resume      - View my resume',
-          '  clear       - Clear the terminal screen',
-          '  date        - Display current date and time',
-          '  echo [text] - Display text',
-          ''
-        ]);
-        break;
-      case 'about':
-        setHistory([
-          ...newHistory,
-          'Hi, I\'m Rajath Hegde!',
-          'I\'m a Full-Stack Web Developer and MCA student from Karnataka, India.',
-          'I specialize in creating interactive web experiences and have a passion for AI integration.',
-          'My journey includes AWS certifications, self-hosted solutions, and mobile development.',
-          ''
-        ]);
-        break;
-      case 'projects':
-        setHistory([
-          ...newHistory,
-          'My Projects:',
-          '  Portfolio OS - Interactive portfolio designed as OS interface',
-          '  AI Development Assistant - VS Code extension for code reviews',
-          '  RTSP Loop Recorder - Android app for RTSP video recording',
-          '  Self-hosted Video Platform - Custom video meeting solution',
-          ''
-        ]);
-        break;
-      case 'skills':
-        setHistory([
-          ...newHistory,
-          'Technical Skills:',
-          '  Frontend: React, Next.js, TypeScript, Tailwind CSS',
-          '  Backend: Node.js, Python, REST APIs',
-          '  DevOps: Docker, AWS, CI/CD',
-          '  Other: AI/ML, Mobile Development, Self-hosted Solutions',
-          ''
-        ]);
-        break;
-      case 'contact':
-        setHistory([
-          ...newHistory,
-          'Contact Information:',
-          '  Email: rajath@example.com',
-          '  LinkedIn: linkedin.com/in/rajath-hegde',
-          '  GitHub: github.com/rajath-hk',
-          ''
-        ]);
-        break;
-      case 'resume':
-        setHistory([
-          ...newHistory,
-          'You can view my resume by opening the "My Resume" window from the desktop or start menu.',
-          ''
-        ]);
-        break;
-      case 'clear':
-        setHistory(['']);
-        break;
-      case 'date':
-        setHistory([
-          ...newHistory,
-          new Date().toString(),
-          ''
-        ]);
-        break;
-      default:
-        if (command.startsWith('echo ')) {
-          setHistory([
-            ...newHistory,
-            cmd.substring(5),
-            ''
-          ]);
-        } else {
-          setHistory([
-            ...newHistory,
-            `Command not found: ${cmd}. Type "help" for available commands.`,
-            ''
-          ]);
-        }
-    }
-  };
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (input.trim() !== '') {
-      executeCommand(input);
-      setCommandHistory([...commandHistory, input]);
-      setHistoryIndex(-1);
+    
+    if (!input.trim()) return;
+    
+    const newHistory = [...history, `$ ${input}`];
+    const [cmd, ...args] = input.trim().split(' ');
+    const command = cmd.toLowerCase();
+    
+    // Add to command history
+    setCommandHistory(prev => [...prev, input]);
+    setHistoryIndex(-1);
+    
+    // Execute command
+    let output: string[] = [];
+    if (commands[command as keyof typeof commands]) {
+      output = commands[command as keyof typeof commands]();
+    } else {
+      output = commands.default(cmd);
     }
+    
+    setHistory([...newHistory, ...output, '']);
     setInput('');
   };
 
@@ -146,7 +148,9 @@ const Terminal = () => {
     if (e.key === 'ArrowUp') {
       e.preventDefault();
       if (commandHistory.length > 0) {
-        const newIndex = historyIndex === -1 ? commandHistory.length - 1 : Math.max(0, historyIndex - 1);
+        const newIndex = historyIndex === -1 
+          ? commandHistory.length - 1 
+          : Math.max(0, historyIndex - 1);
         setHistoryIndex(newIndex);
         setInput(commandHistory[newIndex]);
       }
@@ -165,35 +169,46 @@ const Terminal = () => {
     } else if (e.key === 'Tab') {
       e.preventDefault();
       // Simple tab completion for commands
-      const commands = ['help', 'about', 'projects', 'skills', 'contact', 'resume', 'clear', 'date', 'echo'];
-      const matchingCommand = commands.find(cmd => cmd.startsWith(input.toLowerCase()));
-      if (matchingCommand) {
-        setInput(matchingCommand);
+      const matchingCommands = Object.keys(commands).filter(cmd => 
+        cmd.startsWith(input.toLowerCase()) && cmd !== 'default'
+      );
+      if (matchingCommands.length === 1) {
+        setInput(matchingCommands[0]);
       }
     }
   };
 
   return (
-    <div className="h-full bg-black text-green-400 font-mono text-sm p-4 overflow-auto">
-      <div ref={terminalRef} className="h-[calc(100%-2rem)] overflow-y-auto">
-        {history.map((line, index) => (
-          <div key={index} className="whitespace-pre-wrap">{line}</div>
-        ))}
+    <div className="h-full flex flex-col bg-black text-green-400 font-mono text-sm">
+      <div className="flex items-center px-4 py-2 bg-gray-900 border-b border-gray-700">
+        <TerminalIcon className="w-4 h-4 mr-2" />
+        <span>Terminal</span>
       </div>
-      <form onSubmit={handleSubmit} className="flex">
-        <span className="mr-2">visitor@portfolio:~$</span>
-        <input
-          ref={inputRef}
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={handleKeyDown}
-          className="flex-1 bg-transparent outline-none"
-          autoFocus
-          autoComplete="off"
-          spellCheck="false"
-        />
-      </form>
+      
+      <div 
+        ref={terminalRef}
+        className="flex-1 overflow-y-auto p-4"
+      >
+        {history.map((line, index) => (
+          <div key={index} className="whitespace-pre-wrap">
+            {line}
+          </div>
+        ))}
+        
+        <form onSubmit={handleSubmit} className="flex items-center">
+          <span className="mr-2">$</span>
+          <input
+            ref={inputRef}
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+            className="flex-1 bg-transparent outline-none"
+            spellCheck={false}
+            autoFocus
+          />
+        </form>
+      </div>
     </div>
   );
 };

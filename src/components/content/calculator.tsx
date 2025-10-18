@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Delete } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 const Calculator = () => {
   const [display, setDisplay] = useState('0');
@@ -9,70 +9,29 @@ const Calculator = () => {
   const [operation, setOperation] = useState<string | null>(null);
   const [waitingForOperand, setWaitingForOperand] = useState(false);
 
-  const inputNumber = (num: string) => {
+  const inputDigit = (digit: string) => {
     if (waitingForOperand) {
-      setDisplay(String(num));
+      setDisplay(digit);
       setWaitingForOperand(false);
     } else {
-      setDisplay(display === '0' ? String(num) : display + num);
+      setDisplay(display === '0' ? digit : display + digit);
     }
   };
 
-  const inputOperation = (nextOperation: string) => {
-    const inputValue = parseFloat(display);
-
-    if (previousValue === null) {
-      setPreviousValue(inputValue);
-    } else if (operation) {
-      const currentValue = previousValue || 0;
-      const newValue = calculate(currentValue, inputValue, operation);
-
-      setDisplay(String(newValue));
-      setPreviousValue(newValue);
+  const inputDot = () => {
+    if (waitingForOperand) {
+      setDisplay('0.');
+      setWaitingForOperand(false);
+    } else if (display.indexOf('.') === -1) {
+      setDisplay(display + '.');
     }
-
-    setWaitingForOperand(true);
-    setOperation(nextOperation);
-  };
-
-  const calculate = (firstValue: number, secondValue: number, operation: string): number => {
-    switch (operation) {
-      case '+':
-        return firstValue + secondValue;
-      case '-':
-        return firstValue - secondValue;
-      case '×':
-        return firstValue * secondValue;
-      case '÷':
-        return firstValue / secondValue;
-      case '=':
-        return secondValue;
-      default:
-        return secondValue;
-    }
-  };
-
-  const performCalculation = () => {
-    const inputValue = parseFloat(display);
-
-    if (previousValue !== null && operation) {
-      const newValue = calculate(previousValue, inputValue, operation);
-      setDisplay(String(newValue));
-      setPreviousValue(null);
-      setOperation(null);
-      setWaitingForOperand(true);
-    }
-  };
-
-  const clearAll = () => {
-    setDisplay('0');
-    setPreviousValue(null);
-    setOperation(null);
-    setWaitingForOperand(false);
   };
 
   const clearDisplay = () => {
     setDisplay('0');
+    setPreviousValue(null);
+    setOperation(null);
+    setWaitingForOperand(false);
   };
 
   const toggleSign = () => {
@@ -85,144 +44,150 @@ const Calculator = () => {
     setDisplay(String(value / 100));
   };
 
-  const inputDecimal = () => {
-    if (waitingForOperand) {
-      setDisplay('0.');
-      setWaitingForOperand(false);
-    } else if (display.indexOf('.') === -1) {
-      setDisplay(display + '.');
+  const performOperation = (nextOperation: string) => {
+    const inputValue = parseFloat(display);
+
+    if (previousValue === null) {
+      setPreviousValue(inputValue);
+    } else if (operation) {
+      const currentValue = previousValue || 0;
+      let newValue: number;
+
+      switch (operation) {
+        case '+':
+          newValue = currentValue + inputValue;
+          break;
+        case '-':
+          newValue = currentValue - inputValue;
+          break;
+        case '×':
+          newValue = currentValue * inputValue;
+          break;
+        case '÷':
+          newValue = currentValue / inputValue;
+          break;
+        default:
+          newValue = inputValue;
+      }
+
+      setPreviousValue(newValue);
+      setDisplay(String(newValue));
+    }
+
+    setWaitingForOperand(true);
+    setOperation(nextOperation);
+  };
+
+  const handleEquals = () => {
+    if (operation && previousValue !== null) {
+      performOperation(operation);
+      setOperation(null);
+      setPreviousValue(null);
     }
   };
 
   return (
     <div className="h-full flex flex-col">
-      {/* Display */}
-      <div className="p-4 bg-black/90 text-right">
-        <div className="text-3xl font-light text-white overflow-hidden overflow-ellipsis">
-          {display}
-        </div>
+      <div className="border-b p-4">
+        <h2 className="text-xl font-bold">Calculator</h2>
       </div>
       
-      {/* Keypad */}
-      <div className="flex-1 grid grid-cols-4 gap-0.5 bg-gray-300 dark:bg-gray-700 p-0.5">
-        <button 
-          onClick={clearAll}
-          className="bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 text-black dark:text-white font-medium p-4"
-        >
-          AC
-        </button>
-        <button 
-          onClick={toggleSign}
-          className="bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 text-black dark:text-white font-medium p-4"
-        >
-          +/-
-        </button>
-        <button 
-          onClick={inputPercent}
-          className="bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 text-black dark:text-white font-medium p-4"
-        >
-          %
-        </button>
-        <button 
-          onClick={() => inputOperation('÷')}
-          className="bg-amber-500 hover:bg-amber-600 text-white text-xl font-light p-4"
-        >
-          ÷
-        </button>
+      <div className="flex-1 flex flex-col bg-muted p-4">
+        {/* Display */}
+        <div className="bg-black text-right p-4 rounded-t-lg mb-1">
+          <div className="text-3xl font-mono text-white overflow-hidden">
+            {display.length > 12 ? display.slice(0, 12) + '...' : display}
+          </div>
+        </div>
         
-        <button 
-          onClick={() => inputNumber('7')}
-          className="bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 text-black dark:text-white text-xl p-4"
-        >
-          7
-        </button>
-        <button 
-          onClick={() => inputNumber('8')}
-          className="bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 text-black dark:text-white text-xl p-4"
-        >
-          8
-        </button>
-        <button 
-          onClick={() => inputNumber('9')}
-          className="bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 text-black dark:text-white text-xl p-4"
-        >
-          9
-        </button>
-        <button 
-          onClick={() => inputOperation('×')}
-          className="bg-amber-500 hover:bg-amber-600 text-white text-xl font-light p-4"
-        >
-          ×
-        </button>
-        
-        <button 
-          onClick={() => inputNumber('4')}
-          className="bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 text-black dark:text-white text-xl p-4"
-        >
-          4
-        </button>
-        <button 
-          onClick={() => inputNumber('5')}
-          className="bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 text-black dark:text-white text-xl p-4"
-        >
-          5
-        </button>
-        <button 
-          onClick={() => inputNumber('6')}
-          className="bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 text-black dark:text-white text-xl p-4"
-        >
-          6
-        </button>
-        <button 
-          onClick={() => inputOperation('-')}
-          className="bg-amber-500 hover:bg-amber-600 text-white text-xl font-light p-4"
-        >
-          -
-        </button>
-        
-        <button 
-          onClick={() => inputNumber('1')}
-          className="bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 text-black dark:text-white text-xl p-4"
-        >
-          1
-        </button>
-        <button 
-          onClick={() => inputNumber('2')}
-          className="bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 text-black dark:text-white text-xl p-4"
-        >
-          2
-        </button>
-        <button 
-          onClick={() => inputNumber('3')}
-          className="bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 text-black dark:text-white text-xl p-4"
-        >
-          3
-        </button>
-        <button 
-          onClick={() => inputOperation('+')}
-          className="bg-amber-500 hover:bg-amber-600 text-white text-xl font-light p-4"
-        >
-          +
-        </button>
-        
-        <button 
-          onClick={() => inputNumber('0')}
-          className="col-span-2 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 text-black dark:text-white text-xl p-4 text-left"
-        >
-          0
-        </button>
-        <button 
-          onClick={inputDecimal}
-          className="bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 text-black dark:text-white text-xl p-4"
-        >
-          .
-        </button>
-        <button 
-          onClick={performCalculation}
-          className="bg-amber-500 hover:bg-amber-600 text-white text-xl font-light p-4"
-        >
-          =
-        </button>
+        {/* Keypad */}
+        <div className="grid grid-cols-4 gap-2 flex-1">
+          <Button variant="outline" onClick={clearDisplay} className="h-full text-lg font-bold">
+            AC
+          </Button>
+          <Button variant="outline" onClick={toggleSign} className="h-full text-lg font-bold">
+            +/-
+          </Button>
+          <Button variant="outline" onClick={inputPercent} className="h-full text-lg font-bold">
+            %
+          </Button>
+          <Button 
+            variant="default" 
+            onClick={() => performOperation('÷')} 
+            className="h-full text-lg font-bold bg-orange-500 hover:bg-orange-600"
+          >
+            ÷
+          </Button>
+          
+          <Button variant="outline" onClick={() => inputDigit('7')} className="h-full text-lg font-bold">
+            7
+          </Button>
+          <Button variant="outline" onClick={() => inputDigit('8')} className="h-full text-lg font-bold">
+            8
+          </Button>
+          <Button variant="outline" onClick={() => inputDigit('9')} className="h-full text-lg font-bold">
+            9
+          </Button>
+          <Button 
+            variant="default" 
+            onClick={() => performOperation('×')} 
+            className="h-full text-lg font-bold bg-orange-500 hover:bg-orange-600"
+          >
+            ×
+          </Button>
+          
+          <Button variant="outline" onClick={() => inputDigit('4')} className="h-full text-lg font-bold">
+            4
+          </Button>
+          <Button variant="outline" onClick={() => inputDigit('5')} className="h-full text-lg font-bold">
+            5
+          </Button>
+          <Button variant="outline" onClick={() => inputDigit('6')} className="h-full text-lg font-bold">
+            6
+          </Button>
+          <Button 
+            variant="default" 
+            onClick={() => performOperation('-')} 
+            className="h-full text-lg font-bold bg-orange-500 hover:bg-orange-600"
+          >
+            -
+          </Button>
+          
+          <Button variant="outline" onClick={() => inputDigit('1')} className="h-full text-lg font-bold">
+            1
+          </Button>
+          <Button variant="outline" onClick={() => inputDigit('2')} className="h-full text-lg font-bold">
+            2
+          </Button>
+          <Button variant="outline" onClick={() => inputDigit('3')} className="h-full text-lg font-bold">
+            3
+          </Button>
+          <Button 
+            variant="default" 
+            onClick={() => performOperation('+')} 
+            className="h-full text-lg font-bold bg-orange-500 hover:bg-orange-600"
+          >
+            +
+          </Button>
+          
+          <Button 
+            variant="outline" 
+            onClick={() => inputDigit('0')} 
+            className="h-full text-lg font-bold col-span-2"
+          >
+            0
+          </Button>
+          <Button variant="outline" onClick={inputDot} className="h-full text-lg font-bold">
+            .
+          </Button>
+          <Button 
+            variant="default" 
+            onClick={handleEquals} 
+            className="h-full text-lg font-bold bg-orange-500 hover:bg-orange-600"
+          >
+            =
+          </Button>
+        </div>
       </div>
     </div>
   );
