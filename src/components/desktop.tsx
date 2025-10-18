@@ -16,7 +16,6 @@ import {
 import { useWindows } from '@/contexts/window-context';
 import DesktopIcon from '@/components/desktop-icon';
 import Window from '@/components/window';
-import Taskbar from '@/components/taskbar';
 import TopBar from '@/components/top-bar';
 import SystemSearch from '@/components/system-search';
 import NotificationCenter from '@/components/notification-center';
@@ -28,17 +27,28 @@ import {
   Image,
   Monitor,
   Palette,
-  Moon,
-  Sun
+  Minimize2
 } from 'lucide-react';
 
 const Desktop = () => {
-  const { windows, desktopIcons, resetIconPositions } = useWindows();
+  const { windows, desktopIcons, resetIconPositions, toggleMinimize } = useWindows();
   const desktopRef = React.useRef<HTMLDivElement>(null);
   const [contextMenuOpen, setContextMenuOpen] = React.useState(false);
   const [contextMenuPosition, setContextMenuPosition] = React.useState({ x: 0, y: 0 });
   const [wallpaper, setWallpaper] = useState('/wallpapers/default.jpg');
   const [showNotificationCenter, setShowNotificationCenter] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Check if we're on mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const handleContextMenu = (event: React.MouseEvent) => {
     // Prevent the default browser context menu
@@ -65,14 +75,17 @@ const Desktop = () => {
     }
   }, []);
 
+  // Filter minimized windows for the dock
+  const minimizedWindows = windows.filter(win => win.isMinimized);
+
   return (
     <>
-      <TopBar onNotificationClick={() => setShowNotificationCenter(!showNotificationCenter)} />
+      <TopBar />
       
       <div
         ref={desktopRef}
         id="desktop-area"
-        className="absolute inset-0 pt-8 pb-10 bg-cover bg-center transition-all duration-500"
+        className="absolute inset-0 pt-8 bg-cover bg-center transition-all duration-500"
         style={{ backgroundImage: `url(${wallpaper})` }}
         onContextMenu={handleContextMenu}
       >
@@ -148,7 +161,26 @@ const Desktop = () => {
         ))}
       </AnimatePresence>
       
-      <Taskbar />
+      {/* Mobile bottom navigation for minimized windows */}
+      {isMobile && minimizedWindows.length > 0 && (
+        <div className="fixed bottom-0 left-0 right-0 h-12 bg-background/80 backdrop-blur-xl border-t flex items-center justify-center px-2 z-40">
+          <div className="flex items-center space-x-2 overflow-x-auto w-full">
+            {minimizedWindows.map((win) => (
+              <button
+                key={win.id}
+                className="flex flex-col items-center justify-center p-1 min-w-[60px]"
+                onClick={() => toggleMinimize(win.id)}
+              >
+                <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center">
+                  <win.icon className="w-4 h-4" />
+                </div>
+                <span className="text-xs mt-1 truncate max-w-[60px]">{win.title}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+      
       <SystemSearch />
       <NotificationCenter 
         open={showNotificationCenter} 

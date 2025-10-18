@@ -29,24 +29,35 @@ const LegalContent = () => <div className="p-6 text-card-foreground">This is my 
 
 
 const initialAppsData: AppConfig[] = [
+  // Core personal apps (first row)
   { id: 'about', title: 'My Story', icon: FileText, content: <AboutContent />, defaultSize: { width: 550, height: 400 }, x: 20, y: 50 },
-  { id: 'projects', title: 'Projects', icon: Folder, content: <ProjectsContent />, defaultSize: { width: 650, height: 500 }, x: 20, y: 150 },
-  { id: 'my-work', title: 'My Work', icon: Briefcase, content: <MyWorkContent />, defaultSize: { width: 500, height: 350 }, x: 20, y: 250 },
-  { id: 'skills', title: 'Skills', icon: Award, content: <SkillsContent />, defaultSize: { width: 700, height: 600 }, x: 130, y: 50 },
-  { id: 'terminal', title: 'Terminal', icon: Terminal, content: <TerminalContent />, defaultSize: { width: 650, height: 450 }, x: 100, y: 100 },
   { id: 'resume', title: 'My Resume', icon: FileText, content: <ResumeContent />, defaultSize: { width: 700, height: 800 }, x: 130, y: 50 },
-  { id: 'contact', title: 'Contact Me', icon: Mail, content: <ContactContent />, defaultSize: { width: 450, height: 580 }, x: 130, y: 150 },
-  { id: 'socials', title: 'Socials', icon: Folder, content: <SocialsContent />, defaultSize: { width: 450, height: 350 }, x: 130, y: 250 },
-  { id: 'settings', title: 'Settings', icon: Settings, content: <SettingsContent />, defaultSize: { width: 700, height: 500 }, x: 200, y: 200 },
-  { id: 'explorer', title: 'File Explorer', icon: HardDrive, content: <FileExplorerContent />, defaultSize: { width: 800, height: 500 }, x: 150, y: 150 },
-  { id: 'browser', title: 'Web Browser', icon: Globe, content: <BrowserContent />, defaultSize: { width: 900, height: 600 }, x: 100, y: 100 },
-  { id: 'media', title: 'Media Player', icon: Play, content: <MediaPlayerContent />, defaultSize: { width: 700, height: 500 }, x: 250, y: 250 },
-  { id: 'calculator', title: 'Calculator', icon: Calculator, content: <CalculatorContent />, defaultSize: { width: 300, height: 400 }, x: 300, y: 300 },
-  { id: 'weather', title: 'Weather', icon: Cloud, content: <WeatherContent />, defaultSize: { width: 500, height: 600 }, x: 350, y: 350 },
-  { id: 'notes', title: 'Notes', icon: Notebook, content: <NotesContent />, defaultSize: { width: 600, height: 500 }, x: 400, y: 400 },
-  { id: 'system', title: 'System Info', icon: Activity, content: <SystemInfoContent />, defaultSize: { width: 700, height: 600 }, x: 450, y: 450 },
-  { id: 'gallery', title: 'Gallery', icon: Image, content: <GalleryContent />, defaultSize: { width: 800, height: 600 }, x: 500, y: 500 },
-  { id: 'legal', title: 'Legal', icon: Folder, content: <LegalContent />, defaultSize: { width: 500, height: 300 }, x: 20, y: 450 },
+  { id: 'skills', title: 'Skills', icon: Award, content: <SkillsContent />, defaultSize: { width: 700, height: 600 }, x: 240, y: 50 },
+  { id: 'projects', title: 'Projects', icon: Folder, content: <ProjectsContent />, defaultSize: { width: 650, height: 500 }, x: 350, y: 50 },
+  
+  // Work and portfolio apps (second row)
+  { id: 'my-work', title: 'My Work', icon: Briefcase, content: <MyWorkContent />, defaultSize: { width: 500, height: 350 }, x: 20, y: 200 },
+  { id: 'gallery', title: 'Gallery', icon: Image, content: <GalleryContent />, defaultSize: { width: 800, height: 600 }, x: 130, y: 200 },
+  { id: 'media', title: 'Media Player', icon: Play, content: <MediaPlayerContent />, defaultSize: { width: 700, height: 500 }, x: 240, y: 200 },
+  
+  // Utilities and tools (third row)
+  { id: 'terminal', title: 'Terminal', icon: Terminal, content: <TerminalContent />, defaultSize: { width: 650, height: 450 }, x: 20, y: 350 },
+  { id: 'explorer', title: 'File Explorer', icon: HardDrive, content: <FileExplorerContent />, defaultSize: { width: 800, height: 500 }, x: 130, y: 350 },
+  { id: 'browser', title: 'Web Browser', icon: Globe, content: <BrowserContent />, defaultSize: { width: 900, height: 600 }, x: 240, y: 350 },
+  { id: 'notes', title: 'Notes', icon: Notebook, content: <NotesContent />, defaultSize: { width: 600, height: 500 }, x: 350, y: 350 },
+  
+  // System and settings (fourth row)
+  { id: 'settings', title: 'Settings', icon: Settings, content: <SettingsContent />, defaultSize: { width: 700, height: 500 }, x: 20, y: 500 },
+  { id: 'system', title: 'System Info', icon: Activity, content: <SystemInfoContent />, defaultSize: { width: 700, height: 600 }, x: 130, y: 500 },
+  { id: 'calculator', title: 'Calculator', icon: Calculator, content: <CalculatorContent />, defaultSize: { width: 300, height: 400 }, x: 240, y: 500 },
+  { id: 'weather', title: 'Weather', icon: Cloud, content: <WeatherContent />, defaultSize: { width: 500, height: 600 }, x: 300, y: 500 },
+  
+  // Communication (bottom row)
+  { id: 'contact', title: 'Contact Me', icon: Mail, content: <ContactContent />, defaultSize: { width: 450, height: 580 }, x: 20, y: 650 },
+  { id: 'socials', title: 'Socials', icon: Folder, content: <SocialsContent />, defaultSize: { width: 450, height: 350 }, x: 130, y: 650 },
+  
+  // Hidden/Legal
+  { id: 'legal', title: 'Legal', icon: Folder, content: <LegalContent />, defaultSize: { width: 500, height: 300 }, x: 20, y: 800 },
 ];
 
 
