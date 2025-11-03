@@ -178,11 +178,23 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
         const parsedWindows = JSON.parse(savedWindows);
         setWindows(parsedWindows.map((win: any) => {
           const appConfig = initialAppsData.find(app => app.id === win.id);
+          // Ensure x and y have default values if not present
+          const x = win.x !== undefined ? win.x : (appConfig?.x ?? 100);
+          const y = win.y !== undefined ? win.y : (appConfig?.y ?? 100);
+          
           return {
             ...win,
+            x,
+            y,
             icon: appConfig?.icon || FileText,
             content: createContentElement(win.id),
-            defaultSize: appConfig?.defaultSize
+            defaultSize: appConfig?.defaultSize,
+            width: win.width ?? appConfig?.defaultSize?.width ?? 500,
+            height: win.height ?? appConfig?.defaultSize?.height ?? 400,
+            zIndex: win.zIndex ?? 1,
+            isMinimized: win.isMinimized ?? false,
+            isMaximized: win.isMaximized ?? false,
+            isFocused: win.isFocused ?? false,
           };
         }));
       }
@@ -350,30 +362,28 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
   };
   
   const resetIconPositions = () => {
-    setDesktopIcons(prevIcons => {
-        const resetIcons = prevIcons.map(icon => {
-            const initialIcon = initialAppsData.find(i => i.id === icon.id);
-            return initialIcon ? { ...icon, x: initialIcon.x, y: initialIcon.y } : icon;
-        });
-        saveIconsState(resetIcons);
-        return resetIcons;
-    });
+    setDesktopIcons(initialAppsData);
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem(ICON_STATE_KEY);
+    }
   };
 
   return (
-    <WindowContext.Provider value={{
-      windows,
-      desktopIcons,
-      openWindow,
-      closeWindow,
-      focusWindow,
-      toggleMinimize,
-      toggleMaximize,
-      updateWindowPosition,
-      updateWindowSize,
-      updateIconPosition,
-      resetIconPositions,
-    }}>
+    <WindowContext.Provider
+      value={{
+        windows,
+        desktopIcons,
+        openWindow,
+        closeWindow,
+        focusWindow,
+        toggleMinimize,
+        toggleMaximize,
+        updateWindowPosition,
+        updateWindowSize,
+        updateIconPosition,
+        resetIconPositions,
+      }}
+    >
       {children}
     </WindowContext.Provider>
   );
@@ -381,7 +391,7 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
 
 export const useWindows = () => {
   const context = useContext(WindowContext);
-  if (context === undefined) {
+  if (!context) {
     throw new Error('useWindows must be used within a WindowProvider');
   }
   return context;
