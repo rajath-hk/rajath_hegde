@@ -89,6 +89,50 @@ const saveIconsState = (iconsToSave: AppConfig[]) => {
   localStorage.setItem(ICON_STATE_KEY, JSON.stringify(serializableIcons));
 };
 
+// Create content element for a given app ID
+const createContentElement = (id: string) => {
+  switch (id) {
+    case 'about':
+      return <AboutContent />;
+    case 'projects':
+      return <ProjectsContent />;
+    case 'my-work':
+      return <MyWorkContent />;
+    case 'resume':
+      return <ResumeContent />;
+    case 'skills':
+      return <SkillsContent />;
+    case 'contact':
+      return <ContactContent />;
+    case 'socials':
+      return <SocialsContent />;
+    case 'terminal':
+      return <TerminalContent />;
+    case 'settings':
+      return <SettingsContent />;
+    case 'explorer':
+      return <FileExplorerContent />;
+    case 'browser':
+      return <BrowserContent />;
+    case 'media':
+      return <MediaPlayerContent />;
+    case 'calculator':
+      return <CalculatorContent />;
+    case 'weather':
+      return <WeatherContent />;
+    case 'notes':
+      return <NotesContent />;
+    case 'system':
+      return <SystemInfoContent />;
+    case 'gallery':
+      return <GalleryContent />;
+    case 'legal':
+      return <LegalContent />;
+    default:
+      return <div>Application not found</div>;
+  }
+};
+
 export const WindowProvider = ({ children }: { children: ReactNode }) => {
   const [windows, setWindows] = useState<WindowInstance[]>([]);
   const [desktopIcons, setDesktopIcons] = useState<AppConfig[]>(initialAppsData);
@@ -137,7 +181,7 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
           return {
             ...win,
             icon: appConfig?.icon || FileText,
-            content: appContents[win.id] || <div>Application not found</div>,
+            content: createContentElement(win.id),
             defaultSize: appConfig?.defaultSize
           };
         }));
@@ -170,7 +214,7 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
     setDesktopIcons(prevIcons => 
       prevIcons.map(icon => ({
         ...icon,
-        content: appContents[icon.id] || <div>Application not found</div>
+        content: createContentElement(icon.id)
       }))
     );
     
