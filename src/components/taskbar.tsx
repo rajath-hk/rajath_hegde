@@ -24,15 +24,28 @@ const Taskbar = () => {
   const { windows, closeWindow, toggleMinimize } = useWindows();
   const [time, setTime] = useState(new Date());
   const [showStartMenu, setShowStartMenu] = useState(false);
+  const [isClient, setIsClient] = useState(false);
   const isMobile = useIsMobile();
 
   useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isClient) return;
+    
     const timer = setInterval(() => {
       setTime(new Date());
-    }, 1000);
-    
+    }, 60000); // Update every minute
+
     return () => clearInterval(timer);
-  }, []);
+  }, [isClient]);
+
+  if (!isClient) {
+    return (
+      <div className="fixed bottom-0 left-0 right-0 h-12 bg-background border-t" />
+    );
+  }
 
   // On mobile, we want a simplified taskbar with just the essentials
   if (isMobile) {

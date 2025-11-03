@@ -25,6 +25,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 const Settings = () => {
   const { theme, setTheme } = useTheme();
   const [activeTab, setActiveTab] = useState('system');
+  const [isClient, setIsClient] = useState(false);
   const [wallpaper, setWallpaper] = useState('/logo.png');
   const [volume, setVolume] = useState(80);
   const [notifications, setNotifications] = useState(true);
@@ -34,6 +35,8 @@ const Settings = () => {
 
   // Load settings from localStorage
   useEffect(() => {
+    setIsClient(true);
+    
     if (typeof window !== 'undefined') {
       const savedWallpaper = localStorage.getItem('portfolio-wallpaper') || '/logo.png';
       const savedVolume = localStorage.getItem('portfolio-volume') || '80';
@@ -105,6 +108,22 @@ const Settings = () => {
     { id: 'mountains', name: 'Mountains', url: '/logo.png' },
     { id: 'city', name: 'City', url: '/logo.png' },
   ];
+
+  // Only render on client side to prevent hydration issues
+  if (!isClient) {
+    return (
+      <div className="p-6">
+        <div className="space-y-6">
+          <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/3 animate-pulse"></div>
+          <div className="space-y-4">
+            {[...Array(5)].map((_, i) => (
+              <div key={i} className="h-16 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="h-full flex flex-col">

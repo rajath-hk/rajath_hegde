@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useWindows } from '@/contexts/window-context';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -22,9 +22,22 @@ const DesktopIcon: React.FC<DesktopIconProps> = ({ app }) => {
   });
   const [clickCount, setClickCount] = useState(0);
   const clickTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  useEffect(() => {
+    // Update position when app position changes
+    setPosition({ 
+      x: app.x ?? 0, 
+      y: app.y ?? 0 
+    });
+  }, [app.x, app.y]);
 
   const handleDragStart = () => {
-    if (isMobile) return; // Disable drag on mobile
+    if (isMobile || !isClient) return; // Disable drag on mobile or server
     setIsDragging(true);
   };
 
@@ -32,7 +45,7 @@ const DesktopIcon: React.FC<DesktopIconProps> = ({ app }) => {
     event: MouseEvent | TouchEvent | PointerEvent,
     info: { offset: { x: number; y: number } }
   ) => {
-    if (isMobile) return; // Disable drag on mobile
+    if (isMobile || !isClient) return; // Disable drag on mobile or server
     setIsDragging(false);
     
     // Update position with drag offset
@@ -40,14 +53,18 @@ const DesktopIcon: React.FC<DesktopIconProps> = ({ app }) => {
     const newY = position.y + info.offset.y;
     
     // Keep icon within screen bounds
-    const boundedX = Math.max(0, Math.min(newX, window.innerWidth - 80));
-    const boundedY = Math.max(0, Math.min(newY, window.innerHeight - 80));
-    
-    setPosition({ x: boundedX, y: boundedY });
-    updateIconPosition(app.id, boundedX, boundedY);
+    if (typeof window !== 'undefined') {
+      const boundedX = Math.max(0, Math.min(newX, window.innerWidth - 80));
+      const boundedY = Math.max(0, Math.min(newY, window.innerHeight - 80));
+      
+      setPosition({ x: boundedX, y: boundedY });
+      updateIconPosition(app.id, boundedX, boundedY);
+    }
   };
 
   const handleClick = () => {
+    if (!isClient) return;
+    
     // Handle double-click on desktop, single-click on mobile
     const requiredClicks = isMobile ? 1 : 2;
     
@@ -60,15 +77,21 @@ const DesktopIcon: React.FC<DesktopIconProps> = ({ app }) => {
     if (clickCount + 1 >= requiredClicks) {
       // Open window
       openWindow(app);
-      
       setClickCount(0);
     } else {
-      // Reset click count after delay
+      // Reset click count after 300ms
       clickTimeoutRef.current = setTimeout(() => {
         setClickCount(0);
       }, 300);
     }
   };
+
+  // Don't render on server to prevent hydration issues
+  if (!isClient) {
+    return null;
+  }
+
+  const IconComponent = app.icon;
 
   return (
     <motion.div
@@ -101,26 +124,19 @@ const DesktopIcon: React.FC<DesktopIconProps> = ({ app }) => {
         y: { type: "spring", stiffness: 300, damping: 30 }
       }}
       onClick={handleClick}
-      tabIndex={0}
+      aria-label={`${app.title} application`}
       role="button"
-      aria-label={`Open ${app.title} application`}
+      tabIndex={0}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
           handleClick();
         }
       }}
     >
-      <div className={cn(
-        "w-12 h-12 rounded-lg flex items-center justify-center mb-1 transition-all duration-200",
-        "bg-background/80 backdrop-blur-xl border border-border",
-        "group-hover:bg-accent group-hover:border-primary/50",
-        "group-active:scale-95",
-        isDragging && "ring-2 ring-primary/50"
-      )}>
-        <app.icon className="w-6 h-6 text-foreground" />
+      <div className="bg-background/80 backdrop-blur-xl p-3 rounded-xl border shadow-lg group-hover:shadow-xl transition-all duration-200 group-focus:shadow-xl">
+        {IconComponent && <IconComponent className="w-8 h-8" />}
       </div>
-      <span className="text-xs text-center text-foreground bg-background/50 px-1 rounded break-words w-full">
+      <span className="mt-1 text-xs text-center text-foreground bg-background/80 backdrop-blur-sm px-1 py-0.5 rounded truncate w-full">
         {app.title}
       </span>
     </motion.div>

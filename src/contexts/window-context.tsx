@@ -212,9 +212,17 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
   const [windowDimensions, setWindowDimensions] = useState({width: 0, height: 0});
   const [isLoaded, setIsLoaded] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+
+  // Check if we're on client
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   // Check if we're on mobile
   useEffect(() => {
+    if (!isClient) return;
+    
     const checkMobile = () => {
       if (typeof window !== 'undefined') {
         setIsMobile(window.innerWidth < 768);
@@ -227,9 +235,16 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
     }
     
     // Set up resize listener and initial dimensions
-    const updateDims = () => setWindowDimensions({width: window.innerWidth, height: window.innerHeight});
+    const updateDims = () => {
+      if (typeof window !== 'undefined') {
+        setWindowDimensions({width: window.innerWidth, height: window.innerHeight});
+      }
+    };
+    
     updateDims();
-    window.addEventListener('resize', updateDims);
+    if (typeof window !== 'undefined') {
+      window.addEventListener('resize', updateDims);
+    }
     
     return () => {
       if (typeof window !== 'undefined') {
@@ -237,11 +252,11 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
         window.removeEventListener('resize', updateDims);
       }
     };
-  }, []);
+  }, [isClient]);
 
   // Load state from localStorage once dimensions are available
   useEffect(() => {
-    if (typeof window === 'undefined' || windowDimensions.width === 0 || isLoaded) return;
+    if (typeof window === 'undefined' || windowDimensions.width === 0 || isLoaded || !isClient) return;
     
     // Load windows state
     try {
@@ -293,9 +308,11 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
     );
     
     setIsLoaded(true);
-  }, [windowDimensions, isLoaded]);
+  }, [windowDimensions, isLoaded, isClient]);
 
   const focusWindow = (id: string) => {
+    if (!isClient) return;
+    
     setZIndexCounter(prev => prev + 1);
     setWindows(prevWindows => {
         const newWindows = prevWindows.map(win =>
@@ -309,6 +326,8 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const openWindow = (app: AppConfig) => {
+    if (!isClient) return;
+    
     setWindows(prev => {
       const existingWindow = prev.find(w => w.id === app.id);
       if (existingWindow) {
@@ -328,7 +347,7 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
         let width = app.defaultSize?.width ?? 500;
         let height = app.defaultSize?.height ?? 400;
         
-        if (isMobile) {
+        if (isMobile && typeof window !== 'undefined') {
           // Center window on mobile with appropriate size
           x = Math.max(0, (windowDimensions.width - Math.min(windowDimensions.width - 20, width)) / 2);
           y = 60;
@@ -361,6 +380,8 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const closeWindow = (id: string) => {
+    if (!isClient) return;
+    
     setWindows(prev => {
         const newWindows = prev.filter(win => win.id !== id);
         saveWindowsState(newWindows);
@@ -369,6 +390,8 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
   };
   
   const toggleMinimize = (id: string) => {
+    if (!isClient) return;
+    
     setWindows(prev => {
         const newWindows = prev.map(win => {
             if (win.id === id) {
@@ -383,6 +406,8 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const toggleMaximize = (id: string) => {
+    if (!isClient) return;
+    
     setWindows(prev => {
         const newWindows = prev.map(win => {
             if (win.id === id) {
@@ -406,6 +431,8 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
   }
 
   const updateWindowPosition = (id: string, x: number, y: number) => {
+    if (!isClient) return;
+    
     setWindows(prev => {
         const newWindows = prev.map(win => {
           // Additional check to ensure window object exists and has required properties
@@ -418,6 +445,8 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const updateWindowSize = (id: string, width: number, height: number) => {
+    if (!isClient) return;
+    
     setWindows(prev => {
         const newWindows = prev.map(win => {
           // Additional check to ensure window object exists and has required properties
@@ -430,6 +459,8 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const updateIconPosition = (id: string, x: number, y: number) => {
+    if (!isClient) return;
+    
     setDesktopIcons(prev => {
         const newIcons = prev.map(icon => {
           // Additional check to ensure icon object exists
@@ -442,6 +473,8 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
   };
   
   const resetIconPositions = () => {
+    if (!isClient) return;
+    
     setDesktopIcons(initialAppsData);
     if (typeof window !== 'undefined') {
       localStorage.removeItem(ICON_STATE_KEY);
