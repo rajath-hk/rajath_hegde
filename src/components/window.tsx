@@ -30,15 +30,15 @@ const Window: React.FC<WindowProps> = ({ window }) => {
   const [isResizing, setIsResizing] = useState(false);
   const windowRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({
-    width: window.width,
-    height: window.height
+    width: window.width || 500,
+    height: window.height || 400
   });
   
   // Update dimensions when window prop changes
   useEffect(() => {
     setDimensions({
-      width: window.width,
-      height: window.height
+      width: window.width || 500,
+      height: window.height || 400
     });
   }, [window.width, window.height]);
 
@@ -64,7 +64,10 @@ const Window: React.FC<WindowProps> = ({ window }) => {
     info: PanInfo
   ) => {
     setIsDragging(false);
-    updateWindowPosition(window.id, window.x + info.offset.x, window.y + info.offset.y);
+    // Ensure x and y are valid numbers before updating position
+    const x = typeof window.x === 'number' ? window.x : 100;
+    const y = typeof window.y === 'number' ? window.y : 100;
+    updateWindowPosition(window.id, x + info.offset.x, y + info.offset.y);
   };
 
   const handleResizeStart = () => {
@@ -94,6 +97,10 @@ const Window: React.FC<WindowProps> = ({ window }) => {
     });
   };
 
+  // Ensure x and y are valid numbers for positioning
+  const x = typeof window.x === 'number' ? window.x : 100;
+  const y = typeof window.y === 'number' ? window.y : 100;
+
   return (
     <motion.div
       ref={windowRef}
@@ -104,8 +111,8 @@ const Window: React.FC<WindowProps> = ({ window }) => {
         isResizing && "cursor-se-resize"
       )}
       style={{
-        x: window.x,
-        y: window.y,
+        x: x,
+        y: y,
         width: dimensions.width,
         height: dimensions.height,
         zIndex: window.zIndex,

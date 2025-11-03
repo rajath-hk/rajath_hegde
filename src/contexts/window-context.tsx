@@ -133,6 +133,35 @@ const createContentElement = (id: string) => {
   }
 };
 
+// Validate and fix window data to ensure all required properties are present
+const validateAndFixWindowData = (windowData: any, appConfig: AppConfig | undefined): WindowInstance => {
+  // Ensure all required properties have valid values
+  const x = typeof windowData.x === 'number' ? windowData.x : (appConfig?.x ?? 100);
+  const y = typeof windowData.y === 'number' ? windowData.y : (appConfig?.y ?? 100);
+  const width = typeof windowData.width === 'number' ? windowData.width : (appConfig?.defaultSize?.width ?? 500);
+  const height = typeof windowData.height === 'number' ? windowData.height : (appConfig?.defaultSize?.height ?? 400);
+  const zIndex = typeof windowData.zIndex === 'number' ? windowData.zIndex : 1;
+  const isMinimized = typeof windowData.isMinimized === 'boolean' ? windowData.isMinimized : false;
+  const isMaximized = typeof windowData.isMaximized === 'boolean' ? windowData.isMaximized : false;
+  const isFocused = typeof windowData.isFocused === 'boolean' ? windowData.isFocused : false;
+
+  return {
+    id: windowData.id || (appConfig?.id ?? 'unknown'),
+    title: windowData.title || (appConfig?.title ?? 'Unknown App'),
+    icon: windowData.icon || appConfig?.icon || FileText,
+    content: createContentElement(windowData.id) || <div>Application content not found</div>,
+    defaultSize: appConfig?.defaultSize,
+    x,
+    y,
+    width,
+    height,
+    zIndex,
+    isMinimized,
+    isMaximized,
+    isFocused,
+  };
+};
+
 export const WindowProvider = ({ children }: { children: ReactNode }) => {
   const [windows, setWindows] = useState<WindowInstance[]>([]);
   const [desktopIcons, setDesktopIcons] = useState<AppConfig[]>(initialAppsData);
@@ -176,30 +205,16 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
       const savedWindows = localStorage.getItem(WINDOW_STATE_KEY);
       if (savedWindows) {
         const parsedWindows = JSON.parse(savedWindows);
-        setWindows(parsedWindows.map((win: any) => {
+        const validatedWindows = parsedWindows.map((win: any) => {
           const appConfig = initialAppsData.find(app => app.id === win.id);
-          // Ensure x and y have default values if not present
-          const x = win.x !== undefined ? win.x : (appConfig?.x ?? 100);
-          const y = win.y !== undefined ? win.y : (appConfig?.y ?? 100);
-          
-          return {
-            ...win,
-            x,
-            y,
-            icon: appConfig?.icon || FileText,
-            content: createContentElement(win.id),
-            defaultSize: appConfig?.defaultSize,
-            width: win.width ?? appConfig?.defaultSize?.width ?? 500,
-            height: win.height ?? appConfig?.defaultSize?.height ?? 400,
-            zIndex: win.zIndex ?? 1,
-            isMinimized: win.isMinimized ?? false,
-            isMaximized: win.isMaximized ?? false,
-            isFocused: win.isFocused ?? false,
-          };
-        }));
+          return validateAndFixWindowData(win, appConfig);
+        });
+        setWindows(validatedWindows);
       }
     } catch (e) {
       console.warn('Failed to load window state from localStorage:', e);
+      // If there's an error loading saved windows, initialize with empty array
+      setWindows([]);
     }
     
     // Load icons state
@@ -212,7 +227,10 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
             const savedIcon = parsedIcons.find((si: any) => si.id === icon.id);
             // Only update position, keep the original content
             if (savedIcon) {
-              return { ...icon, x: savedIcon.x, y: savedIcon.y };
+              // Ensure x and y are valid numbers
+              const x = typeof savedIcon.x === 'number' ? savedIcon.x : (icon.x ?? 0);
+              const y = typeof savedIcon.y === 'number' ? savedIcon.y : (icon.y ?? 0);
+              return { ...icon, x, y };
             }
             return icon;
           })
