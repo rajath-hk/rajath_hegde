@@ -387,8 +387,14 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
         const newWindows = prev.map(win => {
             if (win.id === id) {
                 if (win.isMaximized) {
-                    return { ...win, isMaximized: false, width: win.defaultSize?.width || 500, height: win.defaultSize?.height || 400, x: (windowDimensions.width - (win.defaultSize?.width || 500)) / 2, y: (windowDimensions.height - (win.defaultSize?.height || 400)) / 3 };
+                    // Restore window to previous size
+                    const width = win.defaultSize?.width || 500;
+                    const height = win.defaultSize?.height || 400;
+                    const x = (windowDimensions.width - width) / 2;
+                    const y = (windowDimensions.height - height) / 3;
+                    return { ...win, isMaximized: false, width, height, x, y };
                 } else {
+                    // Maximize window
                     return { ...win, isMaximized: true, width: windowDimensions.width, height: windowDimensions.height - 32, x: 0, y: 32 };
                 }
             }
