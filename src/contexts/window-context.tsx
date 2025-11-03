@@ -78,58 +78,77 @@ const WindowContext = createContext<WindowContextType | undefined>(undefined);
 // Helper to save serializable window state to localStorage
 const saveWindowsState = (windowsToSave: WindowInstance[]) => {
   if (typeof window === 'undefined') return;
-  const serializableWindows = windowsToSave.map(({ content, icon, ...rest }) => rest);
-  localStorage.setItem(WINDOW_STATE_KEY, JSON.stringify(serializableWindows));
+  
+  try {
+    const serializableWindows = windowsToSave.map(({ content, icon, ...rest }) => rest);
+    localStorage.setItem(WINDOW_STATE_KEY, JSON.stringify(serializableWindows));
+  } catch (error) {
+    console.error('Failed to save window state to localStorage:', error);
+    // If we can't save, clear the existing data to prevent corruption
+    localStorage.removeItem(WINDOW_STATE_KEY);
+  }
 };
 
 // Helper to save serializable icon state to localStorage
 const saveIconsState = (iconsToSave: AppConfig[]) => {
   if (typeof window === 'undefined') return;
-  const serializableIcons = iconsToSave.map(({ id, x, y }) => ({ id, x, y }));
-  localStorage.setItem(ICON_STATE_KEY, JSON.stringify(serializableIcons));
+  
+  try {
+    const serializableIcons = iconsToSave.map(({ id, x, y }) => ({ id, x, y }));
+    localStorage.setItem(ICON_STATE_KEY, JSON.stringify(serializableIcons));
+  } catch (error) {
+    console.error('Failed to save icon state to localStorage:', error);
+    // If we can't save, clear the existing data to prevent corruption
+    localStorage.removeItem(ICON_STATE_KEY);
+  }
 };
 
 // Create content element for a given app ID
 const createContentElement = (id: string) => {
-  switch (id) {
-    case 'about':
-      return <AboutContent />;
-    case 'projects':
-      return <ProjectsContent />;
-    case 'my-work':
-      return <MyWorkContent />;
-    case 'resume':
-      return <ResumeContent />;
-    case 'skills':
-      return <SkillsContent />;
-    case 'contact':
-      return <ContactContent />;
-    case 'socials':
-      return <SocialsContent />;
-    case 'terminal':
-      return <TerminalContent />;
-    case 'settings':
-      return <SettingsContent />;
-    case 'explorer':
-      return <FileExplorerContent />;
-    case 'browser':
-      return <BrowserContent />;
-    case 'media':
-      return <MediaPlayerContent />;
-    case 'calculator':
-      return <CalculatorContent />;
-    case 'weather':
-      return <WeatherContent />;
-    case 'notes':
-      return <NotesContent />;
-    case 'system':
-      return <SystemInfoContent />;
-    case 'gallery':
-      return <GalleryContent />;
-    case 'legal':
-      return <LegalContent />;
-    default:
-      return <div>Application not found</div>;
+  try {
+    switch (id) {
+      case 'about':
+        return <AboutContent />;
+      case 'projects':
+        return <ProjectsContent />;
+      case 'my-work':
+        return <MyWorkContent />;
+      case 'resume':
+        return <ResumeContent />;
+      case 'skills':
+        return <SkillsContent />;
+      case 'contact':
+        return <ContactContent />;
+      case 'socials':
+        return <SocialsContent />;
+      case 'terminal':
+        return <TerminalContent />;
+      case 'settings':
+        return <SettingsContent />;
+      case 'explorer':
+        return <FileExplorerContent />;
+      case 'browser':
+        return <BrowserContent />;
+      case 'media':
+        return <MediaPlayerContent />;
+      case 'calculator':
+        return <CalculatorContent />;
+      case 'weather':
+        return <WeatherContent />;
+      case 'notes':
+        return <NotesContent />;
+      case 'system':
+        return <SystemInfoContent />;
+      case 'gallery':
+        return <GalleryContent />;
+      case 'legal':
+        return <LegalContent />;
+      default:
+        return <div>Application not found</div>;
+    }
+  } catch (error) {
+    console.error(`Error creating content for app ID: ${id}`, error);
+    return <div>Error loading application content</div>;
   }
 };
 
@@ -231,6 +250,8 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
       console.warn('Failed to load window state from localStorage:', e);
       // If there's an error loading saved windows, initialize with empty array
       setWindows([]);
+      // Clear corrupted data
+      localStorage.removeItem(WINDOW_STATE_KEY);
     }
     
     // Load icons state
@@ -254,6 +275,8 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
       }
     } catch (e) {
       console.warn('Failed to load icon state from localStorage:', e);
+      // Clear corrupted data
+      localStorage.removeItem(ICON_STATE_KEY);
     }
     
     // Set the content for desktop icons

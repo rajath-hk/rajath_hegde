@@ -3,6 +3,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { WindowProvider } from "@/contexts/window-context";
 import { Toaster } from "@/components/ui/toaster";
+import ErrorBoundary from "@/components/error-boundary";
 
 export const metadata: Metadata = {
   title: {
@@ -49,27 +50,30 @@ export default function RootLayout({
             jobTitle: "Full-Stack Web Developer",
             worksFor: {
               "@type": "Organization",
-              name: "MCA Student"
+              name: "Freelance"
             },
             sameAs: [
               "https://github.com/rajath-hk",
-              // Add other social profiles here
+              "https://linkedin.com/in/rajath-hk",
+              "https://twitter.com/rajath_hk"
             ]
           })
         }} />
       </head>
       <body>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <WindowProvider>
-            {children}
-            <Toaster />
-          </WindowProvider>
-        </ThemeProvider>
+        <ErrorBoundary>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <WindowProvider>
+              {children}
+              <Toaster />
+            </WindowProvider>
+          </ThemeProvider>
+        </ErrorBoundary>
       </body>
     </html>
   );

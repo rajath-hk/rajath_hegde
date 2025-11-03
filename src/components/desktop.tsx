@@ -66,15 +66,27 @@ const Desktop = () => {
     // Context menu functionality can be implemented here
   };
 
+  // Handle wallpaper loading errors
+  const handleWallpaperError = (e: React.SyntheticEvent<HTMLDivElement>) => {
+    // Fallback to a solid color if wallpaper fails to load
+    const target = e.target as HTMLDivElement;
+    target.style.backgroundImage = 'none';
+    target.style.backgroundColor = 'var(--background)';
+  };
+
   return (
     <div 
       ref={desktopRef}
       className="relative w-full h-[calc(100vh-3rem)] overflow-auto bg-cover bg-center"
-      style={{ backgroundImage: `url('${wallpaper}')` }}
+      style={{ 
+        backgroundImage: `url('${wallpaper}')`,
+        backgroundColor: 'var(--background)'
+      }}
       onContextMenu={handleContextMenu}
       aria-label="Desktop environment"
       role="main"
       tabIndex={-1}
+      onError={handleWallpaperError}
     >
       {/* Desktop Icons */}
       <div className="relative w-full h-full p-4">
