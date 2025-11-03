@@ -102,15 +102,7 @@ const Desktop = () => {
       {/* Desktop Icons */}
       <div className="relative w-full h-full p-4">
         {desktopIcons.map((icon) => (
-          <DesktopIcon
-            key={icon.id}
-            id={icon.id}
-            title={icon.title}
-            icon={icon.icon}
-            x={icon.x}
-            y={icon.y}
-            content={icon.content}
-          />
+          <DesktopIcon key={icon.id} app={icon} />
         ))}
       </div>
 
