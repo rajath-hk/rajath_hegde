@@ -1,78 +1,129 @@
 'use client';
 
-import type { AppConfig } from '@/types';
+import React, { useState, useRef } from 'react';
+import { motion } from 'framer-motion';
 import { useWindows } from '@/contexts/window-context';
-import React, { useEffect, useState } from 'react';
-import { motion, useMotionValue } from 'framer-motion';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { cn } from '@/lib/utils';
+import type { AppConfig } from '@/types';
 
 interface DesktopIconProps {
   app: AppConfig;
-  constraintsRef: React.RefObject<HTMLDivElement>;
 }
 
-const DesktopIcon = ({ app, constraintsRef }: DesktopIconProps) => {
+const DesktopIcon: React.FC<DesktopIconProps> = ({ app }) => {
   const { openWindow, updateIconPosition } = useWindows();
-  const IconComponent = app.icon;
-  const [isMobile, setIsMobile] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const iconRef = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile();
+  const [position, setPosition] = useState({ 
+    x: app.x ?? 0, 
+    y: app.y ?? 0 
+  });
+  const [clickCount, setClickCount] = useState(0);
+  const clickTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Check if we're on mobile
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
+  const handleDragStart = () => {
+    if (isMobile) return; // Disable drag on mobile
+    setIsDragging(true);
+  };
+
+  const handleDragEnd = (
+    event: MouseEvent | TouchEvent | PointerEvent,
+    info: { offset: { x: number; y: number } }
+  ) => {
+    if (isMobile) return; // Disable drag on mobile
+    setIsDragging(false);
     
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
+    // Update position with drag offset
+    const newX = position.x + info.offset.x;
+    const newY = position.y + info.offset.y;
+    
+    // Keep icon within screen bounds
+    const boundedX = Math.max(0, Math.min(newX, window.innerWidth - 80));
+    const boundedY = Math.max(0, Math.min(newY, window.innerHeight - 80));
+    
+    setPosition({ x: boundedX, y: boundedY });
+    updateIconPosition(app.id, boundedX, boundedY);
+  };
 
-  // Use motion values for a more robust drag implementation
-  const x = useMotionValue(app.x ?? 0);
-  const y = useMotionValue(app.y ?? 0);
-
-  // Sync motion values if the state from context changes (e.g., on initial load)
-  useEffect(() => {
-    x.set(app.x ?? 0);
-    y.set(app.y ?? 0);
-  }, [app.x, app.y, x, y]);
+  const handleClick = () => {
+    // Handle double-click on desktop, single-click on mobile
+    const requiredClicks = isMobile ? 1 : 2;
+    
+    setClickCount(prev => prev + 1);
+    
+    if (clickTimeoutRef.current) {
+      clearTimeout(clickTimeoutRef.current);
+    }
+    
+    if (clickCount + 1 >= requiredClicks) {
+      // Open window
+      openWindow(app);
+      
+      setClickCount(0);
+    } else {
+      // Reset click count after delay
+      clickTimeoutRef.current = setTimeout(() => {
+        setClickCount(0);
+      }, 300);
+    }
+  };
 
   return (
-    <motion.button
-      // Use motion values for position via `style`. Framer Motion will manage this.
-      style={{ x, y, position: 'absolute' }}
-      className="flex flex-col items-center justify-center text-center focus:outline-none p-2 select-none w-20"
-      aria-label={`Open ${app.title}`}
-      onClick={(e) => {
-        e.stopPropagation();
-        // On mobile, single click should open the window
-        if (isMobile) {
-          openWindow(app);
-        }
+    <motion.div
+      ref={iconRef}
+      className={cn(
+        "absolute flex flex-col items-center justify-center w-16 cursor-pointer group select-none outline-none",
+        isDragging ? "cursor-grabbing z-50" : "cursor-pointer",
+        "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+      )}
+      style={{
+        x: position.x,
+        y: position.y,
       }}
-      onDoubleClick={(e) => {
-        e.stopPropagation();
-        // On desktop, double click opens the window
-        if (!isMobile) {
-          openWindow(app);
-        }
-      }}
-      drag={!isMobile} // Only allow drag on desktop
-      dragConstraints={constraintsRef}
+      drag={!isMobile} // Disable drag on mobile
       dragMomentum={false}
-      onDragEnd={() => {
-        // On drag end, update the main state in the context with the final position.
-        updateIconPosition(app.id, x.get(), y.get());
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+      whileDrag={{ 
+        scale: 1.1,
+        zIndex: 1000
       }}
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }} // Better touch feedback on mobile
+      whileHover={{ 
+        scale: isMobile ? 1 : 1.05 
+      }}
+      whileTap={{ 
+        scale: 0.95 
+      }}
+      transition={{ 
+        x: { type: "spring", stiffness: 300, damping: 30 },
+        y: { type: "spring", stiffness: 300, damping: 30 }
+      }}
+      onClick={handleClick}
+      tabIndex={0}
+      role="button"
+      aria-label={`Open ${app.title} application`}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          handleClick();
+        }
+      }}
     >
-      <div className="w-14 h-14 rounded-lg bg-black/10 dark:bg-white/10 backdrop-blur-lg flex items-center justify-center shadow border border-black/10 dark:border-white/10">
-        <IconComponent className="w-7 h-7 text-foreground" />
+      <div className={cn(
+        "w-12 h-12 rounded-lg flex items-center justify-center mb-1 transition-all duration-200",
+        "bg-background/80 backdrop-blur-xl border border-border",
+        "group-hover:bg-accent group-hover:border-primary/50",
+        "group-active:scale-95",
+        isDragging && "ring-2 ring-primary/50"
+      )}>
+        <app.icon className="w-6 h-6 text-foreground" />
       </div>
-      <span className="text-xs mt-1 text-foreground font-medium [text-shadow:0_1px_2px_rgba(255,255,255,0.2)] dark:[text-shadow:0_1px_2px_rgba(0,0,0,0.5)] px-1 py-0.5 rounded">
+      <span className="text-xs text-center text-foreground bg-background/50 px-1 rounded break-words w-full">
         {app.title}
       </span>
-    </motion.button>
+    </motion.div>
   );
 };
 

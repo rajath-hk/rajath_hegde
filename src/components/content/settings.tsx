@@ -12,13 +12,15 @@ import {
   Sun,
   Moon,
   Laptop,
-  Save
+  Save,
+  Image as ImageIcon
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const Settings = () => {
   const { theme, setTheme } = useTheme();
@@ -32,29 +34,33 @@ const Settings = () => {
 
   // Load settings from localStorage
   useEffect(() => {
-    const savedWallpaper = localStorage.getItem('portfolio-wallpaper') || '/logo.png';
-    const savedVolume = localStorage.getItem('portfolio-volume') || '80';
-    const savedNotifications = localStorage.getItem('portfolio-notifications') || 'true';
-    const savedSound = localStorage.getItem('portfolio-sound') || 'true';
-    const savedAutoSave = localStorage.getItem('portfolio-auto-save') || 'true';
-    const savedStartupAnimation = localStorage.getItem('portfolio-startup-animation') || 'true';
-    
-    setWallpaper(savedWallpaper);
-    setVolume(parseInt(savedVolume));
-    setNotifications(savedNotifications === 'true');
-    setSound(savedSound === 'true');
-    setAutoSave(savedAutoSave === 'true');
-    setStartupAnimation(savedStartupAnimation === 'true');
+    if (typeof window !== 'undefined') {
+      const savedWallpaper = localStorage.getItem('portfolio-wallpaper') || '/logo.png';
+      const savedVolume = localStorage.getItem('portfolio-volume') || '80';
+      const savedNotifications = localStorage.getItem('portfolio-notifications') || 'true';
+      const savedSound = localStorage.getItem('portfolio-sound') || 'true';
+      const savedAutoSave = localStorage.getItem('portfolio-auto-save') || 'true';
+      const savedStartupAnimation = localStorage.getItem('portfolio-startup-animation') || 'true';
+      
+      setWallpaper(savedWallpaper);
+      setVolume(parseInt(savedVolume));
+      setNotifications(savedNotifications === 'true');
+      setSound(savedSound === 'true');
+      setAutoSave(savedAutoSave === 'true');
+      setStartupAnimation(savedStartupAnimation === 'true');
+    }
   }, []);
 
   // Save settings to localStorage
   const saveSetting = (key: string, value: string | number | boolean) => {
-    localStorage.setItem(`portfolio-${key}`, String(value));
-    
-    // Special handling for wallpaper
-    if (key === 'wallpaper') {
-      const event = new CustomEvent('wallpaperChange', { detail: value });
-      window.dispatchEvent(event);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(`portfolio-${key}`, String(value));
+      
+      // Special handling for wallpaper
+      if (key === 'wallpaper') {
+        const event = new CustomEvent('wallpaperChange', { detail: value });
+        window.dispatchEvent(event);
+      }
     }
   };
 
@@ -98,12 +104,6 @@ const Settings = () => {
     { id: 'space', name: 'Space', url: '/logo.png' },
     { id: 'mountains', name: 'Mountains', url: '/logo.png' },
     { id: 'city', name: 'City', url: '/logo.png' },
-  ];
-
-  const themeOptions = [
-    { id: 'light', name: 'Light', icon: Sun },
-    { id: 'dark', name: 'Dark', icon: Moon },
-    { id: 'system', name: 'System', icon: Laptop },
   ];
 
   return (
@@ -232,17 +232,37 @@ const Settings = () => {
             <div className="space-y-6">
               <div>
                 <h3 className="text-lg font-medium mb-3">Theme</h3>
-                <div className="grid grid-cols-3 gap-4">
-                  {themeOptions.map((option) => (
-                    <Button
+                <Select value={theme} onValueChange={handleThemeChange}>
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Select theme" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="light">Light</SelectItem>
+                    <SelectItem value="dark">Dark</SelectItem>
+                    <SelectItem value="system">System</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div>
+                <h3 className="text-lg font-medium mb-3">Wallpaper</h3>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                  {wallpaperOptions.map((option) => (
+                    <div 
                       key={option.id}
-                      variant={theme === option.id ? "default" : "outline"}
-                      className="flex flex-col h-24 items-center justify-center"
-                      onClick={() => handleThemeChange(option.id)}
+                      className={`relative rounded-lg overflow-hidden cursor-pointer border-2 ${
+                        wallpaper === option.url ? 'border-primary' : 'border-transparent'
+                      }`}
+                      onClick={() => handleWallpaperChange(option.url)}
                     >
-                      <option.icon className="w-6 h-6 mb-2" />
-                      <span>{option.name}</span>
-                    </Button>
+                      <div 
+                        className="h-20 bg-cover bg-center flex items-center justify-center"
+                        style={{ backgroundImage: `url('${option.url}')` }}
+                      >
+                        <ImageIcon className="w-8 h-8 text-white opacity-50" />
+                      </div>
+                      <div className="p-2 text-sm text-center">{option.name}</div>
+                    </div>
                   ))}
                 </div>
               </div>
