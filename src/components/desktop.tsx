@@ -74,6 +74,17 @@ const Desktop = () => {
     target.style.backgroundColor = 'var(--background)';
   };
 
+  // Validate window object has required properties
+  const isValidWindow = (window: any) => {
+    return window && 
+           typeof window === 'object' && 
+           window.id && 
+           typeof window.x === 'number' && 
+           typeof window.y === 'number' &&
+           typeof window.width === 'number' && 
+           typeof window.height === 'number';
+  };
+
   return (
     <div 
       ref={desktopRef}
@@ -106,7 +117,7 @@ const Desktop = () => {
       {/* Windows */}
       <AnimatePresence>
         {windows
-          .filter(window => window !== null && window !== undefined) // Filter out invalid windows
+          .filter(isValidWindow) // Filter out invalid windows with robust validation
           .map((window) => (
             <Window key={window.id} window={window} />
           ))}

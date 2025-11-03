@@ -17,8 +17,8 @@ interface WindowProps {
 }
 
 const Window: React.FC<WindowProps> = ({ window }) => {
-  // Handle case where window is undefined
-  if (!window) {
+  // Handle case where window is undefined or missing required properties
+  if (!window || !window.id || typeof window.x !== 'number' || typeof window.y !== 'number') {
     return null;
   }
   
