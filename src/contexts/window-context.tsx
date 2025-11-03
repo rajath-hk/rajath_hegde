@@ -95,15 +95,34 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
   const [zIndexCounter, setZIndexCounter] = useState(10);
   const [windowDimensions, setWindowDimensions] = useState({width: 0, height: 0});
   const [isLoaded, setIsLoaded] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
-  // Set up resize listener and initial dimensions
+  // Check if we're on mobile
   useEffect(() => {
+    const checkMobile = () => {
+      if (typeof window !== 'undefined') {
+        setIsMobile(window.innerWidth < 768);
+      }
+    };
+    
+    if (typeof window !== 'undefined') {
+      checkMobile();
+      window.addEventListener('resize', checkMobile);
+    }
+    
+    // Set up resize listener and initial dimensions
     const updateDims = () => setWindowDimensions({width: window.innerWidth, height: window.innerHeight});
-    window.addEventListener('resize', updateDims);
     updateDims();
-    return () => window.removeEventListener('resize', updateDims);
+    window.addEventListener('resize', updateDims);
+    
+    return () => {
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('resize', checkMobile);
+        window.removeEventListener('resize', updateDims);
+      }
+    };
   }, []);
-  
+
   // Load state from localStorage once dimensions are available
   useEffect(() => {
     if (typeof window === 'undefined' || windowDimensions.width === 0 || isLoaded) return;
@@ -172,45 +191,55 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const openWindow = (app: AppConfig) => {
-    const existingWindowIndex = windows.findIndex(win => win.id === app.id);
-    
-    if (existingWindowIndex > -1) {
-      focusWindow(app.id);
-    } else {
-      setWindows(prev => {
-        const newZIndex = zIndexCounter + 1;
-        setZIndexCounter(newZIndex);
-
-        const width = app.defaultSize?.width || 500;
-        const height = app.defaultSize?.height || 400;
-
-        // Cascade new windows to prevent perfect overlap
-        const offset = (prev.length % 5) * 30;
-
-        const newX = Math.max(0, (windowDimensions.width - width) / 2) + offset;
-        const newY = Math.max(32, (windowDimensions.height - height) / 2) + offset; // 32px for top bar
-
+    setWindows(prev => {
+      const existingWindow = prev.find(w => w.id === app.id);
+      if (existingWindow) {
+        // If window exists, bring it to front and unminimize it
+        return prev.map(w => 
+          w.id === app.id 
+            ? { ...w, isMinimized: false, zIndex: Math.max(...prev.map(win => win.zIndex), 0) + 1 } 
+            : w
+        );
+      } else {
+        // Create new window with proper content
+        const content = createContentElement(app.id);
+        
+        // Adjust default position and size for mobile
+        let x = app.x ?? 100;
+        let y = app.y ?? 100;
+        let width = app.defaultSize?.width ?? 500;
+        let height = app.defaultSize?.height ?? 400;
+        
+        if (isMobile) {
+          // Center window on mobile with appropriate size
+          x = Math.max(0, (windowDimensions.width - Math.min(windowDimensions.width - 20, width)) / 2);
+          y = 60;
+          width = Math.min(windowDimensions.width - 20, width);
+          height = Math.min(windowDimensions.height - 100, height);
+        }
+        
         const newWindow: WindowInstance = {
-          id: app.id,
-          title: app.title,
-          icon: app.icon,
-          content: appContents[app.id] || <div>Application not found</div>,
-          defaultSize: app.defaultSize,
-          x: newX,
-          y: newY,
+          ...app,
+          content,
+          x,
+          y,
           width,
           height,
-          zIndex: newZIndex,
+          zIndex: Math.max(...prev.map(w => w.zIndex), 0) + 1,
           isMinimized: false,
           isMaximized: false,
           isFocused: true,
         };
-
-        const newWindows = [...prev.map(w => ({...w, isFocused: false})), newWindow];
-        saveWindowsState(newWindows);
-        return newWindows;
-      });
-    }
+        return [...prev, newWindow];
+      }
+    });
+    
+    // Unfocus other windows
+    setWindows(prev => 
+      prev.map(w => 
+        w.id === app.id ? { ...w, isFocused: true } : { ...w, isFocused: false }
+      )
+    );
   };
 
   const closeWindow = (id: string) => {

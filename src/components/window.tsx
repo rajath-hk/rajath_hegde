@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import type { WindowInstance } from '@/types';
 import { useWindows } from '@/contexts/window-context';
 import { cn } from '@/lib/utils';
-import { X, Minus, Square, Maximize, Minimize } from 'lucide-react';
+import { X, Minus, Square, Minimize } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 type WindowProps = WindowInstance;
@@ -28,8 +28,10 @@ const Window = (props: WindowProps) => {
   const [isResizing, setIsResizing] = useState(false);
   const [resizeDirection, setResizeDirection] = useState<string | null>(null);
   const [isMobile, setIsMobile] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
   
   const windowRef = useRef<HTMLDivElement>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
 
   // Check if we're on mobile
   useEffect(() => {
@@ -74,6 +76,46 @@ const Window = (props: WindowProps) => {
       return;
     }
     focusWindow(id);
+    
+    // Handle touch events for mobile
+    if ('touches' in e) {
+      setIsDragging(true);
+      const touch = e.touches[0];
+      const windowRect = windowRef.current?.getBoundingClientRect();
+      if (!windowRect) return;
+      
+      const offsetX = touch.clientX - windowRect.left;
+      const offsetY = touch.clientY - windowRect.top;
+      
+      const handleTouchMove = (moveEvent: TouchEvent) => {
+        if (!windowRef.current) return;
+        
+        const moveTouch = moveEvent.touches[0];
+        const newX = moveTouch.clientX - offsetX;
+        const newY = moveTouch.clientY - offsetY;
+        
+        // Keep window within bounds
+        const boundedX = Math.max(0, Math.min(newX, window.innerWidth - windowRect.width));
+        const boundedY = Math.max(0, Math.min(newY, window.innerHeight - windowRect.height));
+        
+        setPosition({ x: boundedX, y: boundedY });
+      };
+      
+      const handleTouchEnd = () => {
+        updateWindowPosition(id, position.x, position.y);
+        setIsDragging(false);
+        window.removeEventListener('touchmove', handleTouchMove);
+        window.removeEventListener('touchend', handleTouchEnd);
+      };
+      
+      window.addEventListener('touchmove', handleTouchMove);
+      window.addEventListener('touchend', handleTouchEnd);
+    } else {
+      // Handle mouse events for desktop
+      if (headerRef.current && headerRef.current.contains(e.target as Node)) {
+        setIsDragging(true);
+      }
+    }
   };
   
   const handleDoubleClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -83,81 +125,56 @@ const Window = (props: WindowProps) => {
     toggleMaximize(id);
   };
 
-  // Handle touch events for mobile dragging
-  const handleTouchStart = (e: React.TouchEvent) => {
-    if (isMaximized) return;
-    focusWindow(id);
-    
-    const touch = e.touches[0];
-    const windowRect = windowRef.current?.getBoundingClientRect();
-    if (!windowRect) return;
-    
-    const offsetX = touch.clientX - windowRect.left;
-    const offsetY = touch.clientY - windowRect.top;
-    
-    const handleTouchMove = (moveEvent: TouchEvent) => {
+  // Handle mouse events for desktop dragging and resizing
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    if (isResizing) {
       if (!windowRef.current) return;
+      const rect = windowRef.current.getBoundingClientRect();
+      const minWidth = 300;
+      const minHeight = 200;
       
-      const moveTouch = moveEvent.touches[0];
-      const newX = moveTouch.clientX - offsetX;
-      const newY = moveTouch.clientY - offsetY;
+      let newWidth = size.width;
+      let newHeight = size.height;
+      let newX = position.x;
+      let newY = position.y;
       
-      // Keep window within bounds
-      const boundedX = Math.max(0, Math.min(newX, window.innerWidth - windowRect.width));
-      const boundedY = Math.max(0, Math.min(newY, window.innerHeight - windowRect.height));
+      if (resizeDirection?.includes('e')) {
+        newWidth = Math.max(minWidth, e.clientX - rect.left);
+      }
+      
+      if (resizeDirection?.includes('s')) {
+        newHeight = Math.max(minHeight, e.clientY - rect.top);
+      }
+      
+      if (resizeDirection?.includes('w')) {
+        const widthChange = rect.left - e.clientX;
+        if (size.width + widthChange > minWidth) {
+          newWidth = size.width + widthChange;
+          newX = position.x - widthChange;
+        }
+      }
+      
+      if (resizeDirection?.includes('n')) {
+        const heightChange = rect.top - e.clientY;
+        if (size.height + heightChange > minHeight) {
+          newHeight = size.height + heightChange;
+          newY = position.y - heightChange;
+        }
+      }
+      
+      setSize({ width: newWidth, height: newHeight });
+      setPosition({ x: newX, y: newY });
+    } else if (isDragging) {
+      const newX = e.clientX - (windowRef.current?.offsetWidth || 0) / 2;
+      const newY = e.clientY - 20;
+      
+      // Boundary checks
+      const boundedX = Math.max(0, Math.min(newX, window.innerWidth - (windowRef.current?.offsetWidth || 0)));
+      const boundedY = Math.max(0, Math.min(newY, window.innerHeight - (windowRef.current?.offsetHeight || 0)));
       
       setPosition({ x: boundedX, y: boundedY });
-    };
-    
-    const handleTouchEnd = () => {
-      updateWindowPosition(id, position.x, position.y);
-      window.removeEventListener('touchmove', handleTouchMove);
-      window.removeEventListener('touchend', handleTouchEnd);
-    };
-    
-    window.addEventListener('touchmove', handleTouchMove);
-    window.addEventListener('touchend', handleTouchEnd);
-  };
-
-  const handleMouseMove = useCallback((e: MouseEvent) => {
-    if (!isResizing || !resizeDirection || !windowRef.current) return;
-    
-    const rect = windowRef.current.getBoundingClientRect();
-    const minWidth = 300;
-    const minHeight = 200;
-    
-    let newWidth = size.width;
-    let newHeight = size.height;
-    let newX = position.x;
-    let newY = position.y;
-    
-    if (resizeDirection.includes('e')) {
-      newWidth = Math.max(minWidth, e.clientX - rect.left);
     }
-    
-    if (resizeDirection.includes('s')) {
-      newHeight = Math.max(minHeight, e.clientY - rect.top);
-    }
-    
-    if (resizeDirection.includes('w')) {
-      const widthChange = rect.left - e.clientX;
-      if (size.width + widthChange > minWidth) {
-        newWidth = size.width + widthChange;
-        newX = position.x - widthChange;
-      }
-    }
-    
-    if (resizeDirection.includes('n')) {
-      const heightChange = rect.top - e.clientY;
-      if (size.height + heightChange > minHeight) {
-        newHeight = size.height + heightChange;
-        newY = position.y - heightChange;
-      }
-    }
-    
-    setSize({ width: newWidth, height: newHeight });
-    setPosition({ x: newX, y: newY });
-  }, [isResizing, resizeDirection, size, position]);
+  }, [isResizing, resizeDirection, isDragging, size, position]);
 
   const handleMouseUp = useCallback(() => {
     if (isResizing) {
@@ -165,21 +182,55 @@ const Window = (props: WindowProps) => {
       setResizeDirection(null);
       updateWindowSize(id, size.width, size.height);
       updateWindowPosition(id, position.x, position.y);
+    } else if (isDragging) {
+      setIsDragging(false);
+      updateWindowPosition(id, position.x, position.y);
     }
-  }, [isResizing, id, size, position, updateWindowSize, updateWindowPosition]);
+  }, [isResizing, isDragging, id, size, position, updateWindowSize, updateWindowPosition]);
 
   useEffect(() => {
-    if (isResizing) {
-      window.addEventListener('mousemove', handleMouseMove);
-      window.addEventListener('mouseup', handleMouseUp);
+    if (isResizing || isDragging) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+      return () => {
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+      };
     }
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
-    };
-  }, [isResizing, handleMouseMove, handleMouseUp]);
+  }, [isResizing, isDragging, handleMouseMove, handleMouseUp]);
 
-  // Don't render minimized windows
+  // Handle window maximization for mobile
+  useEffect(() => {
+    if (isMobile && isMaximized) {
+      setSize({
+        width: window.innerWidth,
+        height: window.innerHeight - 40 // Leave space for taskbar
+      });
+      setPosition({ x: 0, y: 0 });
+    } else if (isMobile && !isMaximized) {
+      // Reset to mobile-friendly size when unmaximizing
+      const newWidth = Math.min(window.innerWidth - 20, 600);
+      const newHeight = Math.min(window.innerHeight - 100, 700);
+      
+      setSize({ width: newWidth, height: newHeight });
+      setPosition({ 
+        x: Math.max(0, (window.innerWidth - newWidth) / 2),
+        y: 60 
+      });
+    } else if (!isMobile && isMaximized) {
+      // Desktop maximization logic
+      setSize({
+        width: window.innerWidth,
+        height: window.innerHeight - 40 // Leave space for taskbar
+      });
+      setPosition({ x: 0, y: 0 });
+    } else if (!isMobile && !isMaximized) {
+      // Reset to original size when unmaximizing on desktop
+      setSize({ width, height });
+      setPosition({ x, y });
+    }
+  }, [isMaximized, isMobile, width, height, x, y]);
+
   if (isMinimized) {
     return null;
   }
@@ -187,7 +238,10 @@ const Window = (props: WindowProps) => {
   return (
     <motion.div
       ref={windowRef}
-      className="absolute bg-card/80 dark:bg-card/60 backdrop-blur-xl border rounded-lg flex flex-col shadow-lg"
+      className={cn(
+        "fixed bg-background border rounded-lg shadow-2xl overflow-hidden flex flex-col",
+        isFocused ? "border-blue-500 shadow-lg" : "border-gray-300 dark:border-gray-600"
+      )}
       style={{
         width: size.width,
         height: size.height,
@@ -195,110 +249,97 @@ const Window = (props: WindowProps) => {
         left: position.x,
         top: position.y,
       }}
-      layout
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.9 }}
-      transition={{ type: 'spring', stiffness: 500, damping: 40 }}
       onMouseDown={() => focusWindow(id)}
-      drag={!isMaximized && !isResizing && !isMobile}
-      dragMomentum={false}
-      onDragStart={(event, info) => {
-        if (isMaximized) return;
-        // Check if the target is a button
-        if ((event.target as HTMLElement).closest('button')) {
-          return;
-        }
+      onTouchStart={(e) => {
         focusWindow(id);
-      }}
-      onDragEnd={(e, info) => {
-        updateWindowPosition(id, position.x + info.offset.x, position.y + info.offset.y);
+        handleDragStart(e);
       }}
     >
-      <header
-        className="flex items-center justify-between relative px-3 h-9 flex-shrink-0 border-b bg-black/5 dark:bg-white/5 cursor-move"
+      {/* Window Header */}
+      <div 
+        ref={headerRef}
+        className={cn(
+          "h-10 flex items-center justify-between px-4 cursor-move border-b",
+          isFocused 
+            ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white" 
+            : "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200"
+        )}
         onDoubleClick={handleDoubleClick}
-        onTouchStart={handleTouchStart}
-        style={{ cursor: isMaximized ? 'default' : isResizing ? 'default' : 'grab' }}
+        onMouseDown={handleDragStart}
+        onTouchStart={handleDragStart}
       >
-        <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
-            <button 
-              onClick={(e) => { e.stopPropagation(); closeWindow(id); }} 
-              className="w-6 h-6 rounded-full bg-[#ff5f57] flex items-center justify-center group/btn hover:bg-[#ff3b30] transition-colors"
-              aria-label="Close"
-            >
-                <X className="w-3 h-3 text-[#9d252b] group-hover/btn:text-white transition-colors" />
-            </button>
-            <button 
-              onClick={(e) => { e.stopPropagation(); toggleMinimize(id); }} 
-              className="w-6 h-6 rounded-full bg-[#febc2e] flex items-center justify-center group/btn hover:bg-[#ff9500] transition-colors"
-              aria-label="Minimize"
-            >
-                <Minus className="w-3 h-3 text-[#9a542c] group-hover/btn:text-white transition-colors" />
-            </button>
-            <button 
-              onClick={(e) => { e.stopPropagation(); toggleMaximize(id); }} 
-              className="w-6 h-6 rounded-full bg-[#28c840] flex items-center justify-center group/btn hover:bg-[#00c700] transition-colors"
-              aria-label={isMaximized ? "Restore" : "Maximize"}
-            >
-              {isMaximized ? (
-                <Minimize className="w-3 h-3 text-[#226534] group-hover/btn:text-white transition-colors" />
-              ) : (
-                <Square className="w-3 h-3 text-[#226534] group-hover/btn:text-white transition-colors" />
-              )}
-            </button>
+        <div className="flex items-center space-x-2">
+          <div className="w-3 h-3 rounded-full bg-red-400"></div>
+          <div className="w-3 h-3 rounded-full bg-yellow-400"></div>
+          <div className="w-3 h-3 rounded-full bg-green-400"></div>
         </div>
-        <span className={cn(
-            "font-medium text-sm truncate transition-colors max-w-[60%] sm:max-w-[70%]",
-            isFocused ? "text-foreground" : "text-muted-foreground/80"
-          )}>
+        <div className="text-sm font-medium truncate mx-4 flex-grow text-center">
           {title}
-        </span>
-        <div className="absolute right-3 top-1/2 -translate-y-1/2 w-3 h-3"></div>
-      </header>
-      <div className="flex-1 rounded-b-lg overflow-hidden">
-        <div className="w-full h-full overflow-auto">
-          {content}
+        </div>
+        <div className="flex items-center space-x-2">
+          <button 
+            className="w-6 h-6 flex items-center justify-center rounded hover:bg-black/10 dark:hover:bg-white/10"
+            onClick={() => toggleMinimize(id)}
+            aria-label="Minimize window"
+          >
+            <Minus className="w-4 h-4" />
+          </button>
+          <button 
+            className="w-6 h-6 flex items-center justify-center rounded hover:bg-black/10 dark:hover:bg-white/10"
+            onClick={() => toggleMaximize(id)}
+            aria-label={isMaximized ? "Restore window" : "Maximize window"}
+          >
+            {isMaximized ? <Minimize className="w-4 h-4" /> : <Square className="w-4 h-4" />}
+          </button>
+          <button 
+            className="w-6 h-6 flex items-center justify-center rounded hover:bg-red-500"
+            onClick={() => closeWindow(id)}
+            aria-label="Close window"
+          >
+            <X className="w-4 h-4" />
+          </button>
         </div>
       </div>
-      
-      {/* Resize handles - hidden on mobile */}
-      {!isMaximized && !isMobile && (
+
+      {/* Window Content */}
+      <div className="flex-grow overflow-auto bg-background">
+        {content}
+      </div>
+
+      {/* Resize Handles (only on desktop) */}
+      {!isMobile && !isMaximized && (
         <>
-          {/* Edges */}
           <div 
-            className="absolute top-0 left-2 right-2 h-1 cursor-n-resize" 
-            onMouseDown={(e) => handleResizeStart(e, 'n')}
-          />
-          <div 
-            className="absolute bottom-0 left-2 right-2 h-1 cursor-s-resize" 
-            onMouseDown={(e) => handleResizeStart(e, 's')}
-          />
-          <div 
-            className="absolute left-0 top-2 bottom-2 w-1 cursor-w-resize" 
+            className="absolute w-2 h-full top-0 left-0 cursor-w-resize"
             onMouseDown={(e) => handleResizeStart(e, 'w')}
           />
           <div 
-            className="absolute right-0 top-2 bottom-2 w-1 cursor-e-resize" 
+            className="absolute w-2 h-full top-0 right-0 cursor-e-resize"
             onMouseDown={(e) => handleResizeStart(e, 'e')}
           />
-          
-          {/* Corners */}
           <div 
-            className="absolute top-0 left-0 w-3 h-3 cursor-nw-resize" 
-            onMouseDown={(e) => handleResizeStart(e, 'nw')}
+            className="absolute w-full h-2 top-0 left-0 cursor-n-resize"
+            onMouseDown={(e) => handleResizeStart(e, 'n')}
           />
           <div 
-            className="absolute top-0 right-0 w-3 h-3 cursor-ne-resize" 
-            onMouseDown={(e) => handleResizeStart(e, 'ne')}
+            className="absolute w-full h-2 bottom-0 left-0 cursor-s-resize"
+            onMouseDown={(e) => handleResizeStart(e, 's')}
           />
           <div 
-            className="absolute bottom-0 left-0 w-3 h-3 cursor-sw-resize" 
+            className="absolute w-4 h-4 bottom-0 right-0 cursor-se-resize"
+            onMouseDown={(e) => handleResizeStart(e, 'se')}
+          />
+          <div 
+            className="absolute w-4 h-4 bottom-0 left-0 cursor-sw-resize"
             onMouseDown={(e) => handleResizeStart(e, 'sw')}
           />
           <div 
-            className="absolute bottom-0 right-0 w-3 h-3 cursor-se-resize" 
-            onMouseDown={(e) => handleResizeStart(e, 'se')}
+            className="absolute w-4 h-4 top-0 right-0 cursor-ne-resize"
+            onMouseDown={(e) => handleResizeStart(e, 'ne')}
+          />
+          <div 
+            className="absolute w-4 h-4 top-0 left-0 cursor-nw-resize"
+            onMouseDown={(e) => handleResizeStart(e, 'nw')}
           />
         </>
       )}

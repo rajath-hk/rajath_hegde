@@ -4,48 +4,48 @@
 
 @layer base {
   :root {
-    --background: 210 17% 98%;
-    --foreground: 225 4% 14%;
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
     --card: 0 0% 100%;
-    --card-foreground: 225 4% 14%;
+    --card-foreground: 240 10% 3.9%;
     --popover: 0 0% 100%;
-    --popover-foreground: 225 4% 14%;
-    --primary: 45 100% 58%;
-    --primary-foreground: 222 47% 11%;
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 222 47% 11%;
-    --muted: 210 40% 96%;
-    --muted-foreground: 215 20% 65%;
-    --accent: 221 89% 61%;
-    --accent-foreground: 210 40% 98%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 221 83% 53%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 210 40% 91%;
-    --input: 210 40% 91%;
-    --ring: 45 100% 58%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 221 83% 53%;
     --radius: 0.5rem;
   }
- 
+
   .dark {
-    --background: 225 4% 14%;
-    --foreground: 210 40% 98%;
-    --card: 225 4% 16%;
-    --card-foreground: 210 40% 98%;
-    --popover: 225 4% 14%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 45 100% 58%;
-    --primary-foreground: 222 47% 11%;
-    --secondary: 215 28% 17%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 215 28% 17%;
-    --muted-foreground: 215 20% 65%;
-    --accent: 221 89% 61%;
-    --accent-foreground: 210 40% 98%;
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 215 28% 17%;
-    --input: 215 28% 17%;
-    --ring: 45 100% 58%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 217 91% 60%;
   }
 }
 
@@ -55,5 +55,89 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+  
+  /* Better mobile touch handling */
+  body {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+  }
+  
+  /* Prevent overscroll bounce on mobile */
+  html, body {
+    overscroll-behavior: none;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+  }
+  
+  /* Improve font rendering on mobile */
+  body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+  
+  /* Fix for mobile viewport height issues */
+  .mobile-fixed {
+    position: fixed;
+    height: 100vh; /* Fallback */
+    height: -webkit-fill-available;
+    height: -moz-available;
+    height: fill-available;
+  }
+  
+  /* Better scrolling behavior for mobile */
+  .mobile-scroll {
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Prevent text size adjustment on iOS */
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+  
+  /* Mobile-friendly input styles */
+  input, textarea, select {
+    font-size: 16px; /* Prevent zoom on iOS */
+  }
+  
+  /* Better focus states for mobile */
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+  
+  /* Mobile button enhancements */
+  button {
+    touch-action: manipulation; /* Remove 300ms delay on mobile */
+  }
+  
+  /* Prevent image dragging on mobile */
+  img {
+    -webkit-user-drag: none;
+    -khtml-user-drag: none;
+    -moz-user-drag: none;
+    -o-user-drag: none;
+    user-drag: none;
+  }
+}
+
+/* Responsive typography improvements */
+@media (max-width: 768px) {
+  body {
+    font-size: 16px; /* Better readability on mobile */
+  }
+  
+  h1 {
+    font-size: 1.75rem;
+  }
+  
+  h2 {
+    font-size: 1.5rem;
+  }
+  
+  h3 {
+    font-size: 1.25rem;
   }
 }

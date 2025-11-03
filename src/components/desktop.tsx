@@ -7,7 +7,6 @@ import DesktopIcon from '@/components/desktop-icon';
 import * as Window from '@/components/window';
 import {
   RefreshCw,
-  Wallpaper,
   ChevronUp
 } from 'lucide-react';
 
@@ -15,6 +14,18 @@ const Desktop = () => {
   const { windows, desktopIcons, resetIconPositions, openWindow } = useWindows();
   const desktopRef = useRef<HTMLDivElement>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Check if we're on mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Handle scroll to top button visibility
   useEffect(() => {
@@ -41,7 +52,9 @@ const Desktop = () => {
   return (
     <div 
       ref={desktopRef}
-      className="relative w-full h-screen overflow-y-auto bg-cover bg-center"
+      className={`relative w-full h-screen ${
+        isMobile ? 'overflow-y-scroll' : 'overflow-y-auto'
+      } bg-cover bg-center`}
     >
       <style jsx>{`
         div::-webkit-scrollbar {
@@ -73,9 +86,8 @@ const Desktop = () => {
         />
       ))}
       
-      
-      {/* Scroll to top button */}
-      {showScrollTop && (
+      {/* Scroll to top button - only show on desktop */}
+      {!isMobile && showScrollTop && (
         <button
           onClick={scrollToTop}
           className="fixed bottom-20 right-6 bg-black/50 dark:bg-white/20 backdrop-blur-lg text-white p-2 rounded-full shadow-lg hover:bg-black/70 dark:hover:bg-white/30 transition-all z-30"
@@ -85,14 +97,16 @@ const Desktop = () => {
         </button>
       )}
       
-      {/* Reset icon positions button */}
-      <button
-        onClick={resetIconPositions}
-        className="fixed bottom-20 left-6 bg-black/50 dark:bg-white/20 backdrop-blur-lg text-white p-2 rounded-full shadow-lg hover:bg-black/70 dark:hover:bg-white/30 transition-all z-30"
-        aria-label="Reset icon positions"
-      >
-        <RefreshCw className="w-5 h-5" />
-      </button>
+      {/* Reset icon positions button - only show on desktop */}
+      {!isMobile && (
+        <button
+          onClick={resetIconPositions}
+          className="fixed bottom-20 left-6 bg-black/50 dark:bg-white/20 backdrop-blur-lg text-white p-2 rounded-full shadow-lg hover:bg-black/70 dark:hover:bg-white/30 transition-all z-30"
+          aria-label="Reset icon positions"
+        >
+          <RefreshCw className="w-5 h-5" />
+        </button>
+      )}
     </div>
   );
 };

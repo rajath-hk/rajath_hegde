@@ -12,15 +12,18 @@ import {
   Bell,
   Calendar,
   User,
-  Minus
+  Minus,
+  Home
 } from 'lucide-react';
 import { format } from 'date-fns';
 import StartMenu from '@/components/start-menu';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const Taskbar = () => {
   const { windows, closeWindow, toggleMinimize } = useWindows();
   const [time, setTime] = useState(new Date());
   const [showStartMenu, setShowStartMenu] = useState(false);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -29,6 +32,73 @@ const Taskbar = () => {
     
     return () => clearInterval(timer);
   }, []);
+
+  // On mobile, we want a simplified taskbar with just the essentials
+  if (isMobile) {
+    return (
+      <>
+        {/* Start Menu */}
+        {showStartMenu && (
+          <div className="fixed bottom-16 left-0 right-0 z-50">
+            <StartMenu />
+          </div>
+        )}
+
+        {/* Mobile Taskbar */}
+        <div className="fixed bottom-0 left-0 right-0 h-16 bg-background/80 backdrop-blur-xl border-t flex items-center justify-around px-2 z-50">
+          {/* Start Button */}
+          <Button 
+            variant="ghost" 
+            size="icon"
+            className="h-12 w-12 rounded-full hover:bg-accent"
+            onClick={() => setShowStartMenu(!showStartMenu)}
+            aria-label="Start menu"
+          >
+            <Home className="w-6 h-6" />
+          </Button>
+
+          {/* Open Windows - simplified for mobile */}
+          <div className="flex items-center space-x-1 flex-1 justify-center">
+            {windows
+              .filter(win => !win.isMinimized)
+              .slice(0, 3) // Limit to 3 windows on mobile
+              .map((win) => (
+                <Button
+                  key={win.id}
+                  variant="ghost"
+                  size="icon"
+                  className="h-12 w-12 rounded-full text-xs hover:bg-accent"
+                  onClick={() => toggleMinimize(win.id)}
+                >
+                  <win.icon className="w-6 h-6" />
+                </Button>
+              ))}
+          </div>
+
+          {/* System Tray - simplified for mobile */}
+          <div className="flex items-center space-x-1">
+            <Button 
+              variant="ghost" 
+              size="icon"
+              className="h-12 w-12 rounded-full hover:bg-accent"
+              aria-label="Search"
+            >
+              <Search className="w-6 h-6" />
+            </Button>
+            
+            <Button 
+              variant="ghost" 
+              size="icon"
+              className="h-12 w-12 rounded-full hover:bg-accent"
+              aria-label="Notifications"
+            >
+              <Bell className="w-6 h-6" />
+            </Button>
+          </div>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>
@@ -39,7 +109,7 @@ const Taskbar = () => {
         </div>
       )}
 
-      {/* Taskbar */}
+      {/* Desktop Taskbar */}
       <div className="fixed bottom-0 left-0 right-0 h-10 bg-background/80 backdrop-blur-xl border-t flex items-center justify-between px-2 z-50">
         {/* Start Button */}
         <Button 
