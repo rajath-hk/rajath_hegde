@@ -135,6 +135,11 @@ const createContentElement = (id: string) => {
 
 // Validate and fix window data to ensure all required properties are present
 const validateAndFixWindowData = (windowData: any, appConfig: AppConfig | undefined): WindowInstance => {
+  // Handle case where windowData is null or undefined
+  if (!windowData) {
+    windowData = {};
+  }
+  
   // Ensure all required properties have valid values
   const x = typeof windowData.x === 'number' ? windowData.x : (appConfig?.x ?? 100);
   const y = typeof windowData.y === 'number' ? windowData.y : (appConfig?.y ?? 100);
@@ -160,6 +165,20 @@ const validateAndFixWindowData = (windowData: any, appConfig: AppConfig | undefi
     isMaximized,
     isFocused,
   };
+};
+
+// Additional validation to ensure we never have invalid windows
+const validateAllWindows = (windows: any[]): WindowInstance[] => {
+  if (!Array.isArray(windows)) {
+    return [];
+  }
+  
+  return windows
+    .filter(window => window && typeof window === 'object') // Filter out invalid entries
+    .map(window => {
+      const appConfig = initialAppsData.find(app => app.id === window.id);
+      return validateAndFixWindowData(window, appConfig);
+    });
 };
 
 export const WindowProvider = ({ children }: { children: ReactNode }) => {
@@ -205,10 +224,7 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
       const savedWindows = localStorage.getItem(WINDOW_STATE_KEY);
       if (savedWindows) {
         const parsedWindows = JSON.parse(savedWindows);
-        const validatedWindows = parsedWindows.map((win: any) => {
-          const appConfig = initialAppsData.find(app => app.id === win.id);
-          return validateAndFixWindowData(win, appConfig);
-        });
+        const validatedWindows = validateAllWindows(parsedWindows);
         setWindows(validatedWindows);
       }
     } catch (e) {
@@ -357,7 +373,11 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
 
   const updateWindowPosition = (id: string, x: number, y: number) => {
     setWindows(prev => {
-        const newWindows = prev.map(win => win.id === id ? { ...win, x, y } : win);
+        const newWindows = prev.map(win => {
+          // Additional check to ensure window object exists
+          if (!win) return win;
+          return win.id === id ? { ...win, x, y } : win;
+        });
         saveWindowsState(newWindows);
         return newWindows;
     });
@@ -365,7 +385,11 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
 
   const updateWindowSize = (id: string, width: number, height: number) => {
     setWindows(prev => {
-        const newWindows = prev.map(win => win.id === id ? { ...win, width, height } : win);
+        const newWindows = prev.map(win => {
+          // Additional check to ensure window object exists
+          if (!win) return win;
+          return win.id === id ? { ...win, width, height } : win;
+        });
         saveWindowsState(newWindows);
         return newWindows;
     });
@@ -373,7 +397,11 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
 
   const updateIconPosition = (id: string, x: number, y: number) => {
     setDesktopIcons(prev => {
-        const newIcons = prev.map(icon => icon.id === id ? { ...icon, x, y } : icon);
+        const newIcons = prev.map(icon => {
+          // Additional check to ensure icon object exists
+          if (!icon) return icon;
+          return icon.id === id ? { ...icon, x, y } : icon;
+        });
         saveIconsState(newIcons);
         return newIcons;
     });
@@ -389,7 +417,7 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
   return (
     <WindowContext.Provider
       value={{
-        windows,
+        windows: windows.filter(win => win !== null && win !== undefined), // Extra filter to ensure no null/undefined windows
         desktopIcons,
         openWindow,
         closeWindow,

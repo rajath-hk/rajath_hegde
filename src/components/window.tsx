@@ -13,10 +13,15 @@ import { cn } from '@/lib/utils';
 import { WindowInstance } from '@/types';
 
 interface WindowProps {
-  window: WindowInstance;
+  window?: WindowInstance;
 }
 
 const Window: React.FC<WindowProps> = ({ window }) => {
+  // Handle case where window is undefined
+  if (!window) {
+    return null;
+  }
+  
   const { 
     closeWindow, 
     toggleMinimize, 

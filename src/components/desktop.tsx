@@ -93,9 +93,11 @@ const Desktop = () => {
 
       {/* Windows */}
       <AnimatePresence>
-        {windows.map((window) => (
-          <Window key={window.id} window={window} />
-        ))}
+        {windows
+          .filter(window => window !== null && window !== undefined) // Filter out invalid windows
+          .map((window) => (
+            <Window key={window.id} window={window} />
+          ))}
       </AnimatePresence>
 
       {/* Scroll to top button - hidden on mobile */}
