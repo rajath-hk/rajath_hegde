@@ -18,39 +18,25 @@ import {
 import { format } from 'date-fns';
 import StartMenu from '@/components/start-menu';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { cn } from '@/lib/utils';
 
 const Taskbar = () => {
   const { windows, closeWindow, toggleMinimize } = useWindows();
   const [time, setTime] = useState(new Date());
   const [showStartMenu, setShowStartMenu] = useState(false);
-  const [isClient, setIsClient] = useState(false);
   const isMobile = useIsMobile();
 
   useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  useEffect(() => {
-    if (!isClient) return;
-    
     const timer = setInterval(() => {
       setTime(new Date());
-    }, 60000); // Update every minute
-
+    }, 1000);
+    
     return () => clearInterval(timer);
-  }, [isClient]);
-
-  if (!isClient) {
-    return (
-      <div className="fixed bottom-0 left-0 right-0 h-12 bg-background border-t" />
-    );
-  }
+  }, []);
 
   // On mobile, we want a simplified taskbar with just the essentials
   if (isMobile) {
     return (
-      <React.Fragment>
+      <>
         {/* Start Menu */}
         {showStartMenu && (
           <div className="fixed bottom-16 left-0 right-0 z-50">
@@ -59,130 +45,158 @@ const Taskbar = () => {
         )}
 
         {/* Mobile Taskbar */}
-        <div 
-          className="fixed bottom-0 left-0 right-0 h-16 bg-background/80 backdrop-blur-xl border-t flex items-center justify-around px-2 z-50"
-          role="toolbar"
-          aria-label="Mobile taskbar"
-        >
+        <div className="fixed bottom-0 left-0 right-0 h-16 bg-background/80 backdrop-blur-xl border-t flex items-center justify-around px-2 z-50">
           {/* Start Button */}
           <Button 
             variant="ghost" 
             size="icon"
+            className="h-12 w-12 rounded-full hover:bg-accent"
             onClick={() => setShowStartMenu(!showStartMenu)}
-            className="rounded-xl w-12 h-12"
             aria-label="Start menu"
-            aria-expanded={showStartMenu}
           >
-            <Home className="w-5 h-5" />
+            <Home className="w-6 h-6" />
           </Button>
-          
-          {/* Windows */}
-          <div className="flex gap-1 overflow-x-auto flex-1 px-2">
+
+          {/* Open Windows - simplified for mobile */}
+          <div className="flex items-center space-x-1 flex-1 justify-center">
             {windows
               .filter(win => !win.isMinimized)
-              .map((win) => {
-                const IconComponent = win.icon;
-                return (
-                  <Button
-                    key={win.id}
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => toggleMinimize(win.id)}
-                    className="rounded-xl w-12 h-12 flex-shrink-0"
-                    aria-label={`Minimize ${win.title} window`}
-                  >
-                    <IconComponent className="w-5 h-5" />
-                  </Button>
-                );
-              })}
+              .slice(0, 3) // Limit to 3 windows on mobile
+              .map((win) => (
+                <Button
+                  key={win.id}
+                  variant="ghost"
+                  size="icon"
+                  className="h-12 w-12 rounded-full text-xs hover:bg-accent"
+                  onClick={() => toggleMinimize(win.id)}
+                >
+                  <win.icon className="w-6 h-6" />
+                </Button>
+              ))}
           </div>
-          
-          {/* System Tray */}
-          <div className="flex items-center gap-1">
-            <Button variant="ghost" size="icon" className="rounded-xl w-12 h-12" aria-label="Notifications">
-              <Bell className="w-5 h-5" />
+
+          {/* System Tray - simplified for mobile */}
+          <div className="flex items-center space-x-1">
+            <Button 
+              variant="ghost" 
+              size="icon"
+              className="h-12 w-12 rounded-full hover:bg-accent"
+              aria-label="Search"
+            >
+              <Search className="w-6 h-6" />
             </Button>
-            <div className="text-xs font-medium px-2" aria-label={`Current time: ${format(time, 'h:mm a')}`}>
-              {format(time, 'h:mm a')}
-            </div>
+            
+            <Button 
+              variant="ghost" 
+              size="icon"
+              className="h-12 w-12 rounded-full hover:bg-accent"
+              aria-label="Notifications"
+            >
+              <Bell className="w-6 h-6" />
+            </Button>
           </div>
         </div>
-      </React.Fragment>
+      </>
     );
   }
 
   return (
-    <React.Fragment>
+    <>
       {/* Start Menu */}
       {showStartMenu && (
-        <div className="fixed bottom-16 left-0 z-50">
+        <div className="fixed bottom-12 left-0 z-50">
           <StartMenu />
         </div>
       )}
-      
+
       {/* Desktop Taskbar */}
-      <div 
-        className="fixed bottom-0 left-0 right-0 h-12 bg-background/80 backdrop-blur-xl border-t flex items-center px-2 z-50"
-        role="toolbar"
-        aria-label="Taskbar"
-      >
+      <div className="fixed bottom-0 left-0 right-0 h-10 bg-background/80 backdrop-blur-xl border-t flex items-center justify-between px-2 z-50">
         {/* Start Button */}
         <Button 
           variant="ghost" 
-          size="sm"
+          size="sm" 
+          className="h-8 px-2 hover:bg-accent"
           onClick={() => setShowStartMenu(!showStartMenu)}
-          className="rounded-lg mr-2"
           aria-label="Start menu"
-          aria-expanded={showStartMenu}
         >
-          <Home className="w-4 h-4 mr-1" />
-          Start
+          <span className="font-bold text-lg">_portfolio</span>
         </Button>
-        
-        {/* Windows */}
-        <div className="flex gap-1 flex-1">
-          {windows.map((win) => {
-            const IconComponent = win.icon;
-            return (
+
+        {/* Open Windows */}
+        <div className="flex items-center space-x-1 flex-1 justify-center">
+          {windows
+            .filter(win => !win.isMinimized)
+            .map((win) => (
               <Button
                 key={win.id}
-                variant={win.isFocused ? "secondary" : "ghost"}
+                variant="ghost"
                 size="sm"
+                className="h-8 px-2 text-xs hover:bg-accent"
                 onClick={() => toggleMinimize(win.id)}
-                className={cn(
-                  "rounded-lg px-2 py-1 h-10 flex items-center gap-2 min-w-0 transition-all",
-                  win.isMinimized && "opacity-60"
-                )}
-                aria-label={`${win.isMinimized ? 'Restore' : 'Minimize'} ${win.title} window`}
               >
-                <IconComponent className="w-4 h-4 flex-shrink-0" />
-                <span className="text-sm truncate max-w-[120px]">{win.title}</span>
+                <win.icon className="w-4 h-4 mr-1" />
+                <span className="max-w-[80px] truncate">{win.title}</span>
+                <ChevronUp className="w-3 h-3 ml-1" />
               </Button>
-            );
-          })}
+            ))}
         </div>
-        
+
         {/* System Tray */}
-        <div className="flex items-center gap-1">
-          <Button variant="ghost" size="icon" className="rounded-lg w-8 h-8" aria-label="Search">
+        <div className="flex items-center space-x-1">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="h-8 w-8 p-0 hover:bg-accent"
+            onClick={() => {
+              // Minimize all windows
+              windows.forEach(window => {
+                if (!window.isMinimized) {
+                  toggleMinimize(window.id);
+                }
+              });
+            }}
+            aria-label="Show desktop"
+          >
+            <Minus className="w-4 h-4" />
+          </Button>
+          
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="h-8 w-8 p-0 hover:bg-accent"
+            aria-label="Search"
+          >
             <Search className="w-4 h-4" />
           </Button>
-          <Button variant="ghost" size="icon" className="rounded-lg w-8 h-8" aria-label="Network">
-            <Wifi className="w-4 h-4" />
+          
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="h-8 w-8 p-0 hover:bg-accent"
+            aria-label="Notifications"
+          >
+            <Bell className="w-4 h-4" />
           </Button>
-          <Button variant="ghost" size="icon" className="rounded-lg w-8 h-8" aria-label="Sound">
-            <Volume2 className="w-4 h-4" />
-          </Button>
-          <Button variant="ghost" size="icon" className="rounded-lg w-8 h-8" aria-label="Battery">
-            <Battery className="w-4 h-4" />
-          </Button>
-          <div className="flex items-center gap-1 px-2 text-sm" aria-label={`Current time: ${format(time, 'h:mm a')}`}>
-            <Calendar className="w-4 h-4" />
-            <span>{format(time, 'h:mm a')}</span>
+          
+          <div className="flex items-center px-2 text-sm">
+            <Wifi className="w-4 h-4 mr-1 text-muted-foreground" />
+            <Battery className="w-4 h-4 mr-1 text-muted-foreground" />
+            <Volume2 className="w-4 h-4 mr-2 text-muted-foreground" />
+            <Calendar className="w-4 h-4 mr-1 text-muted-foreground" />
+            <span>{format(time, 'h:mm aa')}</span>
           </div>
+          
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="h-8 w-8 p-0 hover:bg-accent"
+            aria-label="User profile"
+          >
+            <User className="w-4 h-4" />
+          </Button>
         </div>
       </div>
-    </React.Fragment>
+    </>
   );
 };
 

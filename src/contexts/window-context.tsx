@@ -78,131 +78,59 @@ const WindowContext = createContext<WindowContextType | undefined>(undefined);
 // Helper to save serializable window state to localStorage
 const saveWindowsState = (windowsToSave: WindowInstance[]) => {
   if (typeof window === 'undefined') return;
-  
-  try {
-    const serializableWindows = windowsToSave.map(({ content, icon, ...rest }) => rest);
-    localStorage.setItem(WINDOW_STATE_KEY, JSON.stringify(serializableWindows));
-  } catch (error) {
-    console.error('Failed to save window state to localStorage:', error);
-    // If we can't save, clear the existing data to prevent corruption
-    localStorage.removeItem(WINDOW_STATE_KEY);
-  }
+  const serializableWindows = windowsToSave.map(({ content, icon, ...rest }) => rest);
+  localStorage.setItem(WINDOW_STATE_KEY, JSON.stringify(serializableWindows));
 };
 
 // Helper to save serializable icon state to localStorage
 const saveIconsState = (iconsToSave: AppConfig[]) => {
   if (typeof window === 'undefined') return;
-  
-  try {
-    const serializableIcons = iconsToSave.map(({ id, x, y }) => ({ id, x, y }));
-    localStorage.setItem(ICON_STATE_KEY, JSON.stringify(serializableIcons));
-  } catch (error) {
-    console.error('Failed to save icon state to localStorage:', error);
-    // If we can't save, clear the existing data to prevent corruption
-    localStorage.removeItem(ICON_STATE_KEY);
-  }
+  const serializableIcons = iconsToSave.map(({ id, x, y }) => ({ id, x, y }));
+  localStorage.setItem(ICON_STATE_KEY, JSON.stringify(serializableIcons));
 };
 
 // Create content element for a given app ID
 const createContentElement = (id: string) => {
-  try {
-    switch (id) {
-      case 'about':
-        return <AboutContent />;
-      case 'projects':
-        return <ProjectsContent />;
-      case 'my-work':
-        return <MyWorkContent />;
-      case 'resume':
-        return <ResumeContent />;
-      case 'skills':
-        return <SkillsContent />;
-      case 'contact':
-        return <ContactContent />;
-      case 'socials':
-        return <SocialsContent />;
-      case 'terminal':
-        return <TerminalContent />;
-      case 'settings':
-        return <SettingsContent />;
-      case 'explorer':
-        return <FileExplorerContent />;
-      case 'browser':
-        return <BrowserContent />;
-      case 'media':
-        return <MediaPlayerContent />;
-      case 'calculator':
-        return <CalculatorContent />;
-      case 'weather':
-        return <WeatherContent />;
-      case 'notes':
-        return <NotesContent />;
-      case 'system':
-        return <SystemInfoContent />;
-      case 'gallery':
-        return <GalleryContent />;
-      case 'legal':
-        return <LegalContent />;
-      default:
-        return <div>Application not found</div>;
-    }
-  } catch (error) {
-    console.error(`Error creating content for app ID: ${id}`, error);
-    return <div>Error loading application content</div>;
+  switch (id) {
+    case 'about':
+      return <AboutContent />;
+    case 'projects':
+      return <ProjectsContent />;
+    case 'my-work':
+      return <MyWorkContent />;
+    case 'resume':
+      return <ResumeContent />;
+    case 'skills':
+      return <SkillsContent />;
+    case 'contact':
+      return <ContactContent />;
+    case 'socials':
+      return <SocialsContent />;
+    case 'terminal':
+      return <TerminalContent />;
+    case 'settings':
+      return <SettingsContent />;
+    case 'explorer':
+      return <FileExplorerContent />;
+    case 'browser':
+      return <BrowserContent />;
+    case 'media':
+      return <MediaPlayerContent />;
+    case 'calculator':
+      return <CalculatorContent />;
+    case 'weather':
+      return <WeatherContent />;
+    case 'notes':
+      return <NotesContent />;
+    case 'system':
+      return <SystemInfoContent />;
+    case 'gallery':
+      return <GalleryContent />;
+    case 'legal':
+      return <LegalContent />;
+    default:
+      return <div>Application not found</div>;
   }
-};
-
-// Validate and fix window data to ensure all required properties are present
-const validateAndFixWindowData = (windowData: any, appConfig: AppConfig | undefined): WindowInstance => {
-  // Handle case where windowData is null or undefined
-  if (!windowData) {
-    windowData = {};
-  }
-  
-  // Ensure all required properties have valid values
-  const x = typeof windowData.x === 'number' ? windowData.x : (appConfig?.x ?? 100);
-  const y = typeof windowData.y === 'number' ? windowData.y : (appConfig?.y ?? 100);
-  const width = typeof windowData.width === 'number' ? windowData.width : (appConfig?.defaultSize?.width ?? 500);
-  const height = typeof windowData.height === 'number' ? windowData.height : (appConfig?.defaultSize?.height ?? 400);
-  const zIndex = typeof windowData.zIndex === 'number' ? windowData.zIndex : 1;
-  const isMinimized = typeof windowData.isMinimized === 'boolean' ? windowData.isMinimized : false;
-  const isMaximized = typeof windowData.isMaximized === 'boolean' ? windowData.isMaximized : false;
-  const isFocused = typeof windowData.isFocused === 'boolean' ? windowData.isFocused : false;
-
-  return {
-    id: windowData.id || (appConfig?.id ?? 'unknown'),
-    title: windowData.title || (appConfig?.title ?? 'Unknown App'),
-    icon: windowData.icon || appConfig?.icon || FileText,
-    content: createContentElement(windowData.id) || <div>Application content not found</div>,
-    defaultSize: appConfig?.defaultSize,
-    x,
-    y,
-    width,
-    height,
-    zIndex,
-    isMinimized,
-    isMaximized,
-    isFocused,
-  };
-};
-
-// Additional validation to ensure we never have invalid windows
-const validateAllWindows = (windows: any[]): WindowInstance[] => {
-  if (!Array.isArray(windows)) {
-    return [];
-  }
-  
-  return windows
-    .filter(window => window && typeof window === 'object' && window.id) // Filter out invalid entries
-    .map(window => {
-      const appConfig = initialAppsData.find(app => app.id === window.id);
-      return validateAndFixWindowData(window, appConfig);
-    })
-    .filter(window => window && typeof window === 'object' && 
-             typeof window.x === 'number' && 
-             typeof window.y === 'number' && 
-             typeof window.width === 'number' && 
-             typeof window.height === 'number'); // Additional filter for fully valid windows
 };
 
 export const WindowProvider = ({ children }: { children: ReactNode }) => {
@@ -212,17 +140,9 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
   const [windowDimensions, setWindowDimensions] = useState({width: 0, height: 0});
   const [isLoaded, setIsLoaded] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [isClient, setIsClient] = useState(false);
-
-  // Check if we're on client
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
 
   // Check if we're on mobile
   useEffect(() => {
-    if (!isClient) return;
-    
     const checkMobile = () => {
       if (typeof window !== 'undefined') {
         setIsMobile(window.innerWidth < 768);
@@ -235,16 +155,9 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
     }
     
     // Set up resize listener and initial dimensions
-    const updateDims = () => {
-      if (typeof window !== 'undefined') {
-        setWindowDimensions({width: window.innerWidth, height: window.innerHeight});
-      }
-    };
-    
+    const updateDims = () => setWindowDimensions({width: window.innerWidth, height: window.innerHeight});
     updateDims();
-    if (typeof window !== 'undefined') {
-      window.addEventListener('resize', updateDims);
-    }
+    window.addEventListener('resize', updateDims);
     
     return () => {
       if (typeof window !== 'undefined') {
@@ -252,26 +165,29 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
         window.removeEventListener('resize', updateDims);
       }
     };
-  }, [isClient]);
+  }, []);
 
   // Load state from localStorage once dimensions are available
   useEffect(() => {
-    if (typeof window === 'undefined' || windowDimensions.width === 0 || isLoaded || !isClient) return;
+    if (typeof window === 'undefined' || windowDimensions.width === 0 || isLoaded) return;
     
     // Load windows state
     try {
       const savedWindows = localStorage.getItem(WINDOW_STATE_KEY);
       if (savedWindows) {
         const parsedWindows = JSON.parse(savedWindows);
-        const validatedWindows = validateAllWindows(parsedWindows);
-        setWindows(validatedWindows);
+        setWindows(parsedWindows.map((win: any) => {
+          const appConfig = initialAppsData.find(app => app.id === win.id);
+          return {
+            ...win,
+            icon: appConfig?.icon || FileText,
+            content: createContentElement(win.id),
+            defaultSize: appConfig?.defaultSize
+          };
+        }));
       }
     } catch (e) {
       console.warn('Failed to load window state from localStorage:', e);
-      // If there's an error loading saved windows, initialize with empty array
-      setWindows([]);
-      // Clear corrupted data
-      localStorage.removeItem(WINDOW_STATE_KEY);
     }
     
     // Load icons state
@@ -284,10 +200,7 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
             const savedIcon = parsedIcons.find((si: any) => si.id === icon.id);
             // Only update position, keep the original content
             if (savedIcon) {
-              // Ensure x and y are valid numbers
-              const x = typeof savedIcon.x === 'number' ? savedIcon.x : (icon.x ?? 0);
-              const y = typeof savedIcon.y === 'number' ? savedIcon.y : (icon.y ?? 0);
-              return { ...icon, x, y };
+              return { ...icon, x: savedIcon.x, y: savedIcon.y };
             }
             return icon;
           })
@@ -295,8 +208,6 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
       }
     } catch (e) {
       console.warn('Failed to load icon state from localStorage:', e);
-      // Clear corrupted data
-      localStorage.removeItem(ICON_STATE_KEY);
     }
     
     // Set the content for desktop icons
@@ -308,11 +219,9 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
     );
     
     setIsLoaded(true);
-  }, [windowDimensions, isLoaded, isClient]);
+  }, [windowDimensions, isLoaded]);
 
   const focusWindow = (id: string) => {
-    if (!isClient) return;
-    
     setZIndexCounter(prev => prev + 1);
     setWindows(prevWindows => {
         const newWindows = prevWindows.map(win =>
@@ -326,8 +235,6 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const openWindow = (app: AppConfig) => {
-    if (!isClient) return;
-    
     setWindows(prev => {
       const existingWindow = prev.find(w => w.id === app.id);
       if (existingWindow) {
@@ -347,7 +254,7 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
         let width = app.defaultSize?.width ?? 500;
         let height = app.defaultSize?.height ?? 400;
         
-        if (isMobile && typeof window !== 'undefined') {
+        if (isMobile) {
           // Center window on mobile with appropriate size
           x = Math.max(0, (windowDimensions.width - Math.min(windowDimensions.width - 20, width)) / 2);
           y = 60;
@@ -380,8 +287,6 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const closeWindow = (id: string) => {
-    if (!isClient) return;
-    
     setWindows(prev => {
         const newWindows = prev.filter(win => win.id !== id);
         saveWindowsState(newWindows);
@@ -390,8 +295,6 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
   };
   
   const toggleMinimize = (id: string) => {
-    if (!isClient) return;
-    
     setWindows(prev => {
         const newWindows = prev.map(win => {
             if (win.id === id) {
@@ -406,20 +309,12 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const toggleMaximize = (id: string) => {
-    if (!isClient) return;
-    
     setWindows(prev => {
         const newWindows = prev.map(win => {
             if (win.id === id) {
                 if (win.isMaximized) {
-                    // Restore window to previous size
-                    const width = win.defaultSize?.width || 500;
-                    const height = win.defaultSize?.height || 400;
-                    const x = (windowDimensions.width - width) / 2;
-                    const y = (windowDimensions.height - height) / 3;
-                    return { ...win, isMaximized: false, width, height, x, y };
+                    return { ...win, isMaximized: false, width: win.defaultSize?.width || 500, height: win.defaultSize?.height || 400, x: (windowDimensions.width - (win.defaultSize?.width || 500)) / 2, y: (windowDimensions.height - (win.defaultSize?.height || 400)) / 3 };
                 } else {
-                    // Maximize window
                     return { ...win, isMaximized: true, width: windowDimensions.width, height: windowDimensions.height - 32, x: 0, y: 32 };
                 }
             }
@@ -431,74 +326,54 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
   }
 
   const updateWindowPosition = (id: string, x: number, y: number) => {
-    if (!isClient) return;
-    
     setWindows(prev => {
-        const newWindows = prev.map(win => {
-          // Additional check to ensure window object exists and has required properties
-          if (!win || !win.id) return win;
-          return win.id === id ? { ...win, x, y } : win;
-        }).filter(win => win && win.id); // Filter out any null/undefined windows
+        const newWindows = prev.map(win => win.id === id ? { ...win, x, y } : win);
         saveWindowsState(newWindows);
         return newWindows;
     });
   };
 
   const updateWindowSize = (id: string, width: number, height: number) => {
-    if (!isClient) return;
-    
     setWindows(prev => {
-        const newWindows = prev.map(win => {
-          // Additional check to ensure window object exists and has required properties
-          if (!win || !win.id) return win;
-          return win.id === id ? { ...win, width, height } : win;
-        }).filter(win => win && win.id); // Filter out any null/undefined windows
+        const newWindows = prev.map(win => win.id === id ? { ...win, width, height } : win);
         saveWindowsState(newWindows);
         return newWindows;
     });
   };
 
   const updateIconPosition = (id: string, x: number, y: number) => {
-    if (!isClient) return;
-    
     setDesktopIcons(prev => {
-        const newIcons = prev.map(icon => {
-          // Additional check to ensure icon object exists
-          if (!icon || !icon.id) return icon;
-          return icon.id === id ? { ...icon, x, y } : icon;
-        }).filter(icon => icon && icon.id); // Filter out any null/undefined icons
+        const newIcons = prev.map(icon => icon.id === id ? { ...icon, x, y } : icon);
         saveIconsState(newIcons);
         return newIcons;
     });
   };
   
   const resetIconPositions = () => {
-    if (!isClient) return;
-    
-    setDesktopIcons(initialAppsData);
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem(ICON_STATE_KEY);
-    }
+    setDesktopIcons(prevIcons => {
+        const resetIcons = prevIcons.map(icon => {
+            const initialIcon = initialAppsData.find(i => i.id === icon.id);
+            return initialIcon ? { ...icon, x: initialIcon.x, y: initialIcon.y } : icon;
+        });
+        saveIconsState(resetIcons);
+        return resetIcons;
+    });
   };
 
   return (
-    <WindowContext.Provider
-      value={{
-        windows: windows.filter(win => win !== null && win !== undefined && 
-                         typeof win.x === 'number' && 
-                         typeof win.y === 'number'), // Extra filter to ensure no null/undefined windows with valid coordinates
-        desktopIcons,
-        openWindow,
-        closeWindow,
-        focusWindow,
-        toggleMinimize,
-        toggleMaximize,
-        updateWindowPosition,
-        updateWindowSize,
-        updateIconPosition,
-        resetIconPositions,
-      }}
-    >
+    <WindowContext.Provider value={{
+      windows,
+      desktopIcons,
+      openWindow,
+      closeWindow,
+      focusWindow,
+      toggleMinimize,
+      toggleMaximize,
+      updateWindowPosition,
+      updateWindowSize,
+      updateIconPosition,
+      resetIconPositions,
+    }}>
       {children}
     </WindowContext.Provider>
   );
@@ -506,7 +381,7 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
 
 export const useWindows = () => {
   const context = useContext(WindowContext);
-  if (!context) {
+  if (context === undefined) {
     throw new Error('useWindows must be used within a WindowProvider');
   }
   return context;
