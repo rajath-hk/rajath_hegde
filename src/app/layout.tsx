@@ -14,13 +14,13 @@ export const metadata: Metadata = {
   },
 };
 
-export function Layout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={GeistSans.variable}>
+    <html lang="en">
       <body className="overflow-hidden">
         <ThemeProvider
           attribute="class"
@@ -28,12 +28,9 @@ export function Layout({
           enableSystem
           disableTransitionOnChange
         >
-          <WindowProvider>
-            <div className="h-screen w-screen overflow-hidden">
-              {children}
-              <Taskbar />
-            </div>
-          </WindowProvider>
+          <div className="h-screen w-screen overflow-hidden">
+            {children}
+          </div>
           <Toaster />
         </ThemeProvider>
       </body>

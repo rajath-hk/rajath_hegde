@@ -27,39 +27,37 @@ const WINDOW_STATE_KEY = 'retrofolio-windows-v2';
 
 const LegalContent = () => <div className="p-6 text-card-foreground">This is my portfolio. To access this file, please contact me.</div>;
 
-
 const initialAppsData: AppConfig[] = [
   // Core personal apps (first row)
-  { id: 'about', title: 'My Story', icon: FileText, content: <AboutContent />, defaultSize: { width: 550, height: 400 }, x: 20, y: 50 },
-  { id: 'resume', title: 'My Resume', icon: FileText, content: <ResumeContent />, defaultSize: { width: 700, height: 800 }, x: 130, y: 50 },
-  { id: 'skills', title: 'Skills', icon: Award, content: <SkillsContent />, defaultSize: { width: 700, height: 600 }, x: 240, y: 50 },
-  { id: 'projects', title: 'Projects', icon: Folder, content: <ProjectsContent />, defaultSize: { width: 650, height: 500 }, x: 350, y: 50 },
+  { id: 'about', title: 'My Story', icon: FileText, content: null, defaultSize: { width: 550, height: 400 }, x: 20, y: 50 },
+  { id: 'resume', title: 'My Resume', icon: FileText, content: null, defaultSize: { width: 700, height: 800 }, x: 130, y: 50 },
+  { id: 'skills', title: 'Skills', icon: Award, content: null, defaultSize: { width: 700, height: 600 }, x: 240, y: 50 },
+  { id: 'projects', title: 'Projects', icon: Folder, content: null, defaultSize: { width: 650, height: 500 }, x: 350, y: 50 },
   
   // Work and portfolio apps (second row)
-  { id: 'my-work', title: 'My Work', icon: Briefcase, content: <MyWorkContent />, defaultSize: { width: 500, height: 350 }, x: 20, y: 200 },
-  { id: 'gallery', title: 'Gallery', icon: Image, content: <GalleryContent />, defaultSize: { width: 800, height: 600 }, x: 130, y: 200 },
-  { id: 'media', title: 'Media Player', icon: Play, content: <MediaPlayerContent />, defaultSize: { width: 700, height: 500 }, x: 240, y: 200 },
+  { id: 'my-work', title: 'My Work', icon: Briefcase, content: null, defaultSize: { width: 500, height: 350 }, x: 20, y: 200 },
+  { id: 'gallery', title: 'Gallery', icon: Image, content: null, defaultSize: { width: 800, height: 600 }, x: 130, y: 200 },
+  { id: 'media', title: 'Media Player', icon: Play, content: null, defaultSize: { width: 700, height: 500 }, x: 240, y: 200 },
   
   // Utilities and tools (third row)
-  { id: 'terminal', title: 'Terminal', icon: Terminal, content: <TerminalContent />, defaultSize: { width: 650, height: 450 }, x: 20, y: 350 },
-  { id: 'explorer', title: 'File Explorer', icon: HardDrive, content: <FileExplorerContent />, defaultSize: { width: 800, height: 500 }, x: 130, y: 350 },
-  { id: 'browser', title: 'Web Browser', icon: Globe, content: <BrowserContent />, defaultSize: { width: 900, height: 600 }, x: 240, y: 350 },
-  { id: 'notes', title: 'Notes', icon: Notebook, content: <NotesContent />, defaultSize: { width: 600, height: 500 }, x: 350, y: 350 },
+  { id: 'terminal', title: 'Terminal', icon: Terminal, content: null, defaultSize: { width: 650, height: 450 }, x: 20, y: 350 },
+  { id: 'explorer', title: 'File Explorer', icon: HardDrive, content: null, defaultSize: { width: 800, height: 500 }, x: 130, y: 350 },
+  { id: 'browser', title: 'Web Browser', icon: Globe, content: null, defaultSize: { width: 900, height: 600 }, x: 240, y: 350 },
+  { id: 'notes', title: 'Notes', icon: Notebook, content: null, defaultSize: { width: 600, height: 500 }, x: 350, y: 350 },
   
   // System and settings (fourth row)
-  { id: 'settings', title: 'Settings', icon: Settings, content: <SettingsContent />, defaultSize: { width: 700, height: 500 }, x: 20, y: 500 },
-  { id: 'system', title: 'System Info', icon: Activity, content: <SystemInfoContent />, defaultSize: { width: 700, height: 600 }, x: 130, y: 500 },
-  { id: 'calculator', title: 'Calculator', icon: Calculator, content: <CalculatorContent />, defaultSize: { width: 300, height: 400 }, x: 240, y: 500 },
-  { id: 'weather', title: 'Weather', icon: Cloud, content: <WeatherContent />, defaultSize: { width: 500, height: 600 }, x: 300, y: 500 },
+  { id: 'settings', title: 'Settings', icon: Settings, content: null, defaultSize: { width: 700, height: 500 }, x: 20, y: 500 },
+  { id: 'system', title: 'System Info', icon: Activity, content: null, defaultSize: { width: 700, height: 600 }, x: 130, y: 500 },
+  { id: 'calculator', title: 'Calculator', icon: Calculator, content: null, defaultSize: { width: 300, height: 400 }, x: 240, y: 500 },
+  { id: 'weather', title: 'Weather', icon: Cloud, content: null, defaultSize: { width: 500, height: 600 }, x: 300, y: 500 },
   
   // Communication (bottom row)
-  { id: 'contact', title: 'Contact Me', icon: Mail, content: <ContactContent />, defaultSize: { width: 450, height: 580 }, x: 20, y: 650 },
-  { id: 'socials', title: 'Socials', icon: Folder, content: <SocialsContent />, defaultSize: { width: 450, height: 350 }, x: 130, y: 650 },
+  { id: 'contact', title: 'Contact Me', icon: Mail, content: null, defaultSize: { width: 450, height: 580 }, x: 20, y: 650 },
+  { id: 'socials', title: 'Socials', icon: Folder, content: null, defaultSize: { width: 450, height: 350 }, x: 130, y: 650 },
   
   // Hidden/Legal
-  { id: 'legal', title: 'Legal', icon: Folder, content: <LegalContent />, defaultSize: { width: 500, height: 300 }, x: 20, y: 800 },
+  { id: 'legal', title: 'Legal', icon: Folder, content: null, defaultSize: { width: 500, height: 300 }, x: 20, y: 800 },
 ];
-
 
 interface WindowContextType {
   windows: WindowInstance[];
@@ -91,7 +89,6 @@ const saveIconsState = (iconsToSave: AppConfig[]) => {
   localStorage.setItem(ICON_STATE_KEY, JSON.stringify(serializableIcons));
 };
 
-
 export const WindowProvider = ({ children }: { children: ReactNode }) => {
   const [windows, setWindows] = useState<WindowInstance[]>([]);
   const [desktopIcons, setDesktopIcons] = useState<AppConfig[]>(initialAppsData);
@@ -121,7 +118,7 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
           return {
             ...win,
             icon: appConfig?.icon || FileText,
-            content: appConfig?.content || <div>Application not found</div>,
+            content: appContents[win.id] || <div>Application not found</div>,
             defaultSize: appConfig?.defaultSize
           };
         }));
@@ -138,7 +135,11 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
         setDesktopIcons(prevIcons => 
           prevIcons.map(icon => {
             const savedIcon = parsedIcons.find((si: any) => si.id === icon.id);
-            return savedIcon ? { ...icon, x: savedIcon.x, y: savedIcon.y } : icon;
+            // Only update position, keep the original content
+            if (savedIcon) {
+              return { ...icon, x: savedIcon.x, y: savedIcon.y };
+            }
+            return icon;
           })
         );
       }
@@ -146,9 +147,16 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
       console.warn('Failed to load icon state from localStorage:', e);
     }
     
+    // Set the content for desktop icons
+    setDesktopIcons(prevIcons => 
+      prevIcons.map(icon => ({
+        ...icon,
+        content: appContents[icon.id] || <div>Application not found</div>
+      }))
+    );
+    
     setIsLoaded(true);
   }, [windowDimensions, isLoaded]);
-
 
   const focusWindow = (id: string) => {
     setZIndexCounter(prev => prev + 1);
@@ -183,7 +191,11 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
         const newY = Math.max(32, (windowDimensions.height - height) / 2) + offset; // 32px for top bar
 
         const newWindow: WindowInstance = {
-          ...app,
+          id: app.id,
+          title: app.title,
+          icon: app.icon,
+          content: appContents[app.id] || <div>Application not found</div>,
+          defaultSize: app.defaultSize,
           x: newX,
           y: newY,
           width,
