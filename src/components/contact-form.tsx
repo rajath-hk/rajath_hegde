@@ -9,6 +9,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
+import { sendMessage } from '@/actions/send-message';
 
 export function ContactForm() {
   const { toast } = useToast();
@@ -24,18 +25,29 @@ export function ContactForm() {
   const { isSubmitting } = form.formState;
 
   async function onSubmit(data: ContactFormData) {
-    // This is a static site, so we can't use server actions.
-    // Instead, we simulate the submission.
-    console.log('Form submitted (simulation):', data);
-
-    // Simulate network delay to show the 'Sending...' state
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
-    toast({
-      title: 'Message Sent!',
-      description: 'Your message has been sent successfully! (This is a simulation)',
-    });
-    form.reset();
+    try {
+      const result = await sendMessage(data);
+      
+      if (result.success) {
+        toast({
+          title: 'Message Sent!',
+          description: 'Your message has been sent successfully!',
+        });
+        form.reset();
+      } else {
+        toast({
+          title: 'Error',
+          description: result.error || 'Failed to send message. Please try again.',
+          variant: 'destructive',
+        });
+      }
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to send message. Please try again.',
+        variant: 'destructive',
+      });
+    }
   }
 
   return (

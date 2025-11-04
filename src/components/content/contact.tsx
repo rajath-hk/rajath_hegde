@@ -1,32 +1,39 @@
+import { portfolioConfig } from '@/config/portfolio';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Linkedin, Github, Mail, Twitter } from 'lucide-react';
+import { Linkedin, Github, Mail, Twitter, Instagram } from 'lucide-react';
 import { ContactForm } from '../contact-form';
 
 const socialLinks = [
   {
     name: 'LinkedIn',
     icon: Linkedin,
-    url: 'https://linkedin.com/in/rajath-hegde',
+    url: portfolioConfig.social.linkedin,
     description: 'Connect with me professionally'
   },
   {
     name: 'GitHub',
     icon: Github,
-    url: 'https://github.com/rajath-hk',
+    url: portfolioConfig.social.github,
     description: 'Explore my code and contributions'
   },
   {
     name: 'Twitter',
     icon: Twitter,
-    url: 'https://twitter.com/rajath_hegde',
+    url: portfolioConfig.social.twitter,
     description: 'Follow me for tech insights and updates'
+  },
+  {
+    name: 'Instagram',
+    icon: Instagram,
+    url: portfolioConfig.social.instagram,
+    description: 'See my life beyond code'
   }
 ];
 
 const ContactContent = () => {
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 p-6">
       <div className="space-y-4">
         <h2 className="text-3xl font-bold tracking-tight">Let's Connect</h2>
         <p className="text-lg text-muted-foreground">
@@ -60,10 +67,10 @@ const ContactContent = () => {
             <Button
               variant="outline"
               className="w-full justify-start gap-2"
-              onClick={() => window.location.href = 'mailto:contact@rajathhegde.com'}
+              onClick={() => window.location.href = `mailto:${portfolioConfig.personal.email || 'contact@rajathhegde.com'}`}
             >
               <Mail className="h-4 w-4" />
-              <span>contact@rajathhegde.com</span>
+              <span>{portfolioConfig.personal.email || 'contact@rajathhegde.com'}</span>
             </Button>
 
             {socialLinks.map((link, index) => {
@@ -103,6 +110,7 @@ const ContactContent = () => {
               <li>Frontend-focused positions</li>
               <li>Technical consulting opportunities</li>
               <li>Interesting freelance projects</li>
+              <li>Open-source contributions</li>
             </ul>
           </div>
         </Card>

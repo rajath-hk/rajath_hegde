@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Terminal as TerminalIcon, User, Folder, FileText } from 'lucide-react';
+import { portfolioConfig } from '@/config/portfolio';
+import { Terminal as TerminalIcon, User, Folder, FileText, Github, Linkedin, Mail } from 'lucide-react';
 
 const Terminal = () => {
   const [input, setInput] = useState('');
@@ -26,44 +27,43 @@ const Terminal = () => {
       '  neofetch     - Display system information',
     ],
     about: () => [
-      'Rajath Hegde - Full-Stack Web Developer & MCA Student',
-      'From Karnataka, India',
+      `${portfolioConfig.personal.name} - ${portfolioConfig.personal.title}`,
+      `Location: ${portfolioConfig.personal.location}`,
       '',
-      'I\'m passionate about web development, Python, AWS cloud services,',
-      'AI integration, and self-hosted solutions. I enjoy creating',
-      'innovative solutions and sharing knowledge with the developer community.',
+      portfolioConfig.personal.bio,
     ],
-    projects: () => [
-      'My Projects:',
-      '  1. RTSP Loop Recorder - Android application for recording RTSP streams',
-      '  2. Self-Hosted Video Meeting Platform - Direct meeting solution',
-      '  3. GetGo Web Application - Task management web app',
-      '',
-      'Type "projects <name>" for more details about a specific project.',
-    ],
+    projects: () => {
+      const projectLines = ['My Projects:'];
+      portfolioConfig.projects.forEach((project, index) => {
+        projectLines.push(`  ${index + 1}. ${project.title} - ${project.description}`);
+      });
+      projectLines.push('');
+      projectLines.push('Use "projects <number>" for more details about a specific project.');
+      return projectLines;
+    },
     skills: () => [
       'Technical Skills:',
-      '  Expert:     HTML, CSS, JavaScript, Python',
-      '  Advanced:   React, Node.js, AWS, Docker',
-      '  Familiar:   TypeScript, Next.js, MongoDB',
-      '  Learning:   Machine Learning, Kubernetes',
+      `  Expert:     ${portfolioConfig.skills.expert.join(', ')}`,
+      `  Advanced:   ${portfolioConfig.skills.advanced.join(', ')}`,
+      `  Familiar:   ${portfolioConfig.skills.intermediate.join(', ')}`,
+      `  Learning:   ${portfolioConfig.skills.learning.join(', ')}`,
     ],
     contact: () => [
       'Contact Information:',
-      '  Email:    rajath@example.com',
-      '  GitHub:   https://github.com/rajath-hk',
-      '  LinkedIn: https://linkedin.com/in/rajath-hegde',
+      `  Email:    ${portfolioConfig.personal.email}`,
+      `  GitHub:   ${portfolioConfig.social.github}`,
+      `  LinkedIn: ${portfolioConfig.social.linkedin}`,
     ],
     resume: () => [
       'To view my resume, please visit:',
-      '  https://rajath.github.io/rajath_hegde/resume.pdf',
+      `  ${typeof window !== 'undefined' ? window.location.origin : ''}${portfolioConfig.personal.resume}`,
     ],
     socials: () => [
       'Connect with me:',
-      '  GitHub:   https://github.com/rajath-hk',
-      '  LinkedIn: https://linkedin.com/in/rajath-hegde',
-      '  Twitter:  https://twitter.com/rajath_hk',
-      '  Instagram: https://instagram.com/rajath_hk',
+      `  GitHub:   ${portfolioConfig.social.github}`,
+      `  LinkedIn: ${portfolioConfig.social.linkedin}`,
+      `  Twitter:  ${portfolioConfig.social.twitter}`,
+      `  Instagram: ${portfolioConfig.social.instagram}`,
     ],
     date: () => [
       new Date().toString(),
@@ -78,7 +78,7 @@ const Terminal = () => {
       '│  ╚═╝     ╚══════╝   ╚═╝   ╚═╝  ╚═╝ ╚═════╝    ╚═╝         │',
       '└────────────────────────────────────────────────────────────┘',
       '',
-      '  Rajath Hegde@PortfolioOS',
+      `  ${portfolioConfig.personal.name}@PortfolioOS`,
       '  -----------------------',
       '  OS: PortfolioOS 1.0.0',
       '  Kernel: Linux 5.15.0',
@@ -86,7 +86,7 @@ const Terminal = () => {
       '  Terminal: Portfolio Terminal',
       '  CPU: Intel i7-1165G7 (8) @ 4.700GHz',
       '  Memory: 16GB',
-      '  Location: Karnataka, India',
+      `  Location: ${portfolioConfig.personal.location}`,
     ],
     clear: () => {
       setHistory([]);

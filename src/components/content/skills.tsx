@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { portfolioConfig } from '@/config/portfolio';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
@@ -15,64 +16,28 @@ import {
 } from 'lucide-react';
 
 const Skills = () => {
+  const { skills } = portfolioConfig;
+  
   const skillCategories = [
     {
-      name: 'Frontend Development',
+      name: 'Expert Skills',
       icon: <Globe className="w-5 h-5" />,
-      skills: [
-        { name: 'HTML/CSS', level: 95 },
-        { name: 'JavaScript', level: 90 },
-        { name: 'TypeScript', level: 85 },
-        { name: 'React', level: 85 },
-        { name: 'Next.js', level: 80 },
-        { name: 'Tailwind CSS', level: 90 },
-      ]
+      skills: skills.expert.map(skill => ({ name: skill, level: 95 }))
     },
     {
-      name: 'Backend Development',
+      name: 'Advanced Skills',
       icon: <Code className="w-5 h-5" />,
-      skills: [
-        { name: 'Node.js', level: 85 },
-        { name: 'Python', level: 90 },
-        { name: 'Express', level: 80 },
-        { name: 'REST APIs', level: 85 },
-      ]
+      skills: skills.advanced.map(skill => ({ name: skill, level: 85 }))
     },
     {
-      name: 'Database',
+      name: 'Intermediate Skills',
       icon: <Database className="w-5 h-5" />,
-      skills: [
-        { name: 'MongoDB', level: 80 },
-        { name: 'PostgreSQL', level: 75 },
-        { name: 'MySQL', level: 70 },
-      ]
+      skills: skills.intermediate.map(skill => ({ name: skill, level: 75 }))
     },
     {
-      name: 'Cloud & DevOps',
-      icon: <Cloud className="w-5 h-5" />,
-      skills: [
-        { name: 'AWS', level: 80 },
-        { name: 'Docker', level: 75 },
-        { name: 'Firebase', level: 85 },
-        { name: 'CI/CD', level: 70 },
-      ]
-    },
-    {
-      name: 'Mobile Development',
-      icon: <Smartphone className="w-5 h-5" />,
-      skills: [
-        { name: 'Android (Kotlin)', level: 80 },
-        { name: 'React Native', level: 70 },
-      ]
-    },
-    {
-      name: 'Emerging Technologies',
+      name: 'Currently Learning',
       icon: <Zap className="w-5 h-5" />,
-      skills: [
-        { name: 'Machine Learning', level: 65 },
-        { name: 'AI Integration', level: 70 },
-        { name: 'Kubernetes', level: 60 },
-      ]
+      skills: skills.learning.map(skill => ({ name: skill, level: 60 }))
     }
   ];
 

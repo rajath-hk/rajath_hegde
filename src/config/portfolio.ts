@@ -5,7 +5,8 @@ export const portfolioConfig = {
     location: "Karnataka, India",
     bio: "I'm an MCA student and aspiring full-stack web developer from Karnataka, India, with expertise in web development, Python, AWS cloud services, AI integration, and self-hosted solutions. I'm passionate about creating innovative solutions and sharing knowledge with the developer community.",
     avatar: "/images/avatar.jpg",
-    resume: "/files/resume.pdf"
+    resume: "/files/resume.pdf",
+    email: "contact@rajathhegde.com"
   },
   social: {
     github: "https://github.com/rajath-hk",

@@ -1,22 +1,29 @@
 import React from 'react';
 import Image from 'next/image';
+import { portfolioConfig } from '@/config/portfolio';
 
 const AboutContent = () => {
+  const { personal } = portfolioConfig;
+  
   return (
     <div className="prose prose-sm md:prose-base dark:prose-invert max-w-none p-6 space-y-6">
       <div className="flex flex-col sm:flex-row items-start gap-6 not-prose">
-        <Image
-          src="https://img.playbook.com/mj3J7by3sHCDWk50s2eAK_qN5_wOe2va96cBxM6anIM/Z3M6Ly9wbGF5Ym9v/ay1hc3NldHMtcHVi/bGljL2YxZGU5NWZk/LTIxOGUtNDY5Zi1i/M2ZjLTg1MWI1NDNi/Y2Y1Zg"
-          alt="Rajath Hegde"
-          width={200}
-          height={200}
-          className="rounded-lg shadow-md object-cover"
-          data-ai-hint="person portrait"
-        />
+        <div className="relative h-48 w-48 rounded-lg overflow-hidden shadow-md">
+          <Image
+            src={personal.avatar || "https://img.playbook.com/mj3J7by3sHCDWk50s2eAK_qN5_wOe2va96cBxM6anIM/Z3M6Ly9wbGF5Ym9v/ay1hc3NldHMtcHVi/bGljL2YxZGU5NWZk/LTIxOGUtNDY5Zi1i/M2ZjLTg1MWI1NDNi/Y2Y1Zg"}
+            alt={personal.name}
+            fill
+            className="object-cover"
+            data-ai-hint="person portrait"
+          />
+        </div>
         <div className="flex-1 space-y-4">
-          <h1 className="text-3xl font-bold tracking-tight">Rajath Hegde | Full Stack Developer</h1>
+          <h1 className="text-3xl font-bold tracking-tight">{personal.name} | {personal.title}</h1>
           <p className="text-lg text-muted-foreground">
-            Building thoughtful, user-centric experiences with code and creativity from Bangalore, India 🌟
+            {personal.bio}
+          </p>
+          <p className="text-muted-foreground">
+            Based in {personal.location} 🌟
           </p>
         </div>
       </div>
@@ -51,6 +58,8 @@ const AboutContent = () => {
             <li>Building scalable backend systems using Node.js and Python</li>
             <li>Creating engaging user experiences with thoughtful UI/UX design</li>
             <li>Implementing efficient CI/CD pipelines and DevOps practices</li>
+            <li>Cloud services with AWS and other platforms</li>
+            <li>Self-hosted solutions and system administration</li>
           </ul>
         </section>
       </div>

@@ -35,6 +35,7 @@ PortfolioOS transforms the traditional developer portfolio into an interactive o
 11. **Notes** - Personal note-taking application
 12. **System Info** - Detailed system statistics
 13. **Gallery** - Visual showcase of projects and achievements
+14. **Contact** - Contact form and social links
 
 ### UI Components
 - Top bar with system controls and minimized window dock
@@ -61,6 +62,7 @@ PortfolioOS transforms the traditional developer portfolio into an interactive o
 - Touch gesture support for mobile devices
 - Custom theming system
 - Performance optimized with code splitting
+- Server actions for contact form submissions
 
 ## Applications in Detail
 
@@ -116,6 +118,14 @@ User preferences and settings are persisted using localStorage:
 - Desktop icon positions
 - Theme and wallpaper preferences
 - System settings
+
+## Contact Form
+
+The contact form is fully functional with:
+- Client-side validation using Zod
+- Server action for form submission
+- Toast notifications for user feedback
+- Proper error handling
 
 ## Getting Started
 
