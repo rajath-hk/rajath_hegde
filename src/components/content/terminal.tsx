@@ -27,41 +27,46 @@ const Terminal = () => {
       '  neofetch     - Display system information',
     ],
     about: () => [
-      `${portfolioConfig.personal.name} - ${portfolioConfig.personal.title}`,
-      `Location: ${portfolioConfig.personal.location}`,
+      `${portfolioConfig.personal.name || 'Name not set'} - ${portfolioConfig.personal.title || 'Title not set'}`,
+      `Location: ${portfolioConfig.personal.location || 'Location not set'}`,
       '',
-      portfolioConfig.personal.bio,
+      portfolioConfig.personal.bio || 'Bio not available',
     ],
     projects: () => {
       const projectLines = ['My Projects:'];
-      portfolioConfig.projects.forEach((project, index) => {
+      (portfolioConfig.projects || []).forEach((project, index) => {
         projectLines.push(`  ${index + 1}. ${project.title} - ${project.description}`);
       });
       projectLines.push('');
-      projectLines.push('Use "projects <number>" for more details about a specific project.');
       return projectLines;
     },
     skills: () => [
       'Technical Skills:',
       `  Expert:     ${portfolioConfig.skills.expert.join(', ')}`,
-      `  Advanced:   ${portfolioConfig.skills.advanced.join(', ')}`,
-      `  Familiar:   ${portfolioConfig.skills.intermediate.join(', ')}`,
-      `  Learning:   ${portfolioConfig.skills.learning.join(', ')}`,
-    ],
+      `  Expert:     ${(portfolioConfig.skills.expert || []).join(', ')}`,
+      `  Advanced:   ${(portfolioConfig.skills.advanced || []).join(', ')}`,
+      `  Familiar:   ${(portfolioConfig.skills.intermediate || []).join(', ')}`,
+      `  Learning:   ${(portfolioConfig.skills.learning || []).join(', ')}`,
     contact: () => [
       'Contact Information:',
       `  Email:    ${portfolioConfig.personal.email}`,
-      `  GitHub:   ${portfolioConfig.social.github}`,
-      `  LinkedIn: ${portfolioConfig.social.linkedin}`,
-    ],
+      `  Email:    ${portfolioConfig.personal.email || 'Not provided'}`,
+      `  GitHub:   ${portfolioConfig.social.github || 'Not provided'}`,
+      `  LinkedIn: ${portfolioConfig.social.linkedin || 'Not provided'}`,
     resume: () => [
       'To view my resume, please visit:',
-      `  ${typeof window !== 'undefined' ? window.location.origin : ''}${portfolioConfig.personal.resume}`,
+resume: () => [
+  'To view my resume, please visit:',
+  `  ${typeof window !== 'undefined' ? window.location.origin : ''}${portfolioConfig.personal.resume || '/resume'}`,
+],
     ],
-    socials: () => [
-      'Connect with me:',
-      `  GitHub:   ${portfolioConfig.social.github}`,
-      `  LinkedIn: ${portfolioConfig.social.linkedin}`,
+socials: () => [
+  'Connect with me:',
+  `  GitHub:   ${portfolioConfig.social.github || 'Not provided'}`,
+  `  LinkedIn: ${portfolioConfig.social.linkedin || 'Not provided'}`,
+  `  Twitter:  ${portfolioConfig.social.twitter || 'Not provided'}`,
+  `  Instagram: ${portfolioConfig.social.instagram || 'Not provided'}`,
+],
       `  Twitter:  ${portfolioConfig.social.twitter}`,
       `  Instagram: ${portfolioConfig.social.instagram}`,
     ],
