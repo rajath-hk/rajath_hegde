@@ -259,7 +259,7 @@ const Window = (props: WindowProps) => {
       <div 
         ref={headerRef}
         className={cn(
-          "h-10 flex items-center justify-between px-4 cursor-move border-b",
+          "h-10 flex items-center px-4 cursor-move border-b",
           isFocused 
             ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white" 
             : "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200"
@@ -268,36 +268,7 @@ const Window = (props: WindowProps) => {
         onMouseDown={handleDragStart}
         onTouchStart={handleDragStart}
       >
-        <div className="flex items-center space-x-2">
-          {/* Interactive "traffic light" controls - each button duplicates the same actions available in the header controls */}
-          <button
-            type="button"
-            className="w-3 h-3 rounded-full bg-red-400 focus:outline-none focus:ring-2 focus:ring-red-400"
-            aria-label="Close window"
-            title="Close"
-            onClick={(e) => { e.stopPropagation(); closeWindow(id); }}
-          ></button>
-
-          <button
-            type="button"
-            className="w-3 h-3 rounded-full bg-yellow-400 focus:outline-none focus:ring-2 focus:ring-yellow-300"
-            aria-label="Minimize window"
-            title="Minimize"
-            onClick={(e) => { e.stopPropagation(); toggleMinimize(id); }}
-          ></button>
-
-          <button
-            type="button"
-            className="w-3 h-3 rounded-full bg-green-400 focus:outline-none focus:ring-2 focus:ring-green-300"
-            aria-label={isMaximized ? 'Restore window' : 'Maximize window'}
-            title={isMaximized ? 'Restore' : 'Maximize'}
-            onClick={(e) => { e.stopPropagation(); toggleMaximize(id); }}
-          ></button>
-
-          {/* Screen-reader only description so color cues are not the only signal */}
-          <span className="sr-only">Window controls: close, minimize, maximize</span>
-        </div>
-        <div className="text-sm font-medium truncate mx-4 flex-grow text-center">
+        <div className="text-sm font-medium truncate w-full text-center">
           {title}
         </div>
         <div className="flex items-center space-x-2">
