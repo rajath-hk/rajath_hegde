@@ -239,7 +239,7 @@ const Window = (props: WindowProps) => {
     <motion.div
       ref={windowRef}
       className={cn(
-          "fixed bg-background border rounded-lg shadow-2xl overflow-hidden flex flex-col transition-shadow",
+        "fixed bg-background border rounded-lg shadow-2xl overflow-hidden flex flex-col transition-shadow",
         isFocused ? "border-blue-500 shadow-lg" : "border-gray-300 dark:border-gray-600"
       )}
       style={{
@@ -248,14 +248,14 @@ const Window = (props: WindowProps) => {
         zIndex,
         left: position.x,
         top: position.y,
-          willChange: 'transform'
+        willChange: 'transform'
       }}
-        onMouseDown={(e) => {
-          e.stopPropagation();
-          focusWindow(id);
-        }}
+      onMouseDown={(e) => {
+        e.stopPropagation();
+        focusWindow(id);
+      }}
       onTouchStart={(e) => {
-          e.stopPropagation();
+        e.stopPropagation();
         focusWindow(id);
         handleDragStart(e);
       }}
@@ -273,29 +273,39 @@ const Window = (props: WindowProps) => {
         onMouseDown={handleDragStart}
         onTouchStart={handleDragStart}
       >
-        
+        <div className="flex items-center space-x-2">
           <button
             type="button"
             className="w-3 h-3 rounded-full bg-yellow-400 focus:outline-none focus:ring-2 focus:ring-yellow-300"
             aria-label="Minimize window"
             title="Minimize"
             onClick={(e) => { e.stopPropagation(); toggleMinimize(id); }}
-          ></button>
-
+          />
+          
           <button
             type="button"
             className="w-3 h-3 rounded-full bg-green-400 focus:outline-none focus:ring-2 focus:ring-green-300"
             aria-label={isMaximized ? 'Restore window' : 'Maximize window'}
             title={isMaximized ? 'Restore' : 'Maximize'}
             onClick={(e) => { e.stopPropagation(); toggleMaximize(id); }}
-          ></button>
+          />
+
+          <button
+            type="button"
+            className="w-3 h-3 rounded-full bg-red-400 focus:outline-none focus:ring-2 focus:ring-red-300"
+            aria-label="Close window"
+            title="Close"
+            onClick={(e) => { e.stopPropagation(); closeWindow(id); }}
+          />
 
           {/* Screen-reader only description so color cues are not the only signal */}
           <span className="sr-only">Window controls: close, minimize, maximize</span>
         </div>
+        
         <div className="text-sm font-medium truncate mx-4 flex-grow text-center">
           {title}
         </div>
+        
         <div className="flex items-center space-x-2">
           <button 
             className="w-6 h-6 flex items-center justify-center rounded hover:bg-black/10 dark:hover:bg-white/10"
@@ -331,35 +341,35 @@ const Window = (props: WindowProps) => {
         <>
           <div 
             className="absolute w-2 h-full top-0 left-0 cursor-w-resize"
-            onMouseDown={(e) => handleResizeStart(e, 'w')}
+            onMouseDown={(e: React.MouseEvent<HTMLDivElement>) => handleResizeStart(e, 'w')}
           />
           <div 
             className="absolute w-2 h-full top-0 right-0 cursor-e-resize"
-            onMouseDown={(e) => handleResizeStart(e, 'e')}
+            onMouseDown={(e: React.MouseEvent<HTMLDivElement>) => handleResizeStart(e, 'e')}
           />
           <div 
             className="absolute w-full h-2 top-0 left-0 cursor-n-resize"
-            onMouseDown={(e) => handleResizeStart(e, 'n')}
+            onMouseDown={(e: React.MouseEvent<HTMLDivElement>) => handleResizeStart(e, 'n')}
           />
           <div 
             className="absolute w-full h-2 bottom-0 left-0 cursor-s-resize"
-            onMouseDown={(e) => handleResizeStart(e, 's')}
+            onMouseDown={(e: React.MouseEvent<HTMLDivElement>) => handleResizeStart(e, 's')}
           />
           <div 
             className="absolute w-4 h-4 bottom-0 right-0 cursor-se-resize"
-            onMouseDown={(e) => handleResizeStart(e, 'se')}
+            onMouseDown={(e: React.MouseEvent<HTMLDivElement>) => handleResizeStart(e, 'se')}
           />
           <div 
             className="absolute w-4 h-4 bottom-0 left-0 cursor-sw-resize"
-            onMouseDown={(e) => handleResizeStart(e, 'sw')}
+            onMouseDown={(e: React.MouseEvent<HTMLDivElement>) => handleResizeStart(e, 'sw')}
           />
           <div 
             className="absolute w-4 h-4 top-0 right-0 cursor-ne-resize"
-            onMouseDown={(e) => handleResizeStart(e, 'ne')}
+            onMouseDown={(e: React.MouseEvent<HTMLDivElement>) => handleResizeStart(e, 'ne')}
           />
-          <div 
+          <div
             className="absolute w-4 h-4 top-0 left-0 cursor-nw-resize"
-            onMouseDown={(e) => handleResizeStart(e, 'nw')}
+            onMouseDown={(e: React.MouseEvent<HTMLDivElement>) => handleResizeStart(e, 'nw')}
           />
         </>
       )}
