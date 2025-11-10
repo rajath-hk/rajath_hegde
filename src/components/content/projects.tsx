@@ -82,18 +82,18 @@ const Projects = () => {
       {loading && <div className="p-4">Loading projects...</div>}
       {error && <div className="p-4 text-red-500">{error}</div>}
 
-      <div className="grid gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-md">
         {displayProjects.map((project) => (
-          <Card key={project.id} className="p-6 space-y-4">
-            <div className="space-y-3">
+          <Card key={project.id} className="flex flex-col p-md h-full">
+            <div className="space-y-xs">
               <div className="flex items-baseline justify-between">
-                <h3 className="text-2xl font-bold">{project.title}</h3>
-                <span className="text-sm text-muted-foreground">{project.year}</span>
+                <h3 className="text-2xl font-bold line-clamp-1">{project.title}</h3>
+                <span className="text-sm text-muted-foreground shrink-0 ml-sm">{project.year}</span>
               </div>
               <Badge variant="secondary">{project.category}</Badge>
             </div>
             
-            <p className="text-muted-foreground">
+            <p className="text-muted-foreground mt-sm line-clamp-3 flex-grow">
               {project.description}
             </p>
             

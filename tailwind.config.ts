@@ -9,6 +9,19 @@ export default {
   ],
   theme: {
     extend: {
+      spacing: {
+        '4xs': '2px',    // 0.125rem
+        '3xs': '4px',    // 0.25rem
+        '2xs': '8px',    // 0.5rem
+        'xs': '12px',    // 0.75rem
+        'sm': '16px',    // 1rem
+        'md': '24px',    // 1.5rem
+        'lg': '32px',    // 2rem
+        'xl': '48px',    // 3rem
+        '2xl': '64px',   // 4rem
+        '3xl': '96px',   // 6rem
+        '4xl': '128px',  // 8rem
+      },
       fontFamily: {
         body: ['Inter', 'sans-serif'],
         headline: ['Inter', 'sans-serif'],

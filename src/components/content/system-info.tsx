@@ -51,7 +51,7 @@ const SystemInfo = () => {
   return (
     <div className="h-full flex flex-col">
       <div className="border-b p-4">
-        <h1 className="text-2xl font-bold">System Information</h1>
+        <h2 className="text-2xl font-bold">System Information</h2>
         <p className="text-muted-foreground">Detailed information about your system</p>
       </div>
       

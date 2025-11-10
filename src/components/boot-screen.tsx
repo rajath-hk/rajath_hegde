@@ -59,7 +59,7 @@ const BootScreen = ({ onComplete }: BootScreenProps) => {
           animate={{ opacity: 1, y: 0 }}
           className="text-center"
         >
-          <h1 className="text-4xl font-bold text-white mb-8">PortfolioOS</h1>
+          <h2 className="text-4xl font-bold text-white mb-8">PortfolioOS</h2>
           <div className="bg-gray-900 rounded-lg p-8 max-w-md w-full mx-4">
             <div className="mb-6">
               <div
@@ -117,7 +117,7 @@ const BootScreen = ({ onComplete }: BootScreenProps) => {
             className="w-full h-full object-cover"
           />
         </div>
-        <h1 className="text-5xl font-bold mb-2">PortfolioOS</h1>
+        <h2 className="text-5xl font-bold mb-2">PortfolioOS</h2>
         <p className="text-gray-400">Version 1.0.0</p>
       </motion.div>
 

@@ -44,7 +44,7 @@ const Skills = () => {
   return (
     <div className="h-full overflow-y-auto p-6">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Technical Skills</h1>
+        <h2 className="text-3xl font-bold mb-2">Technical Skills</h2>
         <p className="text-muted-foreground">
           My expertise across various technologies and domains
         </p>
