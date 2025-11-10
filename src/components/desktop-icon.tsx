@@ -14,6 +14,7 @@ const DesktopIcon = ({ app, constraintsRef }: DesktopIconProps) => {
   const { openWindow, updateIconPosition } = useWindows();
   const IconComponent = app.icon;
   const [isMobile, setIsMobile] = useState(false);
+  const isDraggingRef = React.useRef(false);
 
   // Check if we're on mobile
   useEffect(() => {
@@ -38,31 +39,27 @@ const DesktopIcon = ({ app, constraintsRef }: DesktopIconProps) => {
 
   return (
     <motion.button
-      // Use motion values for position via `style`. Framer Motion will manage this.
+  // Use motion values for position via `style`. Framer Motion will manage this.
       style={{ x, y, position: 'absolute' }}
       className="flex flex-col items-center justify-center text-center focus:outline-none p-2 select-none w-20"
       aria-label={`Open ${app.title}`}
       onClick={(e) => {
         e.stopPropagation();
-        // On mobile, single click should open the window
-        if (isMobile) {
-          openWindow(app);
-        }
+        // Prevent opening if the user was dragging the icon
+        if (isDraggingRef.current) return;
+        openWindow(app);
       }}
       onDoubleClick={(e) => {
         e.stopPropagation();
-        // On desktop, double click opens the window
-        if (!isMobile) {
-          openWindow(app);
-        }
+        // Keep double-click behavior in case users expect it; also open.
+        if (isDraggingRef.current) return;
+        openWindow(app);
       }}
+      onDragStart={() => { isDraggingRef.current = true; }}
+      onDragEnd={() => { isDraggingRef.current = false; updateIconPosition(app.id, x.get(), y.get()); }}
       drag={!isMobile} // Only allow drag on desktop
       dragConstraints={constraintsRef}
       dragMomentum={false}
-      onDragEnd={() => {
-        // On drag end, update the main state in the context with the final position.
-        updateIconPosition(app.id, x.get(), y.get());
-      }}
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }} // Better touch feedback on mobile
     >

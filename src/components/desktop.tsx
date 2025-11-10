@@ -49,6 +49,20 @@ const Desktop = () => {
     }
   };
 
+  // Stable, deterministic ordering: sort by row (y), then column (x), then title
+  const sortedIcons = [...desktopIcons].sort((a, b) => {
+    const ao = a.order ?? Infinity;
+    const bo = b.order ?? Infinity;
+    if (ao !== bo) return ao - bo;
+    const ay = a.y ?? 0;
+    const by = b.y ?? 0;
+    if (ay !== by) return ay - by;
+    const ax = a.x ?? 0;
+    const bx = b.x ?? 0;
+    if (ax !== bx) return ax - bx;
+    return (a.title || '').localeCompare(b.title || '');
+  });
+
   return (
     <div 
       ref={desktopRef}
@@ -78,13 +92,35 @@ const Desktop = () => {
         ))}
       </AnimatePresence>
       
-      {desktopIcons.map((icon) => (
-        <DesktopIcon 
-          key={icon.id} 
-          app={icon} 
-          constraintsRef={desktopRef}
-        />
-      ))}
+      {/* Render differently on mobile: a simple grid/list with deterministic order */}
+      {isMobile ? (
+        <div className="p-4 grid grid-cols-4 gap-3 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10">
+          {sortedIcons.map(icon => {
+            const IconComp = icon.icon;
+            return (
+              <button
+                key={icon.id}
+                onClick={() => openWindow(icon)}
+                className="flex flex-col items-center justify-center text-center p-2 select-none w-full"
+                aria-label={`Open ${icon.title}`}
+              >
+                <div className="w-12 h-12 rounded-lg bg-black/5 dark:bg-white/5 flex items-center justify-center shadow border border-black/5 dark:border-white/5">
+                  <IconComp className="w-6 h-6 text-foreground" />
+                </div>
+                <span className="text-xs mt-1 text-foreground font-medium truncate w-full">{icon.title}</span>
+              </button>
+            );
+          })}
+        </div>
+      ) : (
+        sortedIcons.map((icon) => (
+          <DesktopIcon 
+            key={icon.id} 
+            app={icon} 
+            constraintsRef={desktopRef}
+          />
+        ))
+      )}
       
       {/* Scroll to top button - only show on desktop */}
       {!isMobile && showScrollTop && (

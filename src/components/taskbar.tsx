@@ -18,9 +18,10 @@ import {
 import { format } from 'date-fns';
 import StartMenu from '@/components/start-menu';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { cn } from '@/lib/utils';
 
 const Taskbar = () => {
-  const { windows, closeWindow, toggleMinimize } = useWindows();
+  const { windows, desktopIcons, closeWindow, toggleMinimize, openWindow } = useWindows();
   const [time, setTime] = useState(new Date());
   const [showStartMenu, setShowStartMenu] = useState(false);
   const isMobile = useIsMobile();
@@ -61,14 +62,19 @@ const Taskbar = () => {
           <div className="flex items-center space-x-1 flex-1 justify-center">
             {windows
               .filter(win => !win.isMinimized)
-              .slice(0, 3) // Limit to 3 windows on mobile
+              .sort((a, b) => (a.order ?? Infinity) - (b.order ?? Infinity))
+              .slice(0, 4) // Show up to 4 windows on mobile
               .map((win) => (
                 <Button
                   key={win.id}
                   variant="ghost"
                   size="icon"
-                  className="h-12 w-12 rounded-full text-xs hover:bg-accent"
+                  className={cn(
+                    "h-12 w-12 rounded-full text-xs",
+                    win.isFocused ? "bg-accent" : "hover:bg-accent"
+                  )}
                   onClick={() => toggleMinimize(win.id)}
+                  aria-label={`Show ${win.title}`}
                 >
                   <win.icon className="w-6 h-6" />
                 </Button>
@@ -82,6 +88,10 @@ const Taskbar = () => {
               size="icon"
               className="h-12 w-12 rounded-full hover:bg-accent"
               aria-label="Search"
+              onClick={() => {
+                const app = desktopIcons.find(i => i.id === 'search');
+                if (app) openWindow(app);
+              }}
             >
               <Search className="w-6 h-6" />
             </Button>
@@ -91,6 +101,10 @@ const Taskbar = () => {
               size="icon"
               className="h-12 w-12 rounded-full hover:bg-accent"
               aria-label="Notifications"
+              onClick={() => {
+                const app = desktopIcons.find(i => i.id === 'notifications');
+                if (app) openWindow(app);
+              }}
             >
               <Bell className="w-6 h-6" />
             </Button>
@@ -126,13 +140,18 @@ const Taskbar = () => {
         <div className="flex items-center space-x-1 flex-1 justify-center">
           {windows
             .filter(win => !win.isMinimized)
+            .sort((a, b) => (a.order ?? Infinity) - (b.order ?? Infinity))
             .map((win) => (
               <Button
                 key={win.id}
                 variant="ghost"
                 size="sm"
-                className="h-8 px-2 text-xs hover:bg-accent"
+                className={cn(
+                  "h-8 px-2 text-xs",
+                  win.isFocused ? "bg-accent" : "hover:bg-accent"
+                )}
                 onClick={() => toggleMinimize(win.id)}
+                title={win.title}
               >
                 <win.icon className="w-4 h-4 mr-1" />
                 <span className="max-w-[80px] truncate">{win.title}</span>
@@ -165,6 +184,10 @@ const Taskbar = () => {
             size="sm" 
             className="h-8 w-8 p-0 hover:bg-accent"
             aria-label="Search"
+            onClick={() => {
+              const app = desktopIcons.find(i => i.id === 'search');
+              if (app) openWindow(app);
+            }}
           >
             <Search className="w-4 h-4" />
           </Button>
@@ -174,6 +197,10 @@ const Taskbar = () => {
             size="sm" 
             className="h-8 w-8 p-0 hover:bg-accent"
             aria-label="Notifications"
+            onClick={() => {
+              const app = desktopIcons.find(i => i.id === 'notifications');
+              if (app) openWindow(app);
+            }}
           >
             <Bell className="w-4 h-4" />
           </Button>
