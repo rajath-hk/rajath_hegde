@@ -134,6 +134,21 @@ The contact form is fully functional with:
 3. Run development server: `npm run dev`
 4. Build for production: `npm run build`
 
+## Local secrets and API keys
+
+Do NOT commit API keys or secrets into the repository. Local editor settings (for example VS Code workspace settings) can contain sensitive values. This repository ignores `.vscode/settings.json` — keep your local keys there or, better, use environment variables or a secrets manager.
+
+Recommended approaches:
+- Use environment variables (preferred): create a local `.env.local` file and add it to `.gitignore`.
+	Example:
+	```env
+	NEXT_PUBLIC_THIRD_PARTY_KEY=your_key_here
+	```
+
+- Or put local editor settings in `.vscode/settings.json` (this repo includes `.vscode/settings.example.json` as a template). Never commit your local `.vscode/settings.json`.
+
+If you accidentally committed a key, rotate/revoke it immediately and check service access logs for unauthorized usage.
+
 ## Login Information
 
 The PortfolioOS features a boot screen with a simulated login:

@@ -14,7 +14,12 @@ interface SearchResult {
   content?: string;
 }
 
-const SystemSearch = () => {
+interface SystemSearchProps {
+  open?: boolean;
+  onClose?: () => void;
+}
+
+const SystemSearch = ({ open, onClose }: SystemSearchProps) => {
   const { desktopIcons, openWindow } = useWindows();
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState('');
@@ -25,19 +30,25 @@ const SystemSearch = () => {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-        e.preventDefault();
-        setIsOpen(true);
-      }
+          e.preventDefault();
+          setIsOpen(true);
+        }
       
-      if (e.key === 'Escape' && isOpen) {
-        setIsOpen(false);
-        setQuery('');
-      }
+        if (e.key === 'Escape' && isOpen) {
+          setIsOpen(false);
+          setQuery('');
+          if (onClose) onClose();
+        }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen]);
+
+  // Sync with controlled `open` prop when provided
+  useEffect(() => {
+    if (typeof open === 'boolean') setIsOpen(open);
+  }, [open]);
 
   // Focus input when search opens
   useEffect(() => {
@@ -109,6 +120,7 @@ const SystemSearch = () => {
     
     setIsOpen(false);
     setQuery('');
+    if (onClose) onClose();
   };
 
   if (!isOpen) return null;
@@ -128,7 +140,7 @@ const SystemSearch = () => {
             className="w-full bg-muted pl-12 pr-4 py-3 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-primary"
           />
           <button 
-            onClick={() => setIsOpen(false)}
+            onClick={() => { setIsOpen(false); if (onClose) onClose(); }}
             className="absolute right-7 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
           >
             ESC

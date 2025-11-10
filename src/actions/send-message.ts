@@ -8,7 +8,7 @@ export async function sendMessage(data: ContactFormData) {
   if (!validatedFields.success) {
     return {
       success: false,
-      error: 'Invalid form data. Please check your inputs.'
+      message: 'Invalid form data. Please check your inputs.'
     };
   }
   
@@ -28,7 +28,7 @@ export async function sendMessage(data: ContactFormData) {
     console.error('Error sending message:', error);
     return { 
       success: false, 
-      error: 'Something went wrong on the server. Please try again.' 
+      message: 'Something went wrong on the server. Please try again.' 
     };
   }
 }

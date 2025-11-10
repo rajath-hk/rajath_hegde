@@ -9,8 +9,8 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "export": "next export",
-    "clean": "rm -rf .next out",
+  "export": "next export",
+  "clean": "node -e \"const fs=require('fs');['.next','out'].forEach(p=>{try{fs.rmSync(p,{recursive:true,force:true})}catch(e){}})\"",
     "prebuild": "npm run clean"
   },
   "dependencies": {

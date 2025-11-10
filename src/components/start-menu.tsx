@@ -200,9 +200,16 @@ const StartMenu = () => {
       {/* User Section */}
       <div className="p-4 border-t flex items-center justify-between">
         <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-            <span className="text-white font-bold">{portfolioConfig.personal.name.charAt(0)}</span>
-          </div>
+            <div
+              className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center"
+              role="img"
+              aria-label={`User avatar for ${portfolioConfig.personal.name}`}
+              title={`User avatar for ${portfolioConfig.personal.name}`}
+            >
+              {/* Include an icon for non-color dependent affordance; icon hidden from AT since we provide aria-label on container */}
+              <User className="w-4 h-4 text-white mr-1" aria-hidden="true" />
+              <span className="text-white font-bold">{portfolioConfig.personal.name.charAt(0)}</span>
+            </div>
           <div>
             <p className="font-medium">{portfolioConfig.personal.name}</p>
             <p className="text-xs text-muted-foreground">Online</p>

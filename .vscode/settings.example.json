@@ -1,0 +1,18 @@
+{
+  // Example VS Code settings for project onboarding.
+  // Rename this file to `.vscode/settings.json` locally and add your values.
+  // DO NOT commit your local `.vscode/settings.json` to the repository.
+
+  // Example: If you use an extension that requires an API key, set it here
+  // "yourExtension.apiKey": "<REPLACE_WITH_YOUR_API_KEY>",
+
+  // Prefer environment variables for secrets and keys.
+  // Example (preferred):
+  //    export MY_API_KEY=xxxx
+  //    In code, reference via process.env.MY_API_KEY
+
+  "editor.formatOnSave": true,
+  "files.exclude": {
+    "**/.DS_Store": true
+  }
+}

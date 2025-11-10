@@ -16,9 +16,15 @@ import StartMenu from '@/components/start-menu';
 import SystemSearch from '@/components/system-search';
 
 const TopBar = () => {
-  const { windows, closeWindow, toggleMinimize } = useWindows();
+  const { windows, closeWindow, toggleMinimize, desktopIcons, openWindow } = useWindows();
   const [showStartMenu, setShowStartMenu] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
+
+  // Helper: find an icon/app by id and open it (avoids repeating guarded logic)
+  const openIconById = (id: string) => {
+    const app = (desktopIcons || []).find(i => i.id === id);
+    if (app) openWindow(app);
+  };
 
   // Filter minimized windows for the dock
   const minimizedWindows = windows.filter(win => win.isMinimized);
@@ -77,6 +83,7 @@ const TopBar = () => {
             variant="ghost" 
             size="sm" 
             className="h-6 w-6 p-0 hover:bg-accent"
+            onClick={() => openIconById('about')}
           >
             <User className="w-3 h-3" />
           </Button>
@@ -85,6 +92,7 @@ const TopBar = () => {
             variant="ghost" 
             size="sm" 
             className="h-6 w-6 p-0 hover:bg-accent"
+            onClick={() => openIconById('settings')}
           >
             <Settings className="w-3 h-3" />
           </Button>
@@ -93,6 +101,7 @@ const TopBar = () => {
             variant="ghost" 
             size="sm" 
             className="h-6 w-6 p-0 hover:bg-accent"
+            onClick={() => openIconById('legal')}
           >
             <Power className="w-3 h-3" />
           </Button>
@@ -109,9 +118,7 @@ const TopBar = () => {
         </>
       )}
       
-      {showSearch && (
-        <SystemSearch onClose={() => setShowSearch(false)} />
-      )}
+      <SystemSearch open={showSearch} onClose={() => setShowSearch(false)} />
     </>
   );
 };

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { User } from 'lucide-react';
 
 interface BootScreenProps {
   onComplete: () => void;
@@ -61,8 +62,13 @@ const BootScreen = ({ onComplete }: BootScreenProps) => {
           <h1 className="text-4xl font-bold text-white mb-8">PortfolioOS</h1>
           <div className="bg-gray-900 rounded-lg p-8 max-w-md w-full mx-4">
             <div className="mb-6">
-              <div className="w-16 h-16 rounded-full bg-blue-500 mx-auto mb-4 flex items-center justify-center">
-                <span className="text-2xl">👤</span>
+              <div
+                className="w-16 h-16 rounded-full bg-blue-500 mx-auto mb-4 flex items-center justify-center"
+                role="img"
+                aria-label={`User avatar for ${'Rajath Hegde'}`}
+                title={`User avatar for ${'Rajath Hegde'}`}
+              >
+                <User className="w-8 h-8 text-white" aria-hidden="true" />
               </div>
               <h2 className="text-xl text-white">Rajath Hegde</h2>
             </div>

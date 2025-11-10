@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useWindows } from '@/contexts/window-context';
-import { X, Bell } from 'lucide-react';
+import { X, Bell, Info, CheckCircle, AlertTriangle, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface Notification {
@@ -167,6 +167,7 @@ const NotificationCenter = () => {
                     className={`border-b last:border-b-0 ${
                       !notification.read ? 'bg-accent/50' : ''
                     }`}
+                    aria-label={`${notification.type} notification: ${notification.title}`}
                   >
                     <div className="p-4 relative">
                       <button
@@ -177,8 +178,14 @@ const NotificationCenter = () => {
                       </button>
                       
                       <div className="flex items-start gap-3">
-                        <div className={`mt-1 flex-shrink-0 w-2 h-2 rounded-full ${getTypeColor(notification.type)}`} />
-                        <div className="flex-1 min-w-0">
+                        <div className="mt-0.5 flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-muted/60">
+                          {/* Icon provides an explicit, non-color dependent affordance */}
+                          {notification.type === 'success' && <CheckCircle className="w-4 h-4 text-green-500" />}
+                          {notification.type === 'warning' && <AlertTriangle className="w-4 h-4 text-yellow-500" />}
+                          {notification.type === 'error' && <AlertCircle className="w-4 h-4 text-red-500" />}
+                          {notification.type === 'info' && <Info className="w-4 h-4 text-blue-500" />}
+                        </div>
+                        <div className="flex-1 min-w-0" role="group" aria-label={notification.title}>
                           <div className="flex items-baseline justify-between">
                             <h4 className="font-medium text-sm truncate">
                               {notification.title}

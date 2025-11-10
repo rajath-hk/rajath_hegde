@@ -62,7 +62,7 @@ const initialAppsData: AppConfig[] = [
 interface WindowContextType {
   windows: WindowInstance[];
   desktopIcons: AppConfig[];
-  openWindow: (app: AppConfig) => void;
+  openWindow: (app: Partial<AppConfig>) => void;
   closeWindow: (id: string) => void;
   focusWindow: (id: string) => void;
   toggleMinimize: (id: string) => void;
@@ -234,20 +234,23 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
-  const openWindow = (app: AppConfig) => {
+  const openWindow = (app: Partial<AppConfig>) => {
+    const id = app.id;
+    if (!id) return; // nothing to open
+
     setWindows(prev => {
-      const existingWindow = prev.find(w => w.id === app.id);
+      const existingWindow = prev.find(w => w.id === id);
       if (existingWindow) {
         // If window exists, bring it to front and unminimize it
         return prev.map(w => 
-          w.id === app.id 
+          w.id === id
             ? { ...w, isMinimized: false, zIndex: Math.max(...prev.map(win => win.zIndex), 0) + 1 } 
             : w
         );
       } else {
         // Create new window with proper content
-        const content = createContentElement(app.id);
-        
+        const content = createContentElement(id);
+
         // Adjust default position and size for mobile
         let x = app.x ?? 100;
         let y = app.y ?? 100;
@@ -263,8 +266,11 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
         }
         
         const newWindow: WindowInstance = {
-          ...app,
+          id: id,
+          title: app.title ?? 'Untitled',
+          icon: app.icon ?? FileText,
           content,
+          defaultSize: app.defaultSize,
           x,
           y,
           width,

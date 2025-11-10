@@ -9,7 +9,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { sendMessage } from '@/actions/send-message';
+
 
 export function ContactForm() {
   const { toast } = useToast();
@@ -26,22 +26,28 @@ export function ContactForm() {
 
   async function onSubmit(data: ContactFormData) {
     try {
-      const result = await sendMessage(data);
-      
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      const result = await res.json();
+
       if (result.success) {
         toast({
           title: 'Message Sent!',
-          description: 'Your message has been sent successfully!',
+          description: result.message || 'Your message has been sent successfully!',
         });
         form.reset();
       } else {
         toast({
           title: 'Error',
-          description: result.error || 'Failed to send message. Please try again.',
+          description: result.message || 'Failed to send message. Please try again.',
           variant: 'destructive',
         });
       }
     } catch (error) {
+      console.error('Error submitting contact form', error);
       toast({
         title: 'Error',
         description: 'Failed to send message. Please try again.',
