@@ -16,10 +16,11 @@ const BootScreen = ({ onComplete }: BootScreenProps) => {
     'Initializing system...',
     'Loading kernel...',
     'Mounting filesystems...',
-    'Starting services...',
+    'Loading services...',
     'Loading user profile...',
     'Preparing desktop environment...',
-    'Welcome to PortfolioOS'
+    'Welcome to PortfolioOS',
+    'Starting up...'
   ];
 
   useEffect(() => {
@@ -128,7 +129,7 @@ const BootScreen = ({ onComplete }: BootScreenProps) => {
 
       <div className="absolute bottom-8 w-full text-center">
         <p className="text-gray-600 text-sm">
-          Press Ctrl+Alt+Del to restart • PortfolioOS © 2024 Rajath Hegde
+          Press Ctrl+Alt+Del to restart • RHOS © 2026 Rajath Hegde
         </p>
       </div>
     </div>

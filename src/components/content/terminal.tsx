@@ -2,7 +2,11 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { portfolioConfig } from '@/config/portfolio';
-import { Terminal as TerminalIcon, User, Folder, FileText, Github, Linkedin, Mail } from 'lucide-react';
+import { Terminal as TerminalIcon } from 'lucide-react';
+
+interface Commands {
+  [key: string]: (...args: string[]) => string[];
+}
 
 const Terminal = () => {
   const [input, setInput] = useState('');
@@ -12,7 +16,7 @@ const Terminal = () => {
   const terminalRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const commands = {
+  const commands: Commands = {
     help: () => [
       'Available commands:',
       '  help         - Show this help message',
@@ -27,51 +31,44 @@ const Terminal = () => {
       '  neofetch     - Display system information',
     ],
     about: () => [
-      `${portfolioConfig.personal.name || 'Name not set'} - ${portfolioConfig.personal.title || 'Title not set'}`,
-      `Location: ${portfolioConfig.personal.location || 'Location not set'}`,
+      `${portfolioConfig.personal?.name || 'Name not set'} - ${portfolioConfig.personal?.title || 'Title not set'}`,
+      `Location: ${portfolioConfig.personal?.location || 'Location not set'}`,
       '',
-      portfolioConfig.personal.bio || 'Bio not available',
+      portfolioConfig.personal?.bio || 'Bio not available',
     ],
     projects: () => {
       const projectLines = ['My Projects:'];
       (portfolioConfig.projects || []).forEach((project, index) => {
-        projectLines.push(`  ${index + 1}. ${project.title} - ${project.description}`);
+        projectLines.push(`  ${index + 1}. ${project.title || 'Untitled'} - ${project.description || 'No description'}`);
       });
-      projectLines.push('');
       return projectLines;
     },
     skills: () => [
       'Technical Skills:',
-      `  Expert:     ${portfolioConfig.skills.expert.join(', ')}`,
-      `  Expert:     ${(portfolioConfig.skills.expert || []).join(', ')}`,
-      `  Advanced:   ${(portfolioConfig.skills.advanced || []).join(', ')}`,
-      `  Familiar:   ${(portfolioConfig.skills.intermediate || []).join(', ')}`,
-      `  Learning:   ${(portfolioConfig.skills.learning || []).join(', ')}`,
+      `  Expert:     ${(portfolioConfig.skills?.expert || []).join(', ')}`,
+      `  Advanced:   ${(portfolioConfig.skills?.advanced || []).join(', ')}`,
+      `  Familiar:   ${(portfolioConfig.skills?.intermediate || []).join(', ')}`,
+      `  Learning:   ${(portfolioConfig.skills?.learning || []).join(', ')}`
+    ],
     contact: () => [
       'Contact Information:',
-      `  Email:    ${portfolioConfig.personal.email}`,
-      `  Email:    ${portfolioConfig.personal.email || 'Not provided'}`,
-      `  GitHub:   ${portfolioConfig.social.github || 'Not provided'}`,
-      `  LinkedIn: ${portfolioConfig.social.linkedin || 'Not provided'}`,
+      `  Email:    ${portfolioConfig.personal?.email || 'Not provided'}`,
+      `  GitHub:   ${portfolioConfig.social?.github || 'Not provided'}`,
+      `  LinkedIn: ${portfolioConfig.social?.linkedin || 'Not provided'}`
+    ],
     resume: () => [
       'To view my resume, please visit:',
-resume: () => [
-  'To view my resume, please visit:',
-  `  ${typeof window !== 'undefined' ? window.location.origin : ''}${portfolioConfig.personal.resume || '/resume'}`,
-],
+      `  ${typeof window !== 'undefined' ? window.location.origin : ''}${portfolioConfig.personal?.resume || '/resume'}`
     ],
-socials: () => [
-  'Connect with me:',
-  `  GitHub:   ${portfolioConfig.social.github || 'Not provided'}`,
-  `  LinkedIn: ${portfolioConfig.social.linkedin || 'Not provided'}`,
-  `  Twitter:  ${portfolioConfig.social.twitter || 'Not provided'}`,
-  `  Instagram: ${portfolioConfig.social.instagram || 'Not provided'}`,
-],
-      `  Twitter:  ${portfolioConfig.social.twitter}`,
-      `  Instagram: ${portfolioConfig.social.instagram}`,
+    socials: () => [
+      'Connect with me:',
+      `  GitHub:   ${portfolioConfig.social?.github || 'Not provided'}`,
+      `  LinkedIn: ${portfolioConfig.social?.linkedin || 'Not provided'}`,
+      `  Twitter:  ${portfolioConfig.social?.twitter || 'Not provided'}`,
+      `  Instagram: ${portfolioConfig.social?.instagram || 'Not provided'}`
     ],
     date: () => [
-      new Date().toString(),
+      new Date().toLocaleString()
     ],
     neofetch: () => [
       '┌────────────────────────────────────────────────────────────┐',
@@ -83,23 +80,17 @@ socials: () => [
       '│  ╚═╝     ╚══════╝   ╚═╝   ╚═╝  ╚═╝ ╚═════╝    ╚═╝         │',
       '└────────────────────────────────────────────────────────────┘',
       '',
-      `  ${portfolioConfig.personal.name}@PortfolioOS`,
+      `  ${portfolioConfig.personal?.name || 'User'}@PortfolioOS`,
       '  -----------------------',
       '  OS: PortfolioOS 1.0.0',
-      '  Kernel: Linux 5.15.0',
-      '  Shell: zsh 5.8',
-      '  Terminal: Portfolio Terminal',
-      '  CPU: Intel i7-1165G7 (8) @ 4.700GHz',
-      '  Memory: 16GB',
-      `  Location: ${portfolioConfig.personal.location}`,
+      '  Shell: Web Terminal',
+      '  Theme: Modern Dark',
+      `  Location: ${portfolioConfig.personal?.location || 'Unknown'}`
     ],
     clear: () => {
       setHistory([]);
       return [];
-    },
-    default: (cmd: string) => [
-      `Command not found: ${cmd}. Type 'help' for available commands.`,
-    ],
+    }
   };
 
   useEffect(() => {
@@ -124,6 +115,14 @@ socials: () => [
     }
   }, [history]);
 
+  const handleCommand = (cmd: string, args: string[]): string[] => {
+    const command = cmd.toLowerCase();
+    if (commands[command]) {
+      return commands[command](...args);
+    }
+    return [`Command not found: ${cmd}. Type 'help' for available commands.`];
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -131,19 +130,13 @@ socials: () => [
     
     const newHistory = [...history, `$ ${input}`];
     const [cmd, ...args] = input.trim().split(' ');
-    const command = cmd.toLowerCase();
     
     // Add to command history
     setCommandHistory(prev => [...prev, input]);
     setHistoryIndex(-1);
     
     // Execute command
-    let output: string[] = [];
-    if (commands[command as keyof typeof commands]) {
-      output = commands[command as keyof typeof commands]();
-    } else {
-      output = commands.default(cmd);
-    }
+    const output = handleCommand(cmd, args);
     
     setHistory([...newHistory, ...output, '']);
     setInput('');
