@@ -305,30 +305,6 @@ const Window = (props: WindowProps) => {
         <div className="text-sm font-medium truncate mx-4 flex-grow text-center">
           {title}
         </div>
-        
-        <div className="flex items-center space-x-2">
-          <button 
-            className="w-6 h-6 flex items-center justify-center rounded hover:bg-black/10 dark:hover:bg-white/10"
-            onClick={() => toggleMinimize(id)}
-            aria-label="Minimize window"
-          >
-            <Minus className="w-4 h-4" />
-          </button>
-          <button 
-            className="w-6 h-6 flex items-center justify-center rounded hover:bg-black/10 dark:hover:bg-white/10"
-            onClick={() => toggleMaximize(id)}
-            aria-label={isMaximized ? "Restore window" : "Maximize window"}
-          >
-            {isMaximized ? <Minimize className="w-4 h-4" /> : <Square className="w-4 h-4" />}
-          </button>
-          <button 
-            className="w-6 h-6 flex items-center justify-center rounded hover:bg-red-500"
-            onClick={() => closeWindow(id)}
-            aria-label="Close window"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        </div>
       </div>
 
       {/* Window Content */}
