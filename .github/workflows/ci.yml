@@ -24,6 +24,10 @@ jobs:
         run: npm run typecheck
       - name: Build (production)
         run: npm run build
+      - name: Export (static)
+        run: npm run export
+      - name: Smoke check exported site
+        run: node scripts/smoke-check.js
       - name: Upload build artifact
         if: success()
         uses: actions/upload-artifact@v4
