@@ -273,16 +273,7 @@ const Window = (props: WindowProps) => {
         onMouseDown={handleDragStart}
         onTouchStart={handleDragStart}
       >
-        <div className="flex items-center space-x-2">
-          {/* Interactive "traffic light" controls - each button duplicates the same actions available in the header controls */}
-          <button
-            type="button"
-            className="w-3 h-3 rounded-full bg-red-400 focus:outline-none focus:ring-2 focus:ring-red-400"
-            aria-label="Close window"
-            title="Close"
-            onClick={(e) => { e.stopPropagation(); closeWindow(id); }}
-          ></button>
-
+        
           <button
             type="button"
             className="w-3 h-3 rounded-full bg-yellow-400 focus:outline-none focus:ring-2 focus:ring-yellow-300"
