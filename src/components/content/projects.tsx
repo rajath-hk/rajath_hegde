@@ -87,7 +87,7 @@ const Projects = () => {
           <Card key={project.id} className="p-6 space-y-4">
             <div className="space-y-3">
               <div className="flex items-baseline justify-between">
-                <h3 className="text-2xl font-bold">{project.title}</h3>
+                  <h3 className="text-xl md:text-2xl font-bold line-clamp-1 flex-1 mr-3">{project.title}</h3>
                 <span className="text-sm text-muted-foreground">{project.year}</span>
               </div>
               <Badge variant="secondary">{project.category}</Badge>
@@ -97,7 +97,7 @@ const Projects = () => {
               {project.description}
             </p>
             
-            <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-2 mt-4">
               {project.technologies.map((tech, techIndex) => (
                 <Badge key={techIndex} variant="outline">
                   {tech}
@@ -105,13 +105,13 @@ const Projects = () => {
               ))}
             </div>
             
-            <div className="flex gap-2">
+              <div className="flex flex-wrap gap-3 mt-4">
               {project.links.github && (
                 <a
                   href={project.links.github}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center text-primary hover:underline"
+                    className="inline-flex items-center text-primary hover:text-primary/80 transition-colors gap-1 focus:outline-none focus:ring-2 focus:ring-primary/50 rounded px-2"
                 >
                   GitHub Repository →
                 </a>
@@ -121,7 +121,7 @@ const Projects = () => {
                   href={project.links.demo}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center text-primary hover:underline"
+                    className="inline-flex items-center text-primary hover:text-primary/80 transition-colors gap-1 focus:outline-none focus:ring-2 focus:ring-primary/50 rounded px-2"
                 >
                   Live Demo →
                 </a>

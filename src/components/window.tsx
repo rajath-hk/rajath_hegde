@@ -239,7 +239,7 @@ const Window = (props: WindowProps) => {
     <motion.div
       ref={windowRef}
       className={cn(
-        "fixed bg-background border rounded-lg shadow-2xl overflow-hidden flex flex-col",
+          "fixed bg-background border rounded-lg shadow-2xl overflow-hidden flex flex-col transition-shadow",
         isFocused ? "border-blue-500 shadow-lg" : "border-gray-300 dark:border-gray-600"
       )}
       style={{
@@ -248,9 +248,14 @@ const Window = (props: WindowProps) => {
         zIndex,
         left: position.x,
         top: position.y,
+          willChange: 'transform'
       }}
-      onMouseDown={() => focusWindow(id)}
+        onMouseDown={(e) => {
+          e.stopPropagation();
+          focusWindow(id);
+        }}
       onTouchStart={(e) => {
+          e.stopPropagation();
         focusWindow(id);
         handleDragStart(e);
       }}

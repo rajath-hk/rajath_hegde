@@ -60,7 +60,7 @@ const BootScreen = ({ onComplete }: BootScreenProps) => {
           className="text-center"
         >
           <h1 className="text-4xl font-bold text-white mb-8">PortfolioOS</h1>
-          <div className="bg-gray-900 rounded-lg p-8 max-w-md w-full mx-4">
+            <div className="bg-gray-900/95 backdrop-blur-sm rounded-lg p-6 md:p-8 max-w-md w-[90%] md:w-full mx-auto shadow-xl">
             <div className="mb-6">
               <div
                 className="w-16 h-16 rounded-full bg-blue-500 mx-auto mb-4 flex items-center justify-center"
@@ -78,21 +78,22 @@ const BootScreen = ({ onComplete }: BootScreenProps) => {
               <input
                 type="password"
                 placeholder="Password (any value)"
-                className="w-full bg-gray-800 text-white rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full bg-gray-800 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow placeholder:text-gray-500"
                 defaultValue=""
+                  aria-label="Password input"
               />
             </div>
             
             <div className="flex justify-between">
               <button 
                 onClick={handleLogin}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded transition-colors"
+                  className="bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white px-6 py-3 rounded-lg transition-all transform active:scale-95 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900"
               >
                 Login
               </button>
               <button 
                 onClick={handleLogin}
-                className="bg-gray-700 hover:bg-gray-600 text-white px-6 py-2 rounded transition-colors"
+                  className="bg-gray-700 hover:bg-gray-600 active:bg-gray-800 text-white px-6 py-3 rounded-lg transition-all transform active:scale-95 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-gray-900"
               >
                 Guest
               </button>

@@ -121,7 +121,8 @@
   /* Optimize for better scrolling performance */
   .mobile-optimized-scroll {
     -webkit-overflow-scrolling: touch;
-    overflow-scrolling: touch;
+      overflow-x: hidden;
+      overscroll-behavior: none;
   }
 
   /* Adjust z-index for mobile elements */
