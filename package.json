@@ -1,16 +1,17 @@
 {
-  "name": "nextn",
+  "name": "rajath-portfolio",
   "version": "0.1.0",
   "private": true,
   "homepage": "https://rajath.github.io/rajath_hegde",
   "scripts": {
-    "dev": "next dev --turbopack -p 3000",
-    "genkit:dev": "genkit start -- tsx src/ai/dev.ts",
-    "genkit:watch": "genkit start -- tsx --watch src/ai/dev.ts",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "export": "next export",
+    "clean": "rm -rf .next out",
+    "prebuild": "npm run clean"
   },
   "dependencies": {
     "@genkit-ai/googleai": "^1.8.0",

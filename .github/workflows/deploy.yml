@@ -34,15 +34,19 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Build with Next.js
-        run: npm run build
+      - name: Build and Export
+        run: |
+          npm run build
+          touch out/.nojekyll
         env:
-          BASE_PATH: /rajath_hegde
+          NODE_ENV: production
+          NEXT_PUBLIC_BASE_PATH: /rajath_hegde
+          GITHUB_PAGES: true
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./out
+          path: out
 
   deploy:
     environment:

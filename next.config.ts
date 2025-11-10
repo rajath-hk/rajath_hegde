@@ -1,23 +1,32 @@
 import type {NextConfig} from 'next';
 
-// This is set in the GitHub Actions workflow
-const basePath = process.env.BASE_PATH || '';
+const isGithubActions = process.env.GITHUB_ACTIONS || false;
+const basePath = isGithubActions ? '/rajath_hegde' : '';
 
 const nextConfig: NextConfig = {
   output: 'export',
   basePath: basePath,
-  trailingSlash: true, // Important for GitHub Pages
+  trailingSlash: true,
+  reactStrictMode: true,
+  swcMinify: true,
   typescript: {
-    ignoreBuildErrors: true,
+    // We'll handle TS errors in development, but allow builds to complete
+    ignoreBuildErrors: process.env.NODE_ENV === 'production',
   },
   eslint: {
-    ignoreDuringBuilds: true,
+    // We'll handle ESLint errors in development, but allow builds to complete
+    ignoreDuringBuilds: process.env.NODE_ENV === 'production',
   },
   images: {
-    unoptimized: true, // Required for static export
+    loader: 'custom',
+    loaderFile: './src/lib/image-loader.ts',
+    deviceSizes: [640, 750, 828, 1080, 1200],
+    imageSizes: [16, 32, 48, 64, 96],
+    domains: ['github.com', 'raw.githubusercontent.com'],
+    formats: ['image/webp'],
   },
-  // Add assetPrefix for proper asset loading on GitHub Pages
-  assetPrefix: basePath || undefined,
+  // Ensure proper asset prefix for GitHub Pages
+  assetPrefix: basePath,
 };
 
 export default nextConfig;
