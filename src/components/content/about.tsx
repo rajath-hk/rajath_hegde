@@ -10,7 +10,7 @@ const AboutContent = () => {
       <div className="flex flex-col sm:flex-row items-start gap-6 not-prose">
         <div className="relative h-48 w-48 rounded-lg overflow-hidden shadow-md">
           <Image
-            src={personal.avatar || "https://img.playbook.com/mj3J7by3sHCDWk50s2eAK_qN5_wOe2va96cBxM6anIM/Z3M6Ly9wbGF5Ym9v/ay1hc3NldHMtcHVi/bGljL2YxZGU5NWZk/LTIxOGUtNDY5Zi1i/M2ZjLTg1MWI1NDNi/Y2Y1Zg"}
+            src="https://via.placeholder.com/400x400/00E5FF/000000?text=Rajath+Hegde"
             alt={personal.name}
             fill
             className="object-cover"

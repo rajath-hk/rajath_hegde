@@ -22,7 +22,7 @@ const Gallery = () => {
   const images = [
     {
       id: 1,
-      src: '/images/projects/rtsp-recorder.jpg',
+      src: 'https://via.placeholder.com/400x300/00E5FF/000000?text=RTSP+Recorder',
       title: 'RTSP Loop Recorder Interface',
       description: 'Main interface of the Android application for recording RTSP video streams',
       category: 'Mobile App',
@@ -30,7 +30,7 @@ const Gallery = () => {
     },
     {
       id: 2,
-      src: '/images/projects/self-hosted-platform.jpg',
+      src: 'https://via.placeholder.com/400x300/00E5FF/000000?text=Self-Hosted+Platform',
       title: 'Self-Hosted Video Meeting',
       description: 'Dashboard of the self-hosted video conferencing platform',
       category: 'Web App',
@@ -38,7 +38,7 @@ const Gallery = () => {
     },
     {
       id: 3,
-      src: '/images/projects/getgo-app.jpg',
+      src: 'https://via.placeholder.com/400x300/00E5FF/000000?text=GetGo+App',
       title: 'GetGo Web Application',
       description: 'Task management interface with productivity features',
       category: 'Web App',
@@ -46,7 +46,7 @@ const Gallery = () => {
     },
     {
       id: 4,
-      src: '/images/certifications/aws-certification.jpg',
+      src: 'https://via.placeholder.com/400x300/00E5FF/000000?text=AWS+Certification',
       title: 'AWS Certification',
       description: 'AWS Certified Developer - Associate certification',
       category: 'Certification',
@@ -54,7 +54,7 @@ const Gallery = () => {
     },
     {
       id: 5,
-      src: '/images/portfolio/desktop-view.jpg',
+      src: 'https://via.placeholder.com/400x300/00E5FF/000000?text=Portfolio+Desktop',
       title: 'Portfolio Desktop View',
       description: 'Desktop version of the PortfolioOS interface',
       category: 'Portfolio',
@@ -62,7 +62,7 @@ const Gallery = () => {
     },
     {
       id: 6,
-      src: '/images/portfolio/mobile-view.jpg',
+      src: 'https://via.placeholder.com/400x300/00E5FF/000000?text=Portfolio+Mobile',
       title: 'Portfolio Mobile View',
       description: 'Mobile responsive design of the PortfolioOS',
       category: 'Portfolio',
@@ -70,7 +70,7 @@ const Gallery = () => {
     },
     {
       id: 7,
-      src: '/images/projects/ml-project.jpg',
+      src: 'https://via.placeholder.com/400x300/00E5FF/000000?text=ML+Project',
       title: 'Machine Learning Project',
       description: 'Visualization of a machine learning model output',
       category: 'AI/ML',
@@ -78,7 +78,7 @@ const Gallery = () => {
     },
     {
       id: 8,
-      src: '/images/projects/docker-deployment.jpg',
+      src: 'https://via.placeholder.com/400x300/00E5FF/000000?text=Docker+Deployment',
       title: 'Docker Deployment',
       description: 'Containerized application deployment using Docker',
       category: 'DevOps',

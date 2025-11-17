@@ -1,0 +1,4 @@
+- [x] Fix syntax errors in src/contexts/window-context.tsx (complete initialAppsData)
+- [x] Fix toggleFavorite in src/components/content/gallery.tsx
+- [x] Fix links in src/components/content/projects.tsx
+- [x] Use placeholders for missing images in src/components/content/about.tsx and src/components/content/gallery.tsx
