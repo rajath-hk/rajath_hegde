@@ -15,13 +15,17 @@ const BootScreen = ({ onComplete }: BootScreenProps) => {
 
   const bootMessages = [
     'Initializing system...',
-    'Loading kernel...',
+    'Loading kernel modules...',
     'Mounting filesystems...',
-    'Loading services...',
+    'Starting system services...',
     'Loading user profile...',
-    'Preparing desktop environment...',
+    'Initializing desktop environment...',
+    'Loading applications...',
+    'Configuring network...',
+    'Setting up audio...',
+    'Preparing workspace...',
     'Welcome to PortfolioOS',
-    'Starting up...'
+    'System ready!'
   ];
 
   useEffect(() => {

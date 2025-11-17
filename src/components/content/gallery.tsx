@@ -146,10 +146,11 @@ const Gallery = () => {
                 onClick={() => setSelectedImage(image.id)}
               >
                 <div className="relative aspect-video">
-                  <img 
-                    src={image.src} 
+                  <img
+                    src={image.src}
                     alt={image.title}
                     className="w-full h-full object-cover"
+                    onError={(e) => { e.currentTarget.src = '/logo.png'; }}
                   />
                   <Button
                     variant="secondary"
@@ -192,10 +193,11 @@ const Gallery = () => {
                 onClick={() => setSelectedImage(image.id)}
               >
                 <div className="w-16 h-16 rounded overflow-hidden mr-4">
-                  <img 
-                    src={image.src} 
+                  <img
+                    src={image.src}
                     alt={image.title}
                     className="w-full h-full object-cover"
+                    onError={(e) => { e.currentTarget.src = '/logo.png'; }}
                   />
                 </div>
                 <div className="flex-1 min-w-0">
@@ -257,10 +259,11 @@ const Gallery = () => {
             </Button>
             
             <div className="relative">
-              <img 
-                src={images.find(img => img.id === selectedImage)?.src || ''} 
+              <img
+                src={images.find(img => img.id === selectedImage)?.src || ''}
                 alt={images.find(img => img.id === selectedImage)?.title || ''}
                 className="max-h-[80vh] w-auto mx-auto"
+                onError={(e) => { e.currentTarget.src = '/logo.png'; }}
               />
             </div>
             

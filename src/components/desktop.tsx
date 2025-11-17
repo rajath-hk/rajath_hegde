@@ -15,6 +15,8 @@ const Desktop = () => {
   const desktopRef = useRef<HTMLDivElement>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
+  const [wallpaper, setWallpaper] = useState('/images/wallpaper.jpg');
 
   // Check if we're on mobile
   useEffect(() => {
@@ -49,7 +51,39 @@ const Desktop = () => {
     }
   };
 
-  // Stable, deterministic ordering: sort by row (y), then column (x), then title
+  // Handle right-click context menu
+  const handleContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setContextMenu({ x: e.clientX, y: e.clientY });
+  };
+
+  // Handle desktop click to close context menu
+  const handleDesktopClick = () => {
+    setContextMenu(null);
+  };
+
+  // Context menu actions
+  const handleRefresh = () => {
+    window.location.reload();
+    setContextMenu(null);
+  };
+
+  const handleNewFolder = () => {
+    // Implementation for creating new folder on desktop
+    console.log('Create new folder on desktop');
+    setContextMenu(null);
+  };
+
+  const handleChangeWallpaper = () => {
+    // Cycle through wallpapers
+    const wallpapers = ['/images/wallpaper.jpg', '/images/wallpaper2.jpg', '/images/wallpaper3.jpg'];
+    const currentIndex = wallpapers.indexOf(wallpaper);
+    const nextIndex = (currentIndex + 1) % wallpapers.length;
+    setWallpaper(wallpapers[nextIndex]);
+    setContextMenu(null);
+  };
+
+  // Stable, deterministic ordering: sort by order first, then row (y), then column (x), then title
   const sortedIcons = [...desktopIcons].sort((a, b) => {
     const ao = a.order ?? Infinity;
     const bo = b.order ?? Infinity;
@@ -64,11 +98,14 @@ const Desktop = () => {
   });
 
   return (
-    <div 
+    <div
       ref={desktopRef}
       className={`relative w-full h-screen ${
         isMobile ? 'overflow-y-scroll' : 'overflow-y-auto'
       } bg-cover bg-center`}
+      style={{ backgroundImage: `url(${wallpaper})` }}
+      onContextMenu={handleContextMenu}
+      onClick={handleDesktopClick}
     >
       <style jsx>{`
         div::-webkit-scrollbar {
@@ -142,6 +179,33 @@ const Desktop = () => {
         >
           <RefreshCw className="w-5 h-5" />
         </button>
+      )}
+
+      {/* Desktop Context Menu */}
+      {contextMenu && !isMobile && (
+        <div
+          className="fixed bg-background/90 backdrop-blur-xl border rounded shadow-lg py-1 z-50"
+          style={{ left: contextMenu.x, top: contextMenu.y }}
+        >
+          <button
+            className="w-full text-left px-3 py-1 hover:bg-accent"
+            onClick={handleRefresh}
+          >
+            Refresh
+          </button>
+          <button
+            className="w-full text-left px-3 py-1 hover:bg-accent"
+            onClick={handleNewFolder}
+          >
+            New Folder
+          </button>
+          <button
+            className="w-full text-left px-3 py-1 hover:bg-accent"
+            onClick={handleChangeWallpaper}
+          >
+            Change Wallpaper
+          </button>
+        </div>
       )}
     </div>
   );

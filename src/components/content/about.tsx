@@ -15,6 +15,7 @@ const AboutContent = () => {
             fill
             className="object-cover"
             data-ai-hint="person portrait"
+            onError={(e) => { e.currentTarget.src = '/logo.png'; }}
           />
         </div>
         <div className="flex-1 space-y-4">

@@ -29,6 +29,11 @@ const Terminal = () => {
       '  clear        - Clear the terminal screen',
       '  date         - Show current date and time',
       '  neofetch     - Display system information',
+      '  ls           - List directory contents',
+      '  pwd          - Print working directory',
+      '  whoami       - Display current user',
+      '  echo         - Display text',
+      '  cat          - Display file contents',
     ],
     about: () => [
       `${portfolioConfig.personal?.name || 'Name not set'} - ${portfolioConfig.personal?.title || 'Title not set'}`,
@@ -85,11 +90,62 @@ const Terminal = () => {
       '  OS: PortfolioOS 1.0.0',
       '  Shell: Web Terminal',
       '  Theme: Modern Dark',
-      `  Location: ${portfolioConfig.personal?.location || 'Unknown'}`
+      `  Location: ${portfolioConfig.personal?.location || 'Unknown'}`,
+      `  Uptime: ${Math.floor(Math.random() * 24)}h ${Math.floor(Math.random() * 60)}m`,
+      `  Memory: ${Math.floor(Math.random() * 8) + 8}GB / 16GB`,
+      `  CPU: Intel Core i7-9750H @ 2.60GHz`
     ],
     clear: () => {
       setHistory([]);
       return [];
+    },
+    ls: () => [
+      'Desktop/',
+      'Documents/',
+      'Projects/',
+      'Downloads/',
+      'Applications/',
+      'README.md',
+      'package.json'
+    ],
+    pwd: () => [
+      '/home/portfolio'
+    ],
+    whoami: () => [
+      portfolioConfig.personal?.name || 'portfolio-user'
+    ],
+    echo: (...args: string[]) => [
+      args.join(' ')
+    ],
+    cat: (file: string) => {
+      const fileContents: { [key: string]: string[] } = {
+        'README.md': [
+          '# PortfolioOS',
+          '',
+          'A modern, interactive portfolio built as a desktop operating system.',
+          '',
+          '## Features',
+          '- Desktop environment with windows',
+          '- File explorer',
+          '- Terminal emulator',
+          '- Project showcase',
+          '- Contact form'
+        ],
+        'package.json': [
+          '{',
+          '  "name": "portfolio-os",',
+          '  "version": "1.0.0",',
+          '  "description": "Interactive portfolio as desktop OS",',
+          '  "main": "next.config.js",',
+          '  "scripts": {',
+          '    "dev": "next dev",',
+          '    "build": "next build",',
+          '    "start": "next start"',
+          '  }',
+          '}'
+        ]
+      };
+      return fileContents[file] || [`cat: ${file}: No such file or directory`];
     }
   };
 

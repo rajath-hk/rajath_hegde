@@ -1,16 +1,20 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useWindows } from '@/contexts/window-context';
 import { Button } from '@/components/ui/button';
-import { 
-  Search, 
-  Bell, 
+import {
+  Search,
+  Bell,
   ChevronDown,
   User,
   Settings,
   Power,
-  Minimize2
+  Minimize2,
+  Volume2,
+  VolumeX,
+  Wifi,
+  Battery
 } from 'lucide-react';
 import StartMenu from '@/components/start-menu';
 import SystemSearch from '@/components/system-search';
@@ -19,12 +23,41 @@ const TopBar = () => {
   const { windows, closeWindow, toggleMinimize, desktopIcons, openWindow } = useWindows();
   const [showStartMenu, setShowStartMenu] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
+  const [batteryLevel, setBatteryLevel] = useState(85);
+  const [isOnline, setIsOnline] = useState(true);
 
   // Helper: find an icon/app by id and open it (avoids repeating guarded logic)
   const openIconById = (id: string) => {
     const app = (desktopIcons || []).find(i => i.id === id);
     if (app) openWindow(app);
   };
+
+  // Simulate battery level changes
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setBatteryLevel(prev => {
+        const change = Math.random() > 0.5 ? 1 : -1;
+        return Math.max(0, Math.min(100, prev + change));
+      });
+    }, 30000); // Update every 30 seconds
+
+    return () => clearInterval(interval);
+  }, []);
+
+  // Monitor online status
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
 
   // Filter minimized windows for the dock
   const minimizedWindows = windows.filter(win => win.isMinimized);
@@ -62,44 +95,66 @@ const TopBar = () => {
         </div>
         
         <div className="flex items-center space-x-1">
-          <Button 
-            variant="ghost" 
-            size="sm" 
+          <Button
+            variant="ghost"
+            size="sm"
             className="h-6 w-6 p-0 hover:bg-accent"
             onClick={() => setShowSearch(true)}
           >
             <Search className="w-3 h-3" />
           </Button>
-          
-          <Button 
-            variant="ghost" 
-            size="sm" 
+
+          <Button
+            variant="ghost"
+            size="sm"
             className="h-6 w-6 p-0 hover:bg-accent"
           >
             <Bell className="w-3 h-3" />
           </Button>
-          
-          <Button 
-            variant="ghost" 
-            size="sm" 
+
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-6 w-6 p-0 hover:bg-accent"
+            onClick={() => setIsMuted(!isMuted)}
+          >
+            {isMuted ? <VolumeX className="w-3 h-3" /> : <Volume2 className="w-3 h-3" />}
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-6 w-6 p-0 hover:bg-accent"
+          >
+            <Wifi className={`w-3 h-3 ${isOnline ? 'text-green-500' : 'text-red-500'}`} />
+          </Button>
+
+          <div className="flex items-center space-x-1">
+            <Battery className="w-3 h-3" />
+            <span className="text-xs">{batteryLevel}%</span>
+          </div>
+
+          <Button
+            variant="ghost"
+            size="sm"
             className="h-6 w-6 p-0 hover:bg-accent"
             onClick={() => openIconById('about')}
           >
             <User className="w-3 h-3" />
           </Button>
-          
-          <Button 
-            variant="ghost" 
-            size="sm" 
+
+          <Button
+            variant="ghost"
+            size="sm"
             className="h-6 w-6 p-0 hover:bg-accent"
             onClick={() => openIconById('settings')}
           >
             <Settings className="w-3 h-3" />
           </Button>
-          
-          <Button 
-            variant="ghost" 
-            size="sm" 
+
+          <Button
+            variant="ghost"
+            size="sm"
             className="h-6 w-6 p-0 hover:bg-accent"
             onClick={() => openIconById('legal')}
           >

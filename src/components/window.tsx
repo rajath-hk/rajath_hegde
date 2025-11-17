@@ -5,7 +5,7 @@ import type { WindowInstance } from '@/types';
 import { useWindows } from '@/contexts/window-context';
 import { cn } from '@/lib/utils';
 import { X, Minus, Square, Minimize } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 type WindowProps = WindowInstance;
 
@@ -237,29 +237,33 @@ const Window = (props: WindowProps) => {
 
   return (
     <motion.div
-      ref={windowRef}
-      className={cn(
-        "fixed bg-background border rounded-lg shadow-2xl overflow-hidden flex flex-col transition-shadow",
-        isFocused ? "border-blue-500 shadow-lg" : "border-gray-300 dark:border-gray-600"
-      )}
-      style={{
-        width: size.width,
-        height: size.height,
-        zIndex,
-        left: position.x,
-        top: position.y,
-        willChange: 'transform'
-      }}
-      onMouseDown={(e) => {
-        e.stopPropagation();
-        focusWindow(id);
-      }}
-      onTouchStart={(e) => {
-        e.stopPropagation();
-        focusWindow(id);
-        handleDragStart(e);
-      }}
-    >
+        ref={windowRef}
+        className={cn(
+          "fixed bg-background border rounded-lg shadow-2xl overflow-hidden flex flex-col transition-shadow",
+          isFocused ? "border-blue-500 shadow-lg" : "border-gray-300 dark:border-gray-600"
+        )}
+        style={{
+          width: size.width,
+          height: size.height,
+          zIndex,
+          left: position.x,
+          top: position.y,
+          willChange: 'transform'
+        }}
+        initial={{ scale: 0.8, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.8, opacity: 0 }}
+        transition={{ duration: 0.2 }}
+        onMouseDown={(e) => {
+          e.stopPropagation();
+          focusWindow(id);
+        }}
+        onTouchStart={(e) => {
+          e.stopPropagation();
+          focusWindow(id);
+          handleDragStart(e);
+        }}
+      >
       {/* Window Header */}
       <div 
         ref={headerRef}

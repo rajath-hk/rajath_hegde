@@ -19,30 +19,65 @@ const NotificationCenter = () => {
   const { windows } = useWindows();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isOpen, setIsOpen] = useState(false);
+  const [notificationHistory, setNotificationHistory] = useState<Notification[]>([]);
 
-  // Add some default notifications
+  // Load notifications from localStorage and add defaults
   useEffect(() => {
-    const defaultNotifications: Notification[] = [
-      {
-        id: '1',
-        title: 'Welcome',
-        message: 'Thanks for visiting my portfolio!',
-        timestamp: new Date(),
-        read: false,
-        type: 'info'
-      },
-      {
-        id: '2',
-        title: 'New Feature',
-        message: 'You can now drag and resize windows',
-        timestamp: new Date(Date.now() - 3600000),
-        read: false,
-        type: 'info'
+    if (typeof window === 'undefined') return;
+
+    const savedNotifications = localStorage.getItem('portfolio-notifications');
+    const savedHistory = localStorage.getItem('portfolio-notification-history');
+
+    if (savedNotifications) {
+      try {
+        const parsed = JSON.parse(savedNotifications);
+        setNotifications(parsed.map((n: any) => ({ ...n, timestamp: new Date(n.timestamp) })));
+      } catch (e) {
+        console.warn('Failed to load notifications from localStorage');
       }
-    ];
-    
-    setNotifications(defaultNotifications);
+    } else {
+      // Add default notifications if none exist
+      const defaultNotifications: Notification[] = [
+        {
+          id: '1',
+          title: 'Welcome',
+          message: 'Thanks for visiting my portfolio!',
+          timestamp: new Date(),
+          read: false,
+          type: 'info'
+        },
+        {
+          id: '2',
+          title: 'New Feature',
+          message: 'You can now drag and resize windows',
+          timestamp: new Date(Date.now() - 3600000),
+          read: false,
+          type: 'info'
+        }
+      ];
+      setNotifications(defaultNotifications);
+    }
+
+    if (savedHistory) {
+      try {
+        const parsed = JSON.parse(savedHistory);
+        setNotificationHistory(parsed.map((n: any) => ({ ...n, timestamp: new Date(n.timestamp) })));
+      } catch (e) {
+        console.warn('Failed to load notification history from localStorage');
+      }
+    }
   }, []);
+
+  // Save notifications to localStorage
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    localStorage.setItem('portfolio-notifications', JSON.stringify(notifications));
+  }, [notifications]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    localStorage.setItem('portfolio-notification-history', JSON.stringify(notificationHistory));
+  }, [notificationHistory]);
 
   // Add a notification when a new window is opened
   useEffect(() => {
@@ -86,6 +121,10 @@ const NotificationCenter = () => {
   };
 
   const clearNotification = (id: string) => {
+    const notificationToRemove = notifications.find(n => n.id === id);
+    if (notificationToRemove) {
+      setNotificationHistory(prev => [notificationToRemove, ...prev]);
+    }
     setNotifications(prev => prev.filter(notification => notification.id !== id));
   };
 
@@ -155,7 +194,17 @@ const NotificationCenter = () => {
             <div className="max-h-96 overflow-y-auto">
               {notifications.length === 0 ? (
                 <div className="p-8 text-center text-muted-foreground">
-                  No notifications
+                  <p>No notifications</p>
+                  {notificationHistory.length > 0 && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="mt-2"
+                      onClick={() => setNotifications(notificationHistory.slice(0, 5))}
+                    >
+                      Restore recent notifications
+                    </Button>
+                  )}
                 </div>
               ) : (
                 notifications.map((notification) => (
