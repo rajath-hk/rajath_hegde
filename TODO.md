@@ -1,37 +1,32 @@
-# Portfolio OS UI/UX and Feature Improvements
+# TODO List for Cleanup and Feature Implementation
 
-## Desktop and Interaction Improvements
-- [ ] Implement "New Folder" creation and folder management on desktop.
-- [ ] Add desktop widgets (clock, calendar, weather, system info) as movable components.
-- [ ] Enable drag-and-drop for desktop icons and windows with snapping support.
-- [ ] Add wallpaper upload feature and dynamic wallpaper slideshow mode.
-- [ ] Enhance icon labels with tooltips and better accessibility.
+## Light Cleanup
+- [x] Check and remove unused imports in key components: desktop-icon.tsx, desktop.tsx, window-context.tsx
+- [ ] (Done) No unused imports found in examined components.
 
-## Theming and Personalization
-- [ ] Add custom color pickers and font selection for themes.
-- [ ] Add additional sound customization for system alerts and notifications.
+## Feature Implementations
 
-## Accessibility and Usability
-- [ ] Improve keyboard navigation and allow customizable keyboard shortcuts.
-- [ ] Add screen reader support with appropriate ARIA roles and attributes.
-- [ ] Provide onboarding walkthrough or tutorial for new users.
+### New Folder Creation
+- [ ] Wire Desktop context menu "New Folder" option to call createNewFolder from window context.
+- [ ] Ensure new folder icon appears on desktop at proper position.
+- [ ] Configure folder to open File Explorer content on double click.
 
-## Notifications and System Monitoring
-- [ ] Add interactive notifications with action buttons (reply, dismiss).
-- [ ] Implement a notifications history or notification center.
-- [ ] Add a system monitor or mini task manager in taskbar or notification center.
+### Drag and Drop Improvements
+- [ ] Review drag and drop interaction on DesktopIcon and Desktop.
+- [ ] Fix any drag drop inconsistencies or add snap-to-grid functionality.
 
-## Settings and Profiles
-- [ ] Add user profile management with export/import settings for backup.
-- [ ] Enhance power management options (e.g., configurable hibernate timer).
-
-## General Feature Enhancements
-- [ ] Improve animations and transitions for windows and desktop icons.
-- [ ] Enhance system-wide search with advanced filters and fuzzy matching.
+### Further TODOs from TODO.md file
+- [ ] Desktop widgets (clock, calendar, weather, system info)
+- [ ] Wallpaper upload & dynamic wallpaper slideshow
+- [ ] Accessibility enhancements
+- [ ] Notification center and system monitor
+- [ ] User profile management and export/import
+- [ ] Animation improvements
+- [ ] Enhanced system-wide search
 
 ---
 
-Next Steps:
-- Start with implementing "New Folder" functionality and basic drag-and-drop support.
-- Incrementally develop features ensuring UI consistency and accessibility.
-- Validate each implemented feature with user feedback and iterate.
+# Next Steps
+- Implement New Folder creation wiring in Desktop component
+- Test and verify folder creation and opening
+- Then implement other TODO items incrementally

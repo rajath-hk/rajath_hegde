@@ -71,6 +71,7 @@ interface WindowContextType {
   updateWindowSize: (id: string, width: number, height: number) => void;
   updateIconPosition: (id: string, x: number, y: number) => void;
   resetIconPositions: () => void;
+  createNewFolder: () => void;
 }
 
 const WindowContext = createContext<WindowContextType | undefined>(undefined);
@@ -366,36 +367,6 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
-  // Create a new folder on desktop with default properties
-  const createNewFolder = () => {
-    setDesktopIcons((prev) => {
-      // Find max id among existing new folders
-      const folderIds = prev
-        .filter((icon) => icon.id.startsWith('new-folder-'))
-        .map((icon) => parseInt(icon.id.replace('new-folder-', ''), 10))
-        .filter((num) => !isNaN(num));
-      const maxId = folderIds.length > 0 ? Math.max(...folderIds) : 0;
-      const newIdNumber = maxId + 1;
-      const newFolderId = `new-folder-${newIdNumber}`;
-      const defaultX = 20 + newIdNumber * 40;
-      const defaultY = 50 + newIdNumber * 40;
-
-      const newFolder: AppConfig = {
-        id: newFolderId,
-        title: `New Folder ${newIdNumber}`,
-        icon: Folder,
-        content: createContentElement('explorer'), // open file explorer for folder
-        defaultSize: { width: 500, height: 400 },
-        x: defaultX,
-        y: defaultY,
-        order: prev.length + 1,
-      };
-
-      const updatedIcons = [...prev, newFolder];
-      saveIconsState(updatedIcons);
-      return updatedIcons;
-    });
-  };
 
   // Create a new folder on desktop with default properties
   const createNewFolder = () => {
@@ -443,74 +414,6 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
         createNewFolder,
       }}
     >
-      {children}
-    </WindowContext.Provider>
-  );
-};
-
-+  // Create a new folder on desktop with default properties
-+  const createNewFolder = () => {
-+    const folderIds = desktopIcons
-+      .filter(icon => icon.id.startsWith('new-folder-'))
-+      .map(icon => parseInt(icon.id.replace('new-folder-', ''), 10))
-+      .filter(num => !isNaN(num));
-+    const maxId = folderIds.length > 0 ? Math.max(...folderIds) : 0;
-+    const newIdNumber = maxId + 1;
-+    const newFolderId = `new-folder-${newIdNumber}`;
-+    const defaultX = 20 + newIdNumber * 40;
-+    const defaultY = 50 + newIdNumber * 40;
-+
-+    const newFolder: AppConfig = {
-+      id: newFolderId,
-+      title: `New Folder ${newIdNumber}`,
-+      icon: Folder,
-+      content: createContentElement('explorer'), // open file explorer for folder
-+      defaultSize: { width: 500, height: 400 },
-+      x: defaultX,
-+      y: defaultY,
-+      order: desktopIcons.length + 1,
-+    };
-+    setDesktopIcons(prev => {
-+      const updatedIcons = [...prev, newFolder];
-+      saveIconsState(updatedIcons);
-+      return updatedIcons;
-+    });
-+  };
-
-  return (
-    <WindowContext.Provider value={{
-      windows,
-      desktopIcons,
-      openWindow,
-      closeWindow,
-      focusWindow,
-      toggleMinimize,
-      toggleMaximize,
-      updateWindowPosition,
-      updateWindowSize,
-      updateIconPosition,
-      resetIconPositions,
-+      createNewFolder,
-    }}>
-      {children}
-    </WindowContext.Provider>
-  );
-};
-
-  return (
-    <WindowContext.Provider value={{
-      windows,
-      desktopIcons,
-      openWindow,
-      closeWindow,
-      focusWindow,
-      toggleMinimize,
-      toggleMaximize,
-      updateWindowPosition,
-      updateWindowSize,
-      updateIconPosition,
-      resetIconPositions,
-    }}>
       {children}
     </WindowContext.Provider>
   );

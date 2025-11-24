@@ -11,7 +11,7 @@ import {
 } from 'lucide-react';
 
 const Desktop = () => {
-  const { windows, desktopIcons, resetIconPositions, openWindow } = useWindows();
+  const { windows, desktopIcons, resetIconPositions, openWindow, createNewFolder } = useWindows();
   const desktopRef = useRef<HTMLDivElement>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -69,8 +69,7 @@ const Desktop = () => {
   };
 
   const handleNewFolder = () => {
-    // Implementation for creating new folder on desktop
-    console.log('Create new folder on desktop');
+    createNewFolder();
     setContextMenu(null);
   };
 
