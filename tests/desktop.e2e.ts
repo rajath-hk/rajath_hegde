@@ -49,15 +49,15 @@ test.describe('Desktop and Window Management E2E Tests', () => {
     await expect(win).toBeVisible();
 
     // Minimize the window
-    await page.click(`${win.selector} button[aria-label="Minimize"]`);
+    await win.locator('button[aria-label="Minimize"]').click();
     await expect(win).toHaveClass(/minimized/);
 
     // Maximize the window
-    await page.click(`${win.selector} button[aria-label="Maximize"]`);
+    await win.locator('button[aria-label="Maximize"]').click();
     await expect(win).toHaveClass(/maximized/);
 
     // Close the window
-    await page.click(`${win.selector} button[aria-label="Close"]`);
+    await win.locator('button[aria-label="Close"]').click();
     await expect(win).not.toBeVisible();
   });
 
