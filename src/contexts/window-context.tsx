@@ -72,6 +72,7 @@ interface WindowContextType {
   updateIconPosition: (id: string, x: number, y: number) => void;
   resetIconPositions: () => void;
   createNewFolder: () => void;
+  reorderIconsToFitScreen: (containerWidth: number, containerHeight: number) => void;
 }
 
 const WindowContext = createContext<WindowContextType | undefined>(undefined);
@@ -397,6 +398,30 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
+  // Reorder icons so that they fit within the given container width and height
+  const reorderIconsToFitScreen = (containerWidth: number, containerHeight: number) => {
+    const iconSize = 90; // Approximate icon width and height in px including padding and margin
+    const iconsPerRow = Math.floor(containerWidth / iconSize);
+    if (iconsPerRow === 0) return; // Prevent division by zero or invalid layout
+
+    const newIcons = desktopIcons.map((icon, index) => {
+      const row = Math.floor(index / iconsPerRow);
+      const col = index % iconsPerRow;
+
+      const x = col * iconSize + 20; // 20px padding from left
+      const y = row * iconSize + 50; // 50px padding from top
+
+      return {
+        ...icon,
+        x,
+        y,
+      };
+    });
+
+    setDesktopIcons(newIcons);
+    saveIconsState(newIcons);
+  };
+
   return (
     <WindowContext.Provider
       value={{
@@ -412,6 +437,7 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
         updateIconPosition,
         resetIconPositions,
         createNewFolder,
+        reorderIconsToFitScreen,
       }}
     >
       {children}

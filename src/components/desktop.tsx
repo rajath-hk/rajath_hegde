@@ -11,7 +11,7 @@ import {
 } from 'lucide-react';
 
 const Desktop = () => {
-  const { windows, desktopIcons, resetIconPositions, openWindow, createNewFolder } = useWindows();
+  const { windows, desktopIcons, resetIconPositions, openWindow, createNewFolder, reorderIconsToFitScreen } = useWindows();
   const desktopRef = useRef<HTMLDivElement>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -169,15 +169,34 @@ const Desktop = () => {
         </button>
       )}
       
+
       {/* Reset icon positions button - only show on desktop */}
       {!isMobile && (
-        <button
-          onClick={resetIconPositions}
-          className="fixed bottom-20 left-6 bg-black/50 dark:bg-white/20 backdrop-blur-lg text-white p-2 rounded-full shadow-lg hover:bg-black/70 dark:hover:bg-white/30 transition-all z-30"
-          aria-label="Reset icon positions"
-        >
-          <RefreshCw className="w-5 h-5" />
-        </button>
+        <>
+          <button
+            onClick={resetIconPositions}
+            className="fixed bottom-20 left-6 bg-black/50 dark:bg-white/20 backdrop-blur-lg text-white p-2 rounded-full shadow-lg hover:bg-black/70 dark:hover:bg-white/30 transition-all z-30"
+            aria-label="Reset icon positions"
+          >
+            <RefreshCw className="w-5 h-5" />
+          </button>
+
+          {/* Reorder icons button */}
+          <button
+            onClick={() => {
+              if (desktopRef.current) {
+                const { clientWidth, clientHeight } = desktopRef.current;
+                reorderIconsToFitScreen(clientWidth, clientHeight);
+              }
+            }}
+            className="fixed bottom-20 left-20 bg-black/50 dark:bg-white/20 backdrop-blur-lg text-white p-2 rounded-full shadow-lg hover:bg-black/70 dark:hover:bg-white/30 transition-all z-30"
+            aria-label="Reorder icons to fit screen"
+            title="Reorder icons to fit screen"
+          >
+            {/* Use icon similar to Refresh (custom SVG or text) */}
+            <span className="font-bold select-none">↹</span>
+          </button>
+        </>
       )}
 
       {/* Desktop Context Menu */}
