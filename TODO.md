@@ -1,32 +1,39 @@
-# TODO List for Cleanup and Feature Implementation
+# TODO List for Cleanup and Feature Implementation - Updated
 
-## Light Cleanup
-- [x] Check and remove unused imports in key components: desktop-icon.tsx, desktop.tsx, window-context.tsx
-- [ ] (Done) No unused imports found in examined components.
+## Accessibility Enhancements
+- [ ] Audit key UI components (button, input, checkbox, radio, switch, dialog, tabs, tooltip).
+- [ ] Add ARIA attributes for custom behaviors.
+- [ ] Enhance keyboard navigation and focus management.
+- [ ] Test accessibility with tools and screen readers.
+- [ ] Fix accessibility issues found in the app coverage.
 
-## Feature Implementations
+## Notification Center and System Monitor
+- [ ] Review and fix minor UI or accessibility issues in notification-center.tsx.
+- [ ] Improve animation smoothness with framer-motion if needed.
+- [ ] Ensure system monitor UX is clear and accessible.
 
-### New Folder Creation
-- [ ] Wire Desktop context menu "New Folder" option to call createNewFolder from window context.
-- [ ] Ensure new folder icon appears on desktop at proper position.
-- [ ] Configure folder to open File Explorer content on double click.
+## User Profile Management
+- [ ] Ensure accessibility compliance on form fields, buttons, and interactions.
+- [ ] Improve import/export UX and error handling if needed.
 
-### Drag and Drop Improvements
-- [ ] Review drag and drop interaction on DesktopIcon and Desktop.
-- [ ] Fix any drag drop inconsistencies or add snap-to-grid functionality.
+## Animation Improvements
+- [ ] Review all framer-motion effects across app components.
+- [ ] Add smooth transitions and performance tweaks.
 
-### Further TODOs from TODO.md file
-- [ ] Desktop widgets (clock, calendar, weather, system info)
-- [ ] Wallpaper upload & dynamic wallpaper slideshow
-- [ ] Accessibility enhancements
-- [ ] Notification center and system monitor
-- [ ] User profile management and export/import
-- [ ] Animation improvements
-- [ ] Enhanced system-wide search
+## Testing and Finalization
+- [ ] Perform comprehensive accessibility testing.
+- [ ] Conduct UI and animation functionality tests.
+- [ ] Fix bugs and improve performance.
+- [ ] Update documentation and README if necessary.
 
 ---
 
-# Next Steps
-- Implement New Folder creation wiring in Desktop component
-- Test and verify folder creation and opening
-- Then implement other TODO items incrementally
+# Completed Tasks
+- [x] Basic accessibility audit of key UI components (button, input, label, checkbox, switch, dialog, tabs).
+- [x] Notification center core implementation and system monitor functional.
+- [x] User profile management basic functionality.
+
+# Next steps
+- Begin accessibility enhancements on UI components and pages.
+- Refine notification center and animations.
+- Iterate based on testing feedback.

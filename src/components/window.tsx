@@ -250,10 +250,14 @@ const Window = (props: WindowProps) => {
           top: position.y,
           willChange: 'transform'
         }}
-        initial={{ scale: 0.8, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.8, opacity: 0 }}
-        transition={{ duration: 0.2 }}
+        initial={{ scale: 0.8, opacity: 0, y: 50 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        exit={{ scale: 0.8, opacity: 0, y: 50 }}
+        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+        drag
+        dragConstraints={{ left: 0, top: 0, right: window.innerWidth - size.width, bottom: window.innerHeight - size.height }}
+        dragMomentum={false}
+        onDragEnd={(event, info) => updateWindowPosition(id, info.point.x, info.point.y)}
         onMouseDown={(e) => {
           e.stopPropagation();
           focusWindow(id);
@@ -312,9 +316,14 @@ const Window = (props: WindowProps) => {
       </div>
 
       {/* Window Content */}
-      <div className="flex-grow overflow-auto bg-background">
+      <motion.div 
+        className="flex-grow overflow-auto bg-background"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.3, delay: 0.1 }}
+      >
         {content}
-      </div>
+      </motion.div>
 
       {/* Resize Handles (only on desktop) */}
       {!isMobile && !isMaximized && (

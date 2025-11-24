@@ -10,6 +10,9 @@ import {
   ChevronUp
 } from 'lucide-react';
 
+import WeatherContent from '@/components/content/weather';
+import SystemInfoContent from '@/components/content/system-info';
+
 const Desktop = () => {
   const { windows, desktopIcons, resetIconPositions, openWindow, createNewFolder, reorderIconsToFitScreen } = useWindows();
   const desktopRef = useRef<HTMLDivElement>(null);
@@ -17,6 +20,9 @@ const Desktop = () => {
   const [isMobile, setIsMobile] = useState(false);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
   const [wallpaper, setWallpaper] = useState('/images/wallpaper.jpg');
+  const [userWallpapers, setUserWallpapers] = useState<string[]>([]);
+  const [slideshowEnabled, setSlideshowEnabled] = useState(false);
+  const [currentSlideshowIndex, setCurrentSlideshowIndex] = useState(0);
 
   // Check if we're on mobile
   useEffect(() => {
@@ -28,6 +34,21 @@ const Desktop = () => {
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
+
+  // Wallpaper slideshow effect
+  useEffect(() => {
+    if (!slideshowEnabled || userWallpapers.length === 0) return;
+
+    const interval = setInterval(() => {
+      setCurrentSlideshowIndex(prevIndex => {
+        const nextIndex = (prevIndex + 1) % userWallpapers.length;
+        setWallpaper(userWallpapers[nextIndex]);
+        return nextIndex;
+      });
+    }, 10000); // Change wallpaper every 10 seconds
+
+    return () => clearInterval(interval);
+  }, [slideshowEnabled, userWallpapers]);
 
   // Handle scroll to top button visibility
   useEffect(() => {
@@ -74,13 +95,61 @@ const Desktop = () => {
   };
 
   const handleChangeWallpaper = () => {
-    // Cycle through wallpapers
+    // Cycle built-in wallpapers only if slideshow off
+    if (slideshowEnabled) {
+      setSlideshowEnabled(false);
+    }
     const wallpapers = ['/images/wallpaper.jpg', '/images/wallpaper2.jpg', '/images/wallpaper3.jpg'];
     const currentIndex = wallpapers.indexOf(wallpaper);
     const nextIndex = (currentIndex + 1) % wallpapers.length;
     setWallpaper(wallpapers[nextIndex]);
     setContextMenu(null);
   };
+
+  // Handle wallpaper upload input change
+  const handleWallpaperUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      const file = files[0];
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        if (event.target?.result) {
+          const imageUrl = event.target.result.toString();
+          setUserWallpapers(prev => {
+            const updated = [...prev, imageUrl];
+            if (!slideshowEnabled) setWallpaper(imageUrl);
+            localStorage.setItem('userWallpapers', JSON.stringify(updated));
+            return updated;
+          });
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+    setContextMenu(null);
+  };
+
+  // Load user wallpapers from localStorage on mount
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const stored = localStorage.getItem('userWallpapers');
+    if (stored) {
+      try {
+        const parsed: string[] = JSON.parse(stored);
+        setUserWallpapers(parsed);
+        if (parsed.length > 0) setWallpaper(parsed[0]);
+      } catch {}
+    }
+    // Load slideshow enabled state
+    const slideshowState = localStorage.getItem('wallpaperSlideshowEnabled');
+    if (slideshowState === 'true') {
+      setSlideshowEnabled(true);
+    }
+  }, []);
+
+  // Store slideshow enabled state on change
+  useEffect(() => {
+    localStorage.setItem('wallpaperSlideshowEnabled', slideshowEnabled ? 'true' : 'false');
+  }, [slideshowEnabled]);
 
   // Stable, deterministic ordering: sort by order first, then row (y), then column (x), then title
   const sortedIcons = [...desktopIcons].sort((a, b) => {
@@ -223,6 +292,18 @@ const Desktop = () => {
           >
             Change Wallpaper
           </button>
+        </div>
+      )}
+
+      {/* Desktop Widgets Area */}
+      {!isMobile && (
+        <div className="fixed top-6 right-6 w-80 max-w-full space-y-4 z-40">
+          <div className="bg-background/80 backdrop-blur-md rounded-lg p-4 shadow-md">
+            <WeatherContent />
+          </div>
+          <div className="bg-background/80 backdrop-blur-md rounded-lg p-4 shadow-md">
+            <SystemInfoContent />
+          </div>
         </div>
       )}
     </div>

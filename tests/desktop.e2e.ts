@@ -61,6 +61,115 @@ test.describe('Desktop and Window Management E2E Tests', () => {
     await expect(win).not.toBeVisible();
   });
 
+  test('notification center opens and displays notifications', async ({ page }) => {
+    // Open notification center
+    await page.click('button[aria-label="Open Notifications"]');
+    const notificationCenter = page.locator('.notification-center');
+    await expect(notificationCenter).toBeVisible();
+
+    // Check for default notifications
+    await expect(notificationCenter.locator('text=Welcome')).toBeVisible();
+    await expect(notificationCenter.locator('text=New Feature')).toBeVisible();
+  });
+
+  test('user profile can be created, edited, exported, and imported', async ({ page }) => {
+    // Open user profile
+    await page.click('button:has-text("User Profile")');
+    const userProfile = page.locator('.user-profile-manager');
+    await expect(userProfile).toBeVisible();
+
+    // Create a new profile
+    await userProfile.locator('button:has-text("Create a Profile")').click();
+    await userProfile.locator('input#name').fill('Test User');
+    await userProfile.locator('input#email').fill('test@example.com');
+    await userProfile.locator('button:has-text("Save Changes")').click();
+
+    // Verify the profile was created
+    await expect(userProfile.locator('text=Test User')).toBeVisible();
+    await expect(userProfile.locator('text=test@example.com')).toBeVisible();
+
+    // Edit the profile
+    await userProfile.locator('button:has-text("Edit Profile")').click();
+    await userProfile.locator('input#name').fill('Test User Edited');
+    await userProfile.locator('button:has-text("Save Changes")').click();
+    await expect(userProfile.locator('text=Test User Edited')).toBeVisible();
+
+    // Export the profile
+    const [download] = await Promise.all([
+      page.waitForEvent('download'),
+      userProfile.locator('button:has-text("Export")').click(),
+    ]);
+    const path = await download.path();
+    expect(path).toBeTruthy();
+
+    // Import the profile
+    await userProfile.locator('input#import-profile').setInputFiles(path);
+    await expect(userProfile.locator('text=Test User Edited')).toBeVisible();
+  });
+
+  test('desktop icons are accessible', async ({ page }) => {
+    const desktopIcon = page.locator('button[aria-label="Open My Story"]');
+    await expect(desktopIcon).toHaveAttribute('role', 'button');
+    await expect(desktopIcon).toHaveAttribute('tabindex', '0');
+  });
+>>>>>>> Stashed changes
+    // Close the window
+    await win.locator('button[aria-label="Close"]').click();
+    await expect(win).not.toBeVisible();
+  });
+
+  test('notification center opens and displays notifications', async ({ page }) => {
+    // Open notification center
+    await page.click('button[aria-label="Open Notifications"]');
+    const notificationCenter = page.locator('.notification-center');
+    await expect(notificationCenter).toBeVisible();
+
+    // Check for default notifications
+    await expect(notificationCenter.locator('text=Welcome')).toBeVisible();
+    await expect(notificationCenter.locator('text=New Feature')).toBeVisible();
+  });
+
+  test('user profile can be created, edited, exported, and imported', async ({ page }) => {
+    // Open user profile
+    await page.click('button:has-text("User Profile")');
+    const userProfile = page.locator('.user-profile-manager');
+    await expect(userProfile).toBeVisible();
+
+    // Create a new profile
+    await userProfile.locator('button:has-text("Create a Profile")').click();
+    await userProfile.locator('input#name').fill('Test User');
+    await userProfile.locator('input#email').fill('test@example.com');
+    await userProfile.locator('button:has-text("Save Changes")').click();
+
+    // Verify the profile was created
+    await expect(userProfile.locator('text=Test User')).toBeVisible();
+    await expect(userProfile.locator('text=test@example.com')).toBeVisible();
+
+    // Edit the profile
+    await userProfile.locator('button:has-text("Edit Profile")').click();
+    await userProfile.locator('input#name').fill('Test User Edited');
+    await userProfile.locator('button:has-text("Save Changes")').click();
+    await expect(userProfile.locator('text=Test User Edited')).toBeVisible();
+
+    // Export the profile
+    const [download] = await Promise.all([
+      page.waitForEvent('download'),
+      userProfile.locator('button:has-text("Export")').click(),
+    ]);
+    const path = await download.path();
+    expect(path).toBeTruthy();
+
+    // Import the profile
+    await userProfile.locator('input#import-profile').setInputFiles(path);
+    await expect(userProfile.locator('text=Test User Edited')).toBeVisible();
+  });
+
+  test('desktop icons are accessible', async ({ page }) => {
+    const desktopIcon = page.locator('button[aria-label="Open My Story"]');
+    await expect(desktopIcon).toHaveAttribute('role', 'button');
+    await expect(desktopIcon).toHaveAttribute('tabindex', '0');
+  });
+
   test('persistence of desktop icons and windows after reload', async ({ page }) => {
     // Create a folder
     await page.click('body', { button: 'right' });
