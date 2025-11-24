@@ -1,4 +1,9 @@
 {
     "IDX.aI.enableInlineCompletion": true,
-    "IDX.aI.enableCodebaseIndexing": true
+    "IDX.aI.enableCodebaseIndexing": true,
+    "Lingma.cloudModelAutoTriggerGenerateLength": "long",
+    "Lingma.cloudModelManualTriggerGenerateLength": "long",
+    "Lingma.localMachineModel": true,
+    "Lingma.localMachineModelInferenceMode": "length",
+    "Lingma.aI Chat.webToolsInAsk/AgentMode": "Auto-execute"
 }

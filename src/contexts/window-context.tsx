@@ -71,8 +71,6 @@ interface WindowContextType {
   updateWindowSize: (id: string, width: number, height: number) => void;
   updateIconPosition: (id: string, x: number, y: number) => void;
   resetIconPositions: () => void;
-  createNewFolder: () => void;
-  reorderIconsToFitScreen: (containerWidth: number, containerHeight: number) => void;
 }
 
 const WindowContext = createContext<WindowContextType | undefined>(undefined);
@@ -358,88 +356,30 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
   };
   
   const resetIconPositions = () => {
-    setDesktopIcons((prevIcons) => {
-      const resetIcons = prevIcons.map((icon) => {
-        const initialIcon = initialAppsData.find((i) => i.id === icon.id);
-        return initialIcon ? { ...icon, x: initialIcon.x, y: initialIcon.y } : icon;
-      });
-      saveIconsState(resetIcons);
-      return resetIcons;
+    setDesktopIcons(prevIcons => {
+        const resetIcons = prevIcons.map(icon => {
+            const initialIcon = initialAppsData.find(i => i.id === icon.id);
+            return initialIcon ? { ...icon, x: initialIcon.x, y: initialIcon.y } : icon;
+        });
+        saveIconsState(resetIcons);
+        return resetIcons;
     });
-  };
-
-
-  // Create a new folder on desktop with default properties
-  const createNewFolder = () => {
-    const folderIds = desktopIcons
-      .filter((icon) => icon.id.startsWith('new-folder-'))
-      .map((icon) => parseInt(icon.id.replace('new-folder-', ''), 10))
-      .filter((num) => !isNaN(num));
-    const maxId = folderIds.length > 0 ? Math.max(...folderIds) : 0;
-    const newIdNumber = maxId + 1;
-    const newFolderId = `new-folder-${newIdNumber}`;
-    const defaultX = 20 + newIdNumber * 40;
-    const defaultY = 50 + newIdNumber * 40;
-
-    const newFolder: AppConfig = {
-      id: newFolderId,
-      title: `New Folder ${newIdNumber}`,
-      icon: Folder,
-      content: createContentElement('explorer'), // open file explorer for folder
-      defaultSize: { width: 500, height: 400 },
-      x: defaultX,
-      y: defaultY,
-      order: desktopIcons.length + 1,
-    };
-    setDesktopIcons((prev) => {
-      const updatedIcons = [...prev, newFolder];
-      saveIconsState(updatedIcons);
-      return updatedIcons;
-    });
-  };
-
-  // Reorder icons so that they fit within the given container width and height
-  const reorderIconsToFitScreen = (containerWidth: number, containerHeight: number) => {
-    const iconSize = 90; // Approximate icon width and height in px including padding and margin
-    const iconsPerRow = Math.floor(containerWidth / iconSize);
-    if (iconsPerRow === 0) return; // Prevent division by zero or invalid layout
-
-    const newIcons = desktopIcons.map((icon, index) => {
-      const row = Math.floor(index / iconsPerRow);
-      const col = index % iconsPerRow;
-
-      const x = col * iconSize + 20; // 20px padding from left
-      const y = row * iconSize + 50; // 50px padding from top
-
-      return {
-        ...icon,
-        x,
-        y,
-      };
-    });
-
-    setDesktopIcons(newIcons);
-    saveIconsState(newIcons);
   };
 
   return (
-    <WindowContext.Provider
-      value={{
-        windows,
-        desktopIcons,
-        openWindow,
-        closeWindow,
-        focusWindow,
-        toggleMinimize,
-        toggleMaximize,
-        updateWindowPosition,
-        updateWindowSize,
-        updateIconPosition,
-        resetIconPositions,
-        createNewFolder,
-        reorderIconsToFitScreen,
-      }}
-    >
+    <WindowContext.Provider value={{
+      windows,
+      desktopIcons,
+      openWindow,
+      closeWindow,
+      focusWindow,
+      toggleMinimize,
+      toggleMaximize,
+      updateWindowPosition,
+      updateWindowSize,
+      updateIconPosition,
+      resetIconPositions,
+    }}>
       {children}
     </WindowContext.Provider>
   );

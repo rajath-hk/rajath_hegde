@@ -39,11 +39,10 @@ const DesktopIcon = ({ app, constraintsRef }: DesktopIconProps) => {
 
   return (
     <motion.button
+  // Use motion values for position via `style`. Framer Motion will manage this.
       style={{ x, y, position: 'absolute' }}
-      className="flex flex-col items-center justify-center text-center focus:outline-none p-2 select-none w-20 rounded-lg focus:bg-white/20"
+      className="flex flex-col items-center justify-center text-center focus:outline-none p-2 select-none w-20"
       aria-label={`Open ${app.title}`}
-      role="button"
-      tabIndex={0}
       onClick={(e) => {
         e.stopPropagation();
         // Prevent opening if the user was dragging the icon

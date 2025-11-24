@@ -5,7 +5,7 @@ import type { WindowInstance } from '@/types';
 import { useWindows } from '@/contexts/window-context';
 import { cn } from '@/lib/utils';
 import { X, Minus, Square, Minimize } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 type WindowProps = WindowInstance;
 
@@ -237,37 +237,29 @@ const Window = (props: WindowProps) => {
 
   return (
     <motion.div
-        ref={windowRef}
-        className={cn(
-          "fixed bg-background border rounded-lg shadow-2xl overflow-hidden flex flex-col transition-shadow",
-          isFocused ? "border-blue-500 shadow-lg" : "border-gray-300 dark:border-gray-600"
-        )}
-        style={{
-          width: size.width,
-          height: size.height,
-          zIndex,
-          left: position.x,
-          top: position.y,
-          willChange: 'transform'
-        }}
-        initial={{ scale: 0.8, opacity: 0, y: 50 }}
-        animate={{ scale: 1, opacity: 1, y: 0 }}
-        exit={{ scale: 0.8, opacity: 0, y: 50 }}
-        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-        drag
-        dragConstraints={{ left: 0, top: 0, right: window.innerWidth - size.width, bottom: window.innerHeight - size.height }}
-        dragMomentum={false}
-        onDragEnd={(event, info) => updateWindowPosition(id, info.point.x, info.point.y)}
-        onMouseDown={(e) => {
-          e.stopPropagation();
-          focusWindow(id);
-        }}
-        onTouchStart={(e) => {
-          e.stopPropagation();
-          focusWindow(id);
-          handleDragStart(e);
-        }}
-      >
+      ref={windowRef}
+      className={cn(
+        "fixed bg-background border rounded-lg shadow-2xl overflow-hidden flex flex-col transition-shadow",
+        isFocused ? "border-blue-500 shadow-lg" : "border-gray-300 dark:border-gray-600"
+      )}
+      style={{
+        width: size.width,
+        height: size.height,
+        zIndex,
+        left: position.x,
+        top: position.y,
+        willChange: 'transform'
+      }}
+      onMouseDown={(e) => {
+        e.stopPropagation();
+        focusWindow(id);
+      }}
+      onTouchStart={(e) => {
+        e.stopPropagation();
+        focusWindow(id);
+        handleDragStart(e);
+      }}
+    >
       {/* Window Header */}
       <div 
         ref={headerRef}
@@ -316,14 +308,9 @@ const Window = (props: WindowProps) => {
       </div>
 
       {/* Window Content */}
-      <motion.div 
-        className="flex-grow overflow-auto bg-background"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.3, delay: 0.1 }}
-      >
+      <div className="flex-grow overflow-auto bg-background">
         {content}
-      </motion.div>
+      </div>
 
       {/* Resize Handles (only on desktop) */}
       {!isMobile && !isMaximized && (

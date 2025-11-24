@@ -3,25 +3,19 @@
 import React, { useState, useEffect } from 'react';
 import { useWindows } from '@/contexts/window-context';
 import { Button } from '@/components/ui/button';
-import {
-  ChevronUp,
-  Wifi,
-  Battery,
-  Volume2,
+import { 
+  ChevronUp, 
+  Wifi, 
+  Battery, 
+  Volume2, 
   Search,
   Bell,
   Calendar,
   User,
   Minus,
-  Home,
-  ChevronLeft,
-  ChevronRight,
-  HardDrive,
-  Terminal,
-  Settings
+  Home
 } from 'lucide-react';
 import { format } from 'date-fns';
-import { motion, AnimatePresence } from 'framer-motion';
 import StartMenu from '@/components/start-menu';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
@@ -30,8 +24,6 @@ const Taskbar = () => {
   const { windows, desktopIcons, closeWindow, toggleMinimize, openWindow } = useWindows();
   const [time, setTime] = useState(new Date());
   const [showStartMenu, setShowStartMenu] = useState(false);
-  const [showCalendar, setShowCalendar] = useState(false);
-  const [currentMonth, setCurrentMonth] = useState(new Date());
   const isMobile = useIsMobile();
 
   useEffect(() => {
@@ -66,11 +58,11 @@ const Taskbar = () => {
             <Home className="w-6 h-6" />
           </Button>
 
-        {/* Open Windows - simplified for mobile */}
+          {/* Open Windows - simplified for mobile */}
           <div className="flex items-center space-x-1 flex-1 justify-center">
             {windows
               .filter(win => !win.isMinimized)
-              .sort((a, b) => (a.zIndex ?? 0) - (b.zIndex ?? 0))
+              .sort((a, b) => (a.order ?? Infinity) - (b.order ?? Infinity))
               .slice(0, 4) // Show up to 4 windows on mobile
               .map((win) => (
                 <Button
@@ -91,28 +83,26 @@ const Taskbar = () => {
 
           {/* System Tray - simplified for mobile */}
           <div className="flex items-center space-x-1">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-12 w-12 rounded-full hover:bg-accent"
-            aria-label="Search"
-            onClick={() => {
-              // Open system search - for now open terminal
-              const app = desktopIcons.find(i => i.id === 'terminal');
-              if (app) openWindow(app);
-            }}
-          >
-            <Search className="w-6 h-6" />
-          </Button>
+            <Button 
+              variant="ghost" 
+              size="icon"
+              className="h-12 w-12 rounded-full hover:bg-accent"
+              aria-label="Search"
+              onClick={() => {
+                const app = desktopIcons.find(i => i.id === 'search');
+                if (app) openWindow(app);
+              }}
+            >
+              <Search className="w-6 h-6" />
+            </Button>
             
-            <Button
-              variant="ghost"
+            <Button 
+              variant="ghost" 
               size="icon"
               className="h-12 w-12 rounded-full hover:bg-accent"
               aria-label="Notifications"
               onClick={() => {
-                // Open notifications - for now open system info
-                const app = desktopIcons.find(i => i.id === 'system');
+                const app = desktopIcons.find(i => i.id === 'notifications');
                 if (app) openWindow(app);
               }}
             >
@@ -150,7 +140,7 @@ const Taskbar = () => {
         <div className="flex items-center space-x-1 flex-1 justify-center">
           {windows
             .filter(win => !win.isMinimized)
-            .sort((a, b) => (a.zIndex ?? 0) - (b.zIndex ?? 0))
+            .sort((a, b) => (a.order ?? Infinity) - (b.order ?? Infinity))
             .map((win) => (
               <Button
                 key={win.id}
@@ -172,9 +162,9 @@ const Taskbar = () => {
 
         {/* System Tray */}
         <div className="flex items-center space-x-1">
-          <Button
-            variant="ghost"
-            size="sm"
+          <Button 
+            variant="ghost" 
+            size="sm" 
             className="h-8 w-8 p-0 hover:bg-accent"
             onClick={() => {
               // Minimize all windows
@@ -188,162 +178,46 @@ const Taskbar = () => {
           >
             <Minus className="w-4 h-4" />
           </Button>
-
-          <Button
-            variant="ghost"
-            size="sm"
+          
+          <Button 
+            variant="ghost" 
+            size="sm" 
             className="h-8 w-8 p-0 hover:bg-accent"
-            aria-label="System Search"
+            aria-label="Search"
             onClick={() => {
-              // Open system search - for now open terminal
-              const app = desktopIcons.find(i => i.id === 'terminal');
+              const app = desktopIcons.find(i => i.id === 'search');
               if (app) openWindow(app);
             }}
           >
             <Search className="w-4 h-4" />
           </Button>
-
-          <Button
-            variant="ghost"
-            size="sm"
+          
+          <Button 
+            variant="ghost" 
+            size="sm" 
             className="h-8 w-8 p-0 hover:bg-accent"
             aria-label="Notifications"
             onClick={() => {
-              // Open notification center - for now open system info
-              const app = desktopIcons.find(i => i.id === 'system');
+              const app = desktopIcons.find(i => i.id === 'notifications');
               if (app) openWindow(app);
             }}
           >
             <Bell className="w-4 h-4" />
           </Button>
-
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-8 w-8 p-0 hover:bg-accent"
-            aria-label="File Explorer"
-            onClick={() => {
-              const app = desktopIcons.find(i => i.id === 'explorer');
-              if (app) openWindow(app);
-            }}
-          >
-            <HardDrive className="w-4 h-4" />
-          </Button>
-
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-8 w-8 p-0 hover:bg-accent"
-            aria-label="Terminal"
-            onClick={() => {
-              const app = desktopIcons.find(i => i.id === 'terminal');
-              if (app) openWindow(app);
-            }}
-          >
-            <Terminal className="w-4 h-4" />
-          </Button>
-
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-8 w-8 p-0 hover:bg-accent"
-            aria-label="Settings"
-            onClick={() => {
-              const app = desktopIcons.find(i => i.id === 'settings');
-              if (app) openWindow(app);
-            }}
-          >
-            <Settings className="w-4 h-4" />
-          </Button>
           
-          <div className="flex items-center px-2 text-sm relative">
-            <Wifi className="w-4 h-4 mr-1 text-green-500" />
-            <Battery className="w-4 h-4 mr-1 text-green-500" />
-            <Volume2 className="w-4 h-4 mr-2 text-green-500" />
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-6 w-6 p-0 mr-1 hover:bg-accent"
-              onClick={() => setShowCalendar(!showCalendar)}
-            >
-              <Calendar className="w-4 h-4" />
-            </Button>
-            <span className="cursor-pointer hover:bg-accent px-1 rounded" onClick={() => setShowCalendar(!showCalendar)}>
-              {format(time, 'h:mm aa')}
-            </span>
-
-            {/* Calendar Popup */}
-            <AnimatePresence>
-              {showCalendar && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 10 }}
-                  className="absolute bottom-full right-0 mb-2 w-64 bg-background/90 backdrop-blur-xl border rounded-lg shadow-xl z-[100] p-4"
-                >
-                  <div className="flex items-center justify-between mb-4">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1))}
-                    >
-                      <ChevronLeft className="w-4 h-4" />
-                    </Button>
-                    <h3 className="font-semibold">
-                      {format(currentMonth, 'MMMM yyyy')}
-                    </h3>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1))}
-                    >
-                      <ChevronRight className="w-4 h-4" />
-                    </Button>
-                  </div>
-
-                  <div className="grid grid-cols-7 gap-1 text-center text-sm">
-                    {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map(day => (
-                      <div key={day} className="font-medium text-muted-foreground py-1">
-                        {day}
-                      </div>
-                    ))}
-
-                    {Array.from({ length: 42 }, (_, i) => {
-                      const date = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), i - currentMonth.getDay() + 1);
-                      const isCurrentMonth = date.getMonth() === currentMonth.getMonth();
-                      const isToday = date.toDateString() === new Date().toDateString();
-
-                      return (
-                        <Button
-                          key={i}
-                          variant={isToday ? "default" : "ghost"}
-                          size="sm"
-                          className={cn(
-                            "h-8 w-8 p-0 text-xs",
-                            !isCurrentMonth && "text-muted-foreground opacity-50"
-                          )}
-                          onClick={() => setShowCalendar(false)}
-                        >
-                          {date.getDate()}
-                        </Button>
-                      );
-                    })}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+          <div className="flex items-center px-2 text-sm">
+            <Wifi className="w-4 h-4 mr-1 text-muted-foreground" />
+            <Battery className="w-4 h-4 mr-1 text-muted-foreground" />
+            <Volume2 className="w-4 h-4 mr-2 text-muted-foreground" />
+            <Calendar className="w-4 h-4 mr-1 text-muted-foreground" />
+            <span>{format(time, 'h:mm aa')}</span>
           </div>
           
-          <Button
-            variant="ghost"
-            size="sm"
+          <Button 
+            variant="ghost" 
+            size="sm" 
             className="h-8 w-8 p-0 hover:bg-accent"
             aria-label="User profile"
-            onClick={() => {
-              // Open user profile - for now open about
-              const app = desktopIcons.find(i => i.id === 'about');
-              if (app) openWindow(app);
-            }}
           >
             <User className="w-4 h-4" />
           </Button>
