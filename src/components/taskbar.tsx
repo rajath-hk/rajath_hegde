@@ -138,26 +138,31 @@ const Taskbar = () => {
 
         {/* Open Windows */}
         <div className="flex items-center space-x-1 flex-1 justify-center">
-          {windows
-            .filter(win => !win.isMinimized)
+        {windows
+            //.filter(win => !win.isMinimized)  // Show all windows, including minimized
             .sort((a, b) => (a.order ?? Infinity) - (b.order ?? Infinity))
-            .map((win) => (
-              <Button
-                key={win.id}
-                variant="ghost"
-                size="sm"
-                className={cn(
-                  "h-8 px-2 text-xs",
-                  win.isFocused ? "bg-accent" : "hover:bg-accent"
-                )}
-                onClick={() => toggleMinimize(win.id)}
-                title={win.title}
-              >
-                <win.icon className="w-4 h-4 mr-1" />
-                <span className="max-w-[80px] truncate">{win.title}</span>
-                <ChevronUp className="w-3 h-3 ml-1" />
-              </Button>
-            ))}
+            .map((win) => {
+              const isMinimized = win.isMinimized;
+              return (
+                <Button
+                  key={win.id}
+                  variant="ghost"
+                  size="sm"
+                  className={cn(
+                    "h-8 px-2 text-xs",
+                    win.isFocused ? "bg-accent" : "hover:bg-accent",
+                    isMinimized ? "opacity-50" : ""  // visually differentiate minimized windows
+                  )}
+                  onClick={() => toggleMinimize(win.id)}
+                  title={win.title}
+                >
+                  <win.icon className="w-4 h-4 mr-1" />
+                  <span className="max-w-[80px] truncate">{win.title}</span>
+                  <ChevronUp className="w-3 h-3 ml-1" />
+                </Button>
+              );
+            })
+        }
         </div>
 
         {/* System Tray */}
