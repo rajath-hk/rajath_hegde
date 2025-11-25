@@ -66,7 +66,7 @@ const Desktop = () => {
   return (
     <div 
       ref={desktopRef}
-      className={`relative w-full h-screen anime-wallpaper ${
+      className={`relative w-full h-screen anime-wallpaper glassy-window ${
         isMobile ? 'overflow-y-scroll' : 'overflow-y-auto'
       } bg-cover bg-center`}
     >
