@@ -264,7 +264,7 @@ const Window = (props: WindowProps) => {
       <div 
         ref={headerRef}
         className={cn(
-          "h-10 flex items-center justify-between px-4 cursor-move border-b",
+          "h-10 flex items-center justify-between px-4 cursor-move border-b glassy-window transition-colors duration-300 ease-in-out",
           isFocused 
             ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white" 
             : "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200"
