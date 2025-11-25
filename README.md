@@ -13,12 +13,16 @@ PortfolioOS transforms the traditional developer portfolio into an interactive o
 - Context menu for desktop customization
 - Wallpaper selection system
 - Responsive design for all device sizes
+- Reset icon positions functionality
 
 ### Window Management System
 - Draggable and resizable application windows
 - Minimize, maximize, and close functionality
 - Window focus management with z-index handling
 - Smooth animations using Framer Motion
+- Window snapping to screen edges
+- Keyboard shortcuts for common actions
+- Error boundaries to prevent crashes
 
 ### Applications Suite
 
@@ -43,6 +47,8 @@ PortfolioOS transforms the traditional developer portfolio into an interactive o
 - Notification center
 - System search functionality
 - Boot screen with login interface
+- Loading states for better UX
+- Enhanced accessibility features
 
 ## Technical Implementation
 
@@ -54,6 +60,7 @@ PortfolioOS transforms the traditional developer portfolio into an interactive o
 - **State Management**: React Context API
 - **Animations**: Framer Motion
 - **Icons**: Lucide React
+- **Email Service**: Resend (with fallback simulation)
 
 ### Key Features Implemented
 - Local storage for persisting user preferences
@@ -63,6 +70,9 @@ PortfolioOS transforms the traditional developer portfolio into an interactive o
 - Custom theming system
 - Performance optimized with code splitting
 - Server actions for contact form submissions
+- Error boundaries for crash prevention
+- Window snapping functionality
+- Enhanced accessibility with ARIA labels
 
 ## Applications in Detail
 
@@ -74,6 +84,7 @@ A fully functional terminal emulator with commands like:
 - `skills` - Show technical skills
 - `contact` - Display contact information
 - `neofetch` - Display system information with ASCII art
+- Arrow key navigation for command history
 
 ### File Explorer
 Browse through a structured file system representing projects and documents:
@@ -110,6 +121,11 @@ Windows can be managed through:
 - **Top bar dock**: Shows minimized windows on desktop
 - **Mobile bottom navigation**: Shows minimized windows on mobile devices
 - **Direct window controls**: Minimize, maximize, and close buttons within each window
+- **Window snapping**: Windows automatically align to screen edges when dragged near them
+- **Keyboard shortcuts**:
+  - Ctrl+Alt+T: Open Terminal
+  - Ctrl+Alt+C: Open Contact form
+  - ESC: Close focused window
 
 ## Local Storage Features
 
@@ -123,16 +139,22 @@ User preferences and settings are persisted using localStorage:
 
 The contact form is fully functional with:
 - Client-side validation using Zod
-- Server action for form submission
+- Server action for form submission with Resend email service
 - Toast notifications for user feedback
 - Proper error handling
+- Fallback simulation mode when API keys are not configured
 
 ## Getting Started
 
 1. Clone the repository
 2. Install dependencies: `npm install`
-3. Run development server: `npm run dev`
-4. Build for production: `npm run build`
+3. Create a `.env.local` file with your Resend API key:
+   ```
+   RESEND_API_KEY=your_resend_api_key_here
+   CONTACT_EMAIL=your_contact_email_here
+   ```
+4. Run development server: `npm run dev`
+5. Build for production: `npm run build`
 
 ## Local secrets and API keys
 
@@ -142,7 +164,8 @@ Recommended approaches:
 - Use environment variables (preferred): create a local `.env.local` file and add it to `.gitignore`.
 	Example:
 	```env
-	NEXT_PUBLIC_THIRD_PARTY_KEY=your_key_here
+	RESEND_API_KEY=your_resend_api_key_here
+	CONTACT_EMAIL=contact@rajathhegde.com
 	```
 
 - Or put local editor settings in `.vscode/settings.json` (this repo includes `.vscode/settings.example.json` as a template). Never commit your local `.vscode/settings.json`.
@@ -155,6 +178,30 @@ The PortfolioOS features a boot screen with a simulated login:
 - No specific password is required
 - Enter any value or click "Guest" to access the system
 - This is purely for visual effect and demonstration purposes
+
+## Recent Improvements
+
+The following improvements have been recently implemented:
+
+### Bug Fixes
+- Fixed contact form to actually send emails using Resend API instead of just simulation
+- Fixed window positioning issues when restoring from localStorage
+- Fixed terminal command history navigation with arrow keys
+- Fixed desktop icon reset functionality
+- Improved mobile touch dragging behavior
+
+### New Features
+- Window snapping to screen edges
+- Keyboard shortcuts for common actions
+- Loading states for better user experience
+- Error boundaries to prevent app crashes
+- Enhanced accessibility features with proper ARIA labels
+
+### Performance & UX Improvements
+- Improved window focus management
+- Better responsive design handling
+- Enhanced error handling and user feedback
+- Optimized component structure for better maintainability
 
 ## Future Enhancements
 
