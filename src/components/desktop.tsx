@@ -15,6 +15,7 @@ const Desktop = () => {
   const desktopRef = useRef<HTMLDivElement>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [wallpaper, setWallpaper] = useState('https://wallpaperaccess.com/full/317501.jpg');
 
   // Check if we're on mobile
   useEffect(() => {
@@ -25,6 +26,24 @@ const Desktop = () => {
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Load wallpaper from localStorage
+  useEffect(() => {
+    const savedWallpaper = localStorage.getItem('portfolio-wallpaper') || 'https://wallpaperaccess.com/full/317501.jpg';
+    setWallpaper(savedWallpaper);
+  }, []);
+
+  // Listen for wallpaper changes
+  useEffect(() => {
+    const handleWallpaperChange = (event: CustomEvent) => {
+      setWallpaper(event.detail);
+    };
+
+    window.addEventListener('wallpaperChange', handleWallpaperChange as EventListener);
+    return () => {
+      window.removeEventListener('wallpaperChange', handleWallpaperChange as EventListener);
+    };
   }, []);
 
   // Handle scroll to top button visibility
@@ -66,9 +85,10 @@ const Desktop = () => {
   return (
     <div 
       ref={desktopRef}
-      className={`relative w-full h-screen anime-wallpaper glassy-window ${
+      className={`relative w-full h-screen glassy-window ${
         isMobile ? 'overflow-y-scroll' : 'overflow-y-auto'
       } bg-cover bg-center`}
+      style={{ backgroundImage: `url('${wallpaper}')` }}
       role="main"
       aria-label="Desktop"
     >

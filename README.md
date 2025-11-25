@@ -11,10 +11,11 @@ PortfolioOS transforms the traditional developer portfolio into an interactive o
 ### Desktop Environment
 - Fully interactive desktop with draggable icons
 - Context menu for desktop customization
-- Wallpaper selection system
+- Wallpaper selection system with multiple options
 - Responsive design for all device sizes
 - Reset icon positions functionality
 - Glassmorphism UI with transparent, frosted glass effects
+- Dark/light mode support with system preference detection
 
 ### Window Management System
 - Draggable and resizable application windows
@@ -64,6 +65,7 @@ PortfolioOS transforms the traditional developer portfolio into an interactive o
 - **Animations**: Framer Motion
 - **Icons**: Lucide React
 - **Email Service**: Resend (with fallback simulation)
+- **Theme Management**: next-themes
 
 ### Key Features Implemented
 - Local storage for persisting user preferences
@@ -76,6 +78,7 @@ PortfolioOS transforms the traditional developer portfolio into an interactive o
 - Error boundaries for crash prevention
 - Window snapping functionality
 - Enhanced accessibility with ARIA labels
+- Dark/light mode with system preference detection
 
 ## Applications in Detail
 
@@ -106,7 +109,7 @@ Showcase project demos and videos:
 ### Settings Application
 Customize the PortfolioOS experience:
 - Theme selection (light/dark/system)
-- Wallpaper selection
+- Wallpaper selection with multiple options
 - Sound preferences
 - Notification settings
 - Privacy controls
@@ -138,6 +141,25 @@ PortfolioOS features a modern glassmorphism design with:
 - Subtle borders and shadows for depth
 - Adaptive transparency for light and dark modes
 - Enhanced visual appeal with layered transparency effects
+
+## Theme Support
+
+PortfolioOS supports multiple themes:
+- **Dark Mode**: Default theme with deep background colors
+- **Light Mode**: Clean theme with light background colors
+- **System Preference**: Automatically adapts to system theme settings
+- Theme settings are persisted in localStorage
+
+## Wallpaper Selection
+
+Users can customize their desktop experience with multiple wallpaper options:
+- Default abstract pattern
+- Space-themed background
+- Mountain landscape
+- City skyline
+- Ocean view
+- Abstract gradient
+- Wallpaper settings are persisted in localStorage
 
 ## Local Storage Features
 
@@ -209,6 +231,8 @@ The following improvements have been recently implemented:
 - Error boundaries to prevent app crashes
 - Enhanced accessibility features with proper ARIA labels
 - Glassmorphism UI with transparent, frosted glass effects
+- Multiple wallpaper options for desktop customization
+- Dark/light mode support with system preference detection
 
 ### Performance & UX Improvements
 - Improved window focus management

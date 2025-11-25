@@ -94,10 +94,12 @@ const Settings = () => {
   };
 
   const wallpaperOptions = [
-    { id: 'default', name: 'Default', url: '/logo.png' },
-    { id: 'space', name: 'Space', url: '/logo.png' },
-    { id: 'mountains', name: 'Mountains', url: '/logo.png' },
-    { id: 'city', name: 'City', url: '/logo.png' },
+    { id: 'default', name: 'Default', url: 'https://wallpaperaccess.com/full/317501.jpg' },
+    { id: 'abstract', name: 'Abstract', url: 'https://images.unsplash.com/photo-1579546929662-711aa81148cf' },
+    { id: 'mountains', name: 'Mountains', url: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b' },
+    { id: 'city', name: 'City', url: 'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df' },
+    { id: 'space', name: 'Space', url: 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564' },
+    { id: 'ocean', name: 'Ocean', url: 'https://images.unsplash.com/photo-1505228395891-9a51e7e86bf6' },
   ];
 
   const themeOptions = [
