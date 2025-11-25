@@ -2,6 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer utilities {
+  .anime-wallpaper {
+    background-image: url('https://wallpaperaccess.com/full/317501.jpg');
+    background-size: cover;
+    background-position: center;
+  }
+  .glassy-window {
+    background-color: rgba(255, 255, 255, 0.15);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
