@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useWindows } from '@/contexts/window-context';
 import { portfolioConfig } from '@/config/portfolio';
 import { Button } from '@/components/ui/button';
@@ -32,6 +32,21 @@ const StartMenu = () => {
   const { openWindow } = useWindows();
   const isMobile = useIsMobile();
   const [activeCategory, setActiveCategory] = useState('all');
+  const startMenuRef = useRef<HTMLDivElement>(null);
+
+  // Handle keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Close start menu with Escape key
+      if (e.key === 'Escape') {
+        const event = new CustomEvent('closeStartMenu');
+        window.dispatchEvent(event);
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   // Group apps by category for better organization
   const categorizedApps = {
@@ -82,19 +97,23 @@ const StartMenu = () => {
   if (isMobile) {
     return (
       <motion.div
+        ref={startMenuRef}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 20 }}
         className="bg-background/90 backdrop-blur-xl rounded-t-xl border-t border-x shadow-2xl w-full max-w-md mx-auto"
+        role="dialog"
+        aria-label="Start Menu"
+        aria-modal="true"
       >
         <div className="p-4 border-b">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-bold">PortfolioOS</h2>
             <div className="flex items-center space-x-2">
-              <Button variant="ghost" size="icon" className="h-8 w-8">
+              <Button variant="ghost" size="icon" className="h-8 w-8" aria-label="User profile">
                 <User className="h-4 w-4" />
               </Button>
-              <Button variant="ghost" size="icon" className="h-8 w-8">
+              <Button variant="ghost" size="icon" className="h-8 w-8" aria-label="Settings">
                 <Settings className="h-4 w-4" />
               </Button>
             </div>

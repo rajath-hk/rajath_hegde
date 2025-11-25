@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useWindows } from '@/contexts/window-context';
 import { X, Bell, Info, CheckCircle, AlertTriangle, AlertCircle, Cpu, MemoryStick } from 'lucide-react';
@@ -24,6 +24,8 @@ const NotificationCenter = () => {
   const [notificationHistory, setNotificationHistory] = useState<Notification[]>([]);
   const [cpuUsage, setCpuUsage] = useState(0);
   const [memoryUsage, setMemoryUsage] = useState(0);
+  const notificationCenterRef = useRef<HTMLDivElement>(null);
+  const openButtonRef = useRef<HTMLButtonElement>(null);
 
   // System monitor effect
   useEffect(() => {
@@ -59,6 +61,34 @@ const NotificationCenter = () => {
     }, 2000);
     return () => clearInterval(interval);
   }, []);
+
+  // Handle keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        setIsOpen(false);
+        openButtonRef.current?.focus();
+      }
+    };
+
+    const handleClickOutside = (e: MouseEvent) => {
+      if (notificationCenterRef.current && 
+          !notificationCenterRef.current.contains(e.target as Node) &&
+          openButtonRef.current !== e.target) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleKeyDown);
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen]);
 
   // Load notifications from localStorage and add defaults
   useEffect(() => {
@@ -179,18 +209,21 @@ const NotificationCenter = () => {
   };
 
   return (
-    <div className="relative">
+    <div className="relative" ref={notificationCenterRef}>
       {/* Notification Bell */}
       <button
+        ref={openButtonRef}
         onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2 rounded-md hover:bg-accent"
-        aria-label="Open Notifications"
+        className="relative p-2 rounded-md hover:bg-accent focus:outline-none focus:ring-2 focus:ring-ring"
+        aria-label={isOpen ? "Close notifications" : "Open notifications"}
+        aria-expanded={isOpen}
+        aria-haspopup="true"
       >
         <Bell className="h-5 w-5" />
         {unreadCount > 0 && (
           <span className="absolute top-1 right-1 flex h-2 w-2">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" aria-label={`${unreadCount} unread notifications`}></span>
           </span>
         )}
       </button>
@@ -203,6 +236,9 @@ const NotificationCenter = () => {
             animate={{ opacity: 1, y: 0, transition: { duration: 0.3, ease: [0.4, 0, 0.2, 1] } }}
             exit={{ opacity: 0, y: 10, transition: { duration: 0.2, ease: [0.4, 0, 1, 1] } }}
             className="absolute right-0 bottom-full mb-2 w-96 bg-background/90 backdrop-blur-xl border rounded-lg shadow-xl z-[100] overflow-hidden"
+            role="dialog"
+            aria-label="Notifications center"
+            aria-modal="true"
           >
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b">
@@ -214,6 +250,7 @@ const NotificationCenter = () => {
                     size="sm" 
                     onClick={markAllAsRead}
                     className="h-6 px-2 text-xs"
+                    aria-label="Mark all notifications as read"
                   >
                     Mark all as read
                   </Button>
@@ -223,6 +260,7 @@ const NotificationCenter = () => {
                   size="sm" 
                   onClick={clearAll}
                   className="h-6 px-2 text-xs"
+                  aria-label="Clear all notifications"
                 >
                   Clear all
                 </Button>
@@ -234,30 +272,30 @@ const NotificationCenter = () => {
               <h4 className="font-semibold text-sm mb-3">System Monitor</h4>
               <div className="space-y-3">
                 <div className="flex items-center gap-2">
-                  <Cpu className="w-4 h-4 text-muted-foreground" />
+                  <Cpu className="w-4 h-4 text-muted-foreground" aria-hidden="true" />
                   <div className="flex-1">
                     <div className="flex justify-between text-xs mb-1">
                       <span>CPU Usage</span>
                       <span>{cpuUsage.toFixed(0)}%</span>
                     </div>
-                    <Progress value={cpuUsage} className="h-1.5" />
+                    <Progress value={cpuUsage} className="h-1.5" aria-label="CPU usage progress" />
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <MemoryStick className="w-4 h-4 text-muted-foreground" />
+                  <MemoryStick className="w-4 h-4 text-muted-foreground" aria-hidden="true" />
                   <div className="flex-1">
                     <div className="flex justify-between text-xs mb-1">
                       <span>Memory Usage</span>
                       <span>{memoryUsage.toFixed(0)}%</span>
                     </div>
-                    <Progress value={memoryUsage} className="h-1.5" />
+                    <Progress value={memoryUsage} className="h-1.5" aria-label="Memory usage progress" />
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Notifications List */}
-            <div className="max-h-80 overflow-y-auto">
+            <div className="max-h-80 overflow-y-auto" role="list">
               {notifications.length === 0 ? (
                 <div className="p-8 text-center text-muted-foreground">
                   <p>No new notifications</p>
@@ -267,6 +305,7 @@ const NotificationCenter = () => {
                       size="sm"
                       className="mt-2"
                       onClick={() => setNotifications(notificationHistory.slice(0, 5))}
+                      aria-label="Restore recent notifications"
                     >
                       Restore recent notifications
                     </Button>
@@ -276,24 +315,25 @@ const NotificationCenter = () => {
                 notifications.map((notification) => (
                   <motion.div
                     key={notification.id}
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0, transition: { duration: 0.25, ease: [0.4, 0, 0.2, 1] } }}
-                  exit={{ opacity: 0, x: 20, transition: { duration: 0.2, ease: [0.4, 0, 1, 1] } }}
-                  className={`border-b last:border-b-0 ${
-                    !notification.read ? 'bg-accent/50' : ''
-                  }`}
-                  aria-label={`${notification.type} notification: ${notification.title}`}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0, transition: { duration: 0.25, ease: [0.4, 0, 0.2, 1] } }}
+                    exit={{ opacity: 0, x: 20, transition: { duration: 0.2, ease: [0.4, 0, 1, 1] } }}
+                    className={`border-b last:border-b-0 ${
+                      !notification.read ? 'bg-accent/50' : ''
+                    }`}
+                    aria-label={`${notification.type} notification: ${notification.title}`}
                   >
                     <div className="p-4 relative">
                       <button
                         onClick={() => clearNotification(notification.id)}
-                        className="absolute top-2 right-2 p-1 rounded-full hover:bg-muted"
+                        className="absolute top-2 right-2 p-1 rounded-full hover:bg-muted focus:outline-none focus:ring-2 focus:ring-ring"
+                        aria-label={`Dismiss notification: ${notification.title}`}
                       >
                         <X className="h-3 w-3" />
                       </button>
                       
                       <div className="flex items-start gap-3">
-                        <div className="mt-0.5 flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-muted/60">
+                        <div className="mt-0.5 flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-muted/60" aria-hidden="true">
                           {/* Icon provides an explicit, non-color dependent affordance */}
                           {notification.type === 'success' && <CheckCircle className="w-4 h-4 text-green-500" />}
                           {notification.type === 'warning' && <AlertTriangle className="w-4 h-4 text-yellow-500" />}
@@ -324,6 +364,7 @@ const NotificationCenter = () => {
                           size="sm"
                           className="mt-2 h-6 px-2 text-xs"
                           onClick={() => markAsRead(notification.id)}
+                          aria-label={`Mark notification "${notification.title}" as read`}
                         >
                           Mark as read
                         </Button>

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useWindows } from '@/contexts/window-context';
 import { Button } from '@/components/ui/button';
 import { 
@@ -25,6 +25,7 @@ const Taskbar = () => {
   const [time, setTime] = useState(new Date());
   const [showStartMenu, setShowStartMenu] = useState(false);
   const isMobile = useIsMobile();
+  const taskbarRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -32,6 +33,13 @@ const Taskbar = () => {
     }, 1000);
     
     return () => clearInterval(timer);
+  }, []);
+
+  // Handle closing start menu from other components
+  useEffect(() => {
+    const closeStartMenu = () => setShowStartMenu(false);
+    window.addEventListener('closeStartMenu', closeStartMenu);
+    return () => window.removeEventListener('closeStartMenu', closeStartMenu);
   }, []);
 
   // On mobile, we want a simplified taskbar with just the essentials
@@ -46,7 +54,12 @@ const Taskbar = () => {
         )}
 
         {/* Mobile Taskbar */}
-        <div className="fixed bottom-0 left-0 right-0 h-16 glassy-taskbar border-t flex items-center justify-around px-2 z-50">
+        <div 
+          ref={taskbarRef}
+          className="fixed bottom-0 left-0 right-0 h-16 glassy-taskbar border-t flex items-center justify-around px-2 z-50"
+          role="toolbar"
+          aria-label="Taskbar"
+        >
           {/* Start Button */}
           <Button 
             variant="ghost" 
@@ -54,12 +67,14 @@ const Taskbar = () => {
             className="h-12 w-12 rounded-full hover:bg-accent/50"
             onClick={() => setShowStartMenu(!showStartMenu)}
             aria-label="Start menu"
+            aria-expanded={showStartMenu}
+            aria-controls={showStartMenu ? "start-menu" : undefined}
           >
             <Home className="w-6 h-6" />
           </Button>
 
           {/* Open Windows - simplified for mobile */}
-          <div className="flex items-center space-x-1 flex-1 justify-center">
+          <div className="flex items-center space-x-1 flex-1 justify-center" role="group" aria-label="Open windows">
             {windows
               .filter(win => !win.isMinimized)
               .sort((a, b) => (a.order ?? Infinity) - (b.order ?? Infinity))
@@ -82,7 +97,7 @@ const Taskbar = () => {
           </div>
 
           {/* System Tray - simplified for mobile */}
-          <div className="flex items-center space-x-1">
+          <div className="flex items-center space-x-1" role="group" aria-label="System controls">
             <Button 
               variant="ghost" 
               size="icon"
@@ -124,7 +139,12 @@ const Taskbar = () => {
       )}
 
       {/* Desktop Taskbar */}
-      <div className="fixed bottom-0 left-0 right-0 h-10 glassy-taskbar border-t flex items-center justify-between px-2 z-50">
+      <div 
+        ref={taskbarRef}
+        className="fixed bottom-0 left-0 right-0 h-10 glassy-taskbar border-t flex items-center justify-between px-2 z-50"
+        role="toolbar"
+        aria-label="Taskbar"
+      >
         {/* Start Button */}
         <Button 
           variant="ghost" 
@@ -132,12 +152,14 @@ const Taskbar = () => {
           className="h-8 px-2 hover:bg-accent/50"
           onClick={() => setShowStartMenu(!showStartMenu)}
           aria-label="Start menu"
+          aria-expanded={showStartMenu}
+          aria-controls={showStartMenu ? "start-menu" : undefined}
         >
           <span className="font-bold text-lg">_portfolio</span>
         </Button>
 
         {/* Open Windows */}
-        <div className="flex items-center space-x-1 flex-1 justify-center">
+        <div className="flex items-center space-x-1 flex-1 justify-center" role="group" aria-label="Open windows">
         {windows
             //.filter(win => !win.isMinimized)  // Show all windows, including minimized
             .sort((a, b) => (a.order ?? Infinity) - (b.order ?? Infinity))
@@ -155,6 +177,7 @@ const Taskbar = () => {
                   )}
                   onClick={() => toggleMinimize(win.id)}
                   title={win.title}
+                  aria-label={`${win.title} window`}
                 >
                   <win.icon className="w-4 h-4 mr-1" />
                   <span className="max-w-[80px] truncate">{win.title}</span>
@@ -166,7 +189,7 @@ const Taskbar = () => {
         </div>
 
         {/* System Tray */}
-        <div className="flex items-center space-x-1">
+        <div className="flex items-center space-x-1" role="group" aria-label="System controls">
           <Button 
             variant="ghost" 
             size="sm" 
@@ -210,11 +233,11 @@ const Taskbar = () => {
             <Bell className="w-4 h-4" />
           </Button>
           
-          <div className="flex items-center px-2 text-sm backdrop-blur-sm rounded">
-            <Wifi className="w-4 h-4 mr-1 text-muted-foreground" />
-            <Battery className="w-4 h-4 mr-1 text-muted-foreground" />
-            <Volume2 className="w-4 h-4 mr-2 text-muted-foreground" />
-            <Calendar className="w-4 h-4 mr-1 text-muted-foreground" />
+          <div className="flex items-center px-2 text-sm backdrop-blur-sm rounded" aria-label="System information">
+            <Wifi className="w-4 h-4 mr-1 text-muted-foreground" aria-hidden="true" />
+            <Battery className="w-4 h-4 mr-1 text-muted-foreground" aria-hidden="true" />
+            <Volume2 className="w-4 h-4 mr-2 text-muted-foreground" aria-hidden="true" />
+            <Calendar className="w-4 h-4 mr-1 text-muted-foreground" aria-hidden="true" />
             <span>{format(time, 'h:mm aa')}</span>
           </div>
           
