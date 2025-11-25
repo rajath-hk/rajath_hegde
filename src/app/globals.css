@@ -9,13 +9,51 @@
     background-position: center;
   }
   .glassy-window {
+    background-color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: saturate(180%) blur(25px);
+    -webkit-backdrop-filter: saturate(180%) blur(25px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease, border 0.3s ease, box-shadow 0.3s ease;
+    border-radius: var(--radius);
+  }
+  
+  .glassy-window-dark {
+    background-color: rgba(30, 30, 30, 0.15);
+    backdrop-filter: saturate(180%) blur(25px);
+    -webkit-backdrop-filter: saturate(180%) blur(25px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  }
+  
+  .glassy-taskbar {
     background-color: rgba(255, 255, 255, 0.15);
     backdrop-filter: saturate(180%) blur(20px);
     -webkit-backdrop-filter: saturate(180%) blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
-    transition: background-color 0.3s ease, border 0.3s ease, box-shadow 0.3s ease;
-    border-radius: var(--radius);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    box-shadow: 0 -2px 20px rgba(0, 0, 0, 0.1);
+  }
+  
+  .glassy-taskbar-dark {
+    background-color: rgba(30, 30, 30, 0.2);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 -2px 20px rgba(0, 0, 0, 0.2);
+  }
+  
+  .glassy-icon {
+    background-color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: saturate(180%) blur(10px);
+    -webkit-backdrop-filter: saturate(180%) blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+  
+  .glassy-icon-dark {
+    background-color: rgba(30, 30, 30, 0.15);
+    backdrop-filter: saturate(180%) blur(10px);
+    -webkit-backdrop-filter: saturate(180%) blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
   }
 }
 
@@ -40,7 +78,7 @@
     --border: 240 5.9% 90%;
     --input: 240 5.9% 90%;
     --ring: 221 83% 53%;
-    --radius: 0.5rem;
+    --radius: 0.75rem;
   }
 
   .dark {

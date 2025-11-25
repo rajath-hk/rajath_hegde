@@ -46,12 +46,12 @@ const Taskbar = () => {
         )}
 
         {/* Mobile Taskbar */}
-        <div className="fixed bottom-0 left-0 right-0 h-16 bg-background/80 backdrop-blur-xl border-t flex items-center justify-around px-2 z-50">
+        <div className="fixed bottom-0 left-0 right-0 h-16 glassy-taskbar border-t flex items-center justify-around px-2 z-50">
           {/* Start Button */}
           <Button 
             variant="ghost" 
             size="icon"
-            className="h-12 w-12 rounded-full hover:bg-accent"
+            className="h-12 w-12 rounded-full hover:bg-accent/50"
             onClick={() => setShowStartMenu(!showStartMenu)}
             aria-label="Start menu"
           >
@@ -70,8 +70,8 @@ const Taskbar = () => {
                   variant="ghost"
                   size="icon"
                   className={cn(
-                    "h-12 w-12 rounded-full text-xs",
-                    win.isFocused ? "bg-accent" : "hover:bg-accent"
+                    "h-12 w-12 rounded-full text-xs backdrop-blur-sm",
+                    win.isFocused ? "bg-accent/50" : "hover:bg-accent/30"
                   )}
                   onClick={() => toggleMinimize(win.id)}
                   aria-label={`Show ${win.title}`}
@@ -86,7 +86,7 @@ const Taskbar = () => {
             <Button 
               variant="ghost" 
               size="icon"
-              className="h-12 w-12 rounded-full hover:bg-accent"
+              className="h-12 w-12 rounded-full hover:bg-accent/50"
               aria-label="Search"
               onClick={() => {
                 const app = desktopIcons.find(i => i.id === 'search');
@@ -99,7 +99,7 @@ const Taskbar = () => {
             <Button 
               variant="ghost" 
               size="icon"
-              className="h-12 w-12 rounded-full hover:bg-accent"
+              className="h-12 w-12 rounded-full hover:bg-accent/50"
               aria-label="Notifications"
               onClick={() => {
                 const app = desktopIcons.find(i => i.id === 'notifications');
@@ -124,12 +124,12 @@ const Taskbar = () => {
       )}
 
       {/* Desktop Taskbar */}
-      <div className="fixed bottom-0 left-0 right-0 h-10 bg-background/80 backdrop-blur-xl border-t flex items-center justify-between px-2 z-50">
+      <div className="fixed bottom-0 left-0 right-0 h-10 glassy-taskbar border-t flex items-center justify-between px-2 z-50">
         {/* Start Button */}
         <Button 
           variant="ghost" 
           size="sm" 
-          className="h-8 px-2 hover:bg-accent"
+          className="h-8 px-2 hover:bg-accent/50"
           onClick={() => setShowStartMenu(!showStartMenu)}
           aria-label="Start menu"
         >
@@ -149,8 +149,8 @@ const Taskbar = () => {
                   variant="ghost"
                   size="sm"
                   className={cn(
-                    "h-8 px-2 text-xs",
-                    win.isFocused ? "bg-accent" : "hover:bg-accent",
+                    "h-8 px-2 text-xs backdrop-blur-sm",
+                    win.isFocused ? "bg-accent/50" : "hover:bg-accent/30",
                     isMinimized ? "opacity-50" : ""  // visually differentiate minimized windows
                   )}
                   onClick={() => toggleMinimize(win.id)}
@@ -170,7 +170,7 @@ const Taskbar = () => {
           <Button 
             variant="ghost" 
             size="sm" 
-            className="h-8 w-8 p-0 hover:bg-accent"
+            className="h-8 w-8 p-0 hover:bg-accent/50"
             onClick={() => {
               // Minimize all windows
               windows.forEach(window => {
@@ -187,7 +187,7 @@ const Taskbar = () => {
           <Button 
             variant="ghost" 
             size="sm" 
-            className="h-8 w-8 p-0 hover:bg-accent"
+            className="h-8 w-8 p-0 hover:bg-accent/50"
             aria-label="Search"
             onClick={() => {
               const app = desktopIcons.find(i => i.id === 'search');
@@ -200,7 +200,7 @@ const Taskbar = () => {
           <Button 
             variant="ghost" 
             size="sm" 
-            className="h-8 w-8 p-0 hover:bg-accent"
+            className="h-8 w-8 p-0 hover:bg-accent/50"
             aria-label="Notifications"
             onClick={() => {
               const app = desktopIcons.find(i => i.id === 'notifications');
@@ -210,7 +210,7 @@ const Taskbar = () => {
             <Bell className="w-4 h-4" />
           </Button>
           
-          <div className="flex items-center px-2 text-sm">
+          <div className="flex items-center px-2 text-sm backdrop-blur-sm rounded">
             <Wifi className="w-4 h-4 mr-1 text-muted-foreground" />
             <Battery className="w-4 h-4 mr-1 text-muted-foreground" />
             <Volume2 className="w-4 h-4 mr-2 text-muted-foreground" />
@@ -221,7 +221,7 @@ const Taskbar = () => {
           <Button 
             variant="ghost" 
             size="sm" 
-            className="h-8 w-8 p-0 hover:bg-accent"
+            className="h-8 w-8 p-0 hover:bg-accent/50"
             aria-label="User profile"
           >
             <User className="w-4 h-4" />

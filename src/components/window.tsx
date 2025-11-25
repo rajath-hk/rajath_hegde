@@ -314,8 +314,8 @@ const Window = (props: WindowProps) => {
         className={cn(
           "h-10 flex items-center justify-between px-4 cursor-move border-b glassy-window transition-colors duration-300 ease-in-out",
           isFocused 
-            ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white" 
-            : "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200"
+            ? "bg-gradient-to-r from-blue-500/20 to-purple-600/20 text-white backdrop-blur-lg" 
+            : "bg-gray-100/30 dark:bg-gray-800/30 text-gray-800 dark:text-gray-200 backdrop-blur-md"
         )}
         onDoubleClick={handleDoubleClick}
         onMouseDown={handleDragStart}
@@ -357,7 +357,7 @@ const Window = (props: WindowProps) => {
       </div>
 
       {/* Window Content */}
-      <div className="flex-grow overflow-auto bg-background relative" role="main">
+      <div className="flex-grow overflow-auto bg-background/70 dark:bg-background/80 relative backdrop-blur-sm" role="main">
         {isLoading ? (
           <div className="absolute inset-0 flex items-center justify-center" role="status">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>

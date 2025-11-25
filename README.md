@@ -14,6 +14,7 @@ PortfolioOS transforms the traditional developer portfolio into an interactive o
 - Wallpaper selection system
 - Responsive design for all device sizes
 - Reset icon positions functionality
+- Glassmorphism UI with transparent, frosted glass effects
 
 ### Window Management System
 - Draggable and resizable application windows
@@ -23,6 +24,7 @@ PortfolioOS transforms the traditional developer portfolio into an interactive o
 - Window snapping to screen edges
 - Keyboard shortcuts for common actions
 - Error boundaries to prevent crashes
+- Enhanced glassy, transparent window design
 
 ### Applications Suite
 
@@ -49,6 +51,7 @@ PortfolioOS transforms the traditional developer portfolio into an interactive o
 - Boot screen with login interface
 - Loading states for better UX
 - Enhanced accessibility features
+- Glassmorphism design throughout the interface
 
 ## Technical Implementation
 
@@ -67,7 +70,7 @@ PortfolioOS transforms the traditional developer portfolio into an interactive o
 - Responsive design for mobile, tablet, and desktop
 - Keyboard navigation support
 - Touch gesture support for mobile devices
-- Custom theming system
+- Custom theming system with glassmorphism effects
 - Performance optimized with code splitting
 - Server actions for contact form submissions
 - Error boundaries for crash prevention
@@ -126,6 +129,15 @@ Windows can be managed through:
   - Ctrl+Alt+T: Open Terminal
   - Ctrl+Alt+C: Open Contact form
   - ESC: Close focused window
+
+## Glassmorphism Design
+
+PortfolioOS features a modern glassmorphism design with:
+- Transparent UI elements with frosted glass effects
+- Dynamic blur effects using backdrop-filter
+- Subtle borders and shadows for depth
+- Adaptive transparency for light and dark modes
+- Enhanced visual appeal with layered transparency effects
 
 ## Local Storage Features
 
@@ -196,6 +208,7 @@ The following improvements have been recently implemented:
 - Loading states for better user experience
 - Error boundaries to prevent app crashes
 - Enhanced accessibility features with proper ARIA labels
+- Glassmorphism UI with transparent, frosted glass effects
 
 ### Performance & UX Improvements
 - Improved window focus management

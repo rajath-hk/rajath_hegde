@@ -128,7 +128,7 @@ const Desktop = () => {
       {!isMobile && showScrollTop && (
         <button
           onClick={scrollToTop}
-          className="fixed bottom-20 right-6 bg-black/50 dark:bg-white/20 backdrop-blur-lg text-white p-2 rounded-full shadow-lg hover:bg-black/70 dark:hover:bg-white/30 transition-all z-30"
+          className="fixed bottom-20 right-6 glassy-icon text-foreground p-2 rounded-full shadow-lg hover:bg-black/20 dark:hover:bg-white/20 transition-all z-30 backdrop-blur-lg"
           aria-label="Scroll to top"
         >
           <ChevronUp className="w-5 h-5" />
@@ -139,7 +139,7 @@ const Desktop = () => {
       {!isMobile && (
         <button
           onClick={resetIconPositions}
-          className="fixed bottom-20 left-6 bg-black/50 dark:bg-white/20 backdrop-blur-lg text-white p-2 rounded-full shadow-lg hover:bg-black/70 dark:hover:bg-white/30 transition-all z-30"
+          className="fixed bottom-20 left-6 glassy-icon text-foreground p-2 rounded-full shadow-lg hover:bg-black/20 dark:hover:bg-white/20 transition-all z-30 backdrop-blur-lg"
           aria-label="Reset icon positions"
         >
           <RefreshCw className="w-5 h-5" />

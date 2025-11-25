@@ -66,7 +66,7 @@ const DesktopIcon = ({ app, constraintsRef }: DesktopIconProps) => {
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }} // Better touch feedback on mobile
     >
-      <div className="w-14 h-14 rounded-lg bg-black/10 dark:bg-white/10 backdrop-blur-lg flex items-center justify-center shadow border border-black/10 dark:border-white/10">
+      <div className="w-14 h-14 rounded-lg glassy-icon flex items-center justify-center shadow border">
         <IconComponent className="w-7 h-7 text-foreground" />
       </div>
       <span className="text-xs mt-1 text-foreground font-medium [text-shadow:0_1px_2px_rgba(255,255,255,0.2)] dark:[text-shadow:0_1px_2px_rgba(0,0,0,0.5)] px-1 py-0.5 rounded">
