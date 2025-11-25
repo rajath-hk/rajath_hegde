@@ -71,6 +71,8 @@ interface WindowContextType {
   updateWindowSize: (id: string, width: number, height: number) => void;
   updateIconPosition: (id: string, x: number, y: number) => void;
   resetIconPositions: () => void;
+  openAppById: (id: string) => void; // New function for keyboard shortcuts
+  closeFocusedWindow: () => void; // New function for ESC key
 }
 
 const WindowContext = createContext<WindowContextType | undefined>(undefined);
@@ -178,8 +180,25 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
         const parsedWindows = JSON.parse(savedWindows);
         setWindows(parsedWindows.map((win: any) => {
           const appConfig = initialAppsData.find(app => app.id === win.id);
+          
+          // Ensure window is within screen bounds
+          let x = win.x;
+          let y = win.y;
+          
+          // Boundary checks to ensure window is visible
+          if (typeof x === 'number' && typeof y === 'number') {
+            x = Math.max(0, Math.min(x, windowDimensions.width - (win.width || 300)));
+            y = Math.max(0, Math.min(y, windowDimensions.height - (win.height || 200)));
+          } else {
+            // Default positioning if none exists
+            x = appConfig?.x ?? 100;
+            y = appConfig?.y ?? 100;
+          }
+          
           return {
             ...win,
+            x,
+            y,
             icon: appConfig?.icon || FileText,
             content: createContentElement(win.id),
             defaultSize: appConfig?.defaultSize
@@ -244,8 +263,8 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
         // If window exists, bring it to front and unminimize it
         return prev.map(w => 
           w.id === id
-            ? { ...w, isMinimized: false, zIndex: Math.max(...prev.map(win => win.zIndex), 0) + 1 } 
-            : w
+            ? { ...w, isMinimized: false, zIndex: Math.max(...prev.map(win => win.zIndex), 0) + 1, isFocused: true } 
+            : { ...w, isFocused: false }
         );
       } else {
         // Create new window with proper content
@@ -280,16 +299,15 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
           isMaximized: false,
           isFocused: true,
         };
-        return [...prev, newWindow];
+        
+        // Unfocus other windows
+        const updatedWindows = [...prev, newWindow].map(w => 
+          w.id === id ? { ...w, isFocused: true } : { ...w, isFocused: false }
+        );
+        
+        return updatedWindows;
       }
     });
-    
-    // Unfocus other windows
-    setWindows(prev => 
-      prev.map(w => 
-        w.id === app.id ? { ...w, isFocused: true } : { ...w, isFocused: false }
-      )
-    );
   };
 
   const closeWindow = (id: string) => {
@@ -361,8 +379,28 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
             const initialIcon = initialAppsData.find(i => i.id === icon.id);
             return initialIcon ? { ...icon, x: initialIcon.x, y: initialIcon.y } : icon;
         });
+        // Save the reset positions
         saveIconsState(resetIcons);
         return resetIcons;
+    });
+  };
+  
+  const openAppById = (id: string) => {
+    const appConfig = initialAppsData.find(app => app.id === id);
+    if (appConfig) {
+      openWindow(appConfig);
+    }
+  };
+  
+  const closeFocusedWindow = () => {
+    setWindows(prev => {
+      const focusedWindow = prev.find(window => window.isFocused);
+      if (focusedWindow) {
+        const newWindows = prev.filter(win => win.id !== focusedWindow.id);
+        saveWindowsState(newWindows);
+        return newWindows;
+      }
+      return prev;
     });
   };
 
@@ -379,6 +417,8 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
       updateWindowSize,
       updateIconPosition,
       resetIconPositions,
+      openAppById,
+      closeFocusedWindow
     }}>
       {children}
     </WindowContext.Provider>

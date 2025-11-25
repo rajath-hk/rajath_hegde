@@ -6,6 +6,7 @@ import { useWindows } from '@/contexts/window-context';
 import { cn } from '@/lib/utils';
 import { X, Minus, Square, Minimize } from 'lucide-react';
 import { motion } from 'framer-motion';
+import ErrorBoundary from './error-boundary';
 
 type WindowProps = WindowInstance;
 
@@ -29,6 +30,7 @@ const Window = (props: WindowProps) => {
   const [resizeDirection, setResizeDirection] = useState<string | null>(null);
   const [isMobile, setIsMobile] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   
   const windowRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
@@ -62,6 +64,15 @@ const Window = (props: WindowProps) => {
     }
   }, [width, height, x, y, isMobile]);
 
+  // Simulate content loading
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 300);
+    
+    return () => clearTimeout(timer);
+  }, []);
+
   const handleResizeStart = (e: React.MouseEvent<HTMLDivElement>, direction: string) => {
     if (e.button !== 0) return;
     e.stopPropagation();
@@ -91,12 +102,15 @@ const Window = (props: WindowProps) => {
         if (!windowRef.current) return;
         
         const moveTouch = moveEvent.touches[0];
+        const windowWidth = windowRef.current.offsetWidth;
+        const windowHeight = windowRef.current.offsetHeight;
+        
         const newX = moveTouch.clientX - offsetX;
         const newY = moveTouch.clientY - offsetY;
         
         // Keep window within bounds
-        const boundedX = Math.max(0, Math.min(newX, window.innerWidth - windowRect.width));
-        const boundedY = Math.max(0, Math.min(newY, window.innerHeight - windowRect.height));
+        const boundedX = Math.max(0, Math.min(newX, window.innerWidth - windowWidth));
+        const boundedY = Math.max(0, Math.min(newY, window.innerHeight - windowHeight));
         
         setPosition({ x: boundedX, y: boundedY });
       };
@@ -165,12 +179,18 @@ const Window = (props: WindowProps) => {
       setSize({ width: newWidth, height: newHeight });
       setPosition({ x: newX, y: newY });
     } else if (isDragging) {
-      const newX = e.clientX - (windowRef.current?.offsetWidth || 0) / 2;
+      if (!windowRef.current) return;
+      
+      const windowWidth = windowRef.current.offsetWidth;
+      const windowHeight = windowRef.current.offsetHeight;
+      
+      // Calculate new position based on mouse movement
+      const newX = e.clientX - windowWidth / 2;
       const newY = e.clientY - 20;
       
-      // Boundary checks
-      const boundedX = Math.max(0, Math.min(newX, window.innerWidth - (windowRef.current?.offsetWidth || 0)));
-      const boundedY = Math.max(0, Math.min(newY, window.innerHeight - (windowRef.current?.offsetHeight || 0)));
+      // Boundary checks to keep window within screen
+      const boundedX = Math.max(0, Math.min(newX, window.innerWidth - windowWidth));
+      const boundedY = Math.max(0, Math.min(newY, window.innerHeight - windowHeight));
       
       setPosition({ x: boundedX, y: boundedY });
     }
@@ -184,7 +204,31 @@ const Window = (props: WindowProps) => {
       updateWindowPosition(id, position.x, position.y);
     } else if (isDragging) {
       setIsDragging(false);
-      updateWindowPosition(id, position.x, position.y);
+      
+      // Implement window snapping
+      const snapThreshold = 20; // pixels from edge to snap
+      let finalX = position.x;
+      let finalY = position.y;
+      
+      // Snap to edges
+      if (position.x < snapThreshold) {
+        finalX = 0; // Snap to left edge
+      } else if (position.x + size.width > window.innerWidth - snapThreshold) {
+        finalX = window.innerWidth - size.width; // Snap to right edge
+      }
+      
+      if (position.y < snapThreshold) {
+        finalY = 0; // Snap to top edge
+      } else if (position.y + size.height > window.innerHeight - snapThreshold) {
+        finalY = window.innerHeight - size.height; // Snap to bottom edge
+      }
+      
+      // Update position if snapped
+      if (finalX !== position.x || finalY !== position.y) {
+        setPosition({ x: finalX, y: finalY });
+      }
+      
+      updateWindowPosition(id, finalX, finalY);
     }
   }, [isResizing, isDragging, id, size, position, updateWindowSize, updateWindowPosition]);
 
@@ -226,8 +270,12 @@ const Window = (props: WindowProps) => {
       setPosition({ x: 0, y: 0 });
     } else if (!isMobile && !isMaximized) {
       // Reset to original size when unmaximizing on desktop
+      // But ensure window stays within bounds
+      const boundedX = Math.max(0, Math.min(x, window.innerWidth - width));
+      const boundedY = Math.max(0, Math.min(y, window.innerHeight - height));
+      
       setSize({ width, height });
-      setPosition({ x, y });
+      setPosition({ x: boundedX, y: boundedY });
     }
   }, [isMaximized, isMobile, width, height, x, y]);
 
@@ -272,6 +320,7 @@ const Window = (props: WindowProps) => {
         onDoubleClick={handleDoubleClick}
         onMouseDown={handleDragStart}
         onTouchStart={handleDragStart}
+        role="banner"
       >
         <div className="flex items-center space-x-2">
           <button
@@ -302,14 +351,23 @@ const Window = (props: WindowProps) => {
           <span className="sr-only">Window controls: close, minimize, maximize</span>
         </div>
         
-        <div className="text-sm font-medium truncate mx-4 flex-grow text-center">
+        <div className="text-sm font-medium truncate mx-4 flex-grow text-center" role="heading" aria-level={2}>
           {title}
         </div>
       </div>
 
       {/* Window Content */}
-      <div className="flex-grow overflow-auto bg-background">
-        {content}
+      <div className="flex-grow overflow-auto bg-background relative" role="main">
+        {isLoading ? (
+          <div className="absolute inset-0 flex items-center justify-center" role="status">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+            <span className="sr-only">Loading...</span>
+          </div>
+        ) : (
+          <ErrorBoundary>
+            {content}
+          </ErrorBoundary>
+        )}
       </div>
 
       {/* Resize Handles (only on desktop) */}

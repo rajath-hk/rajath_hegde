@@ -11,7 +11,7 @@ interface DesktopIconProps {
 }
 
 const DesktopIcon = ({ app, constraintsRef }: DesktopIconProps) => {
-  const { openWindow, updateIconPosition } = useWindows();
+  const { openWindow, updateIconPosition, desktopIcons } = useWindows();
   const IconComponent = app.icon;
   const [isMobile, setIsMobile] = useState(false);
   const isDraggingRef = React.useRef(false);
@@ -31,11 +31,14 @@ const DesktopIcon = ({ app, constraintsRef }: DesktopIconProps) => {
   const x = useMotionValue(app.x ?? 0);
   const y = useMotionValue(app.y ?? 0);
 
-  // Sync motion values if the state from context changes (e.g., on initial load)
+  // Sync motion values if the state from context changes (e.g., on initial load or reset)
   useEffect(() => {
-    x.set(app.x ?? 0);
-    y.set(app.y ?? 0);
-  }, [app.x, app.y, x, y]);
+    const currentIcon = desktopIcons.find(icon => icon.id === app.id);
+    if (currentIcon) {
+      x.set(currentIcon.x ?? 0);
+      y.set(currentIcon.y ?? 0);
+    }
+  }, [app.id, desktopIcons, x, y]);
 
   return (
     <motion.button

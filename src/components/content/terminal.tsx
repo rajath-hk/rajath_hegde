@@ -187,8 +187,13 @@ const Terminal = () => {
     const newHistory = [...history, `$ ${input}`];
     const [cmd, ...args] = input.trim().split(' ');
     
-    // Add to command history
-    setCommandHistory(prev => [...prev, input]);
+    // Add to command history (avoid duplicates)
+    setCommandHistory(prev => {
+      // Remove any existing instances of this command
+      const filtered = prev.filter(cmd => cmd !== input);
+      // Add to the end
+      return [...filtered, input];
+    });
     setHistoryIndex(-1);
     
     // Execute command
@@ -229,6 +234,9 @@ const Terminal = () => {
       if (matchingCommands.length === 1) {
         setInput(matchingCommands[0]);
       }
+    } else if (e.key === 'Enter') {
+      // Reset history index when submitting a new command
+      setHistoryIndex(-1);
     }
   };
 

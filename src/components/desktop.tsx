@@ -69,6 +69,8 @@ const Desktop = () => {
       className={`relative w-full h-screen anime-wallpaper glassy-window ${
         isMobile ? 'overflow-y-scroll' : 'overflow-y-auto'
       } bg-cover bg-center`}
+      role="main"
+      aria-label="Desktop"
     >
       <style jsx>{`
         div::-webkit-scrollbar {
