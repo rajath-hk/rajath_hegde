@@ -8,8 +8,8 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  basePath: process.env.GITHUB_ACTIONS ? '/rajath_hegde' : '',
-  assetPrefix: process.env.GITHUB_ACTIONS ? '/rajath_hegde/' : '',
+  basePath: process.env.GITHUB_ACTIONS ? '/HegdeOS' : '',
+  assetPrefix: process.env.GITHUB_ACTIONS ? '/HegdeOS/' : '',
 };
 
 module.exports = nextConfig;

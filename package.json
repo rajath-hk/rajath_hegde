@@ -2,7 +2,7 @@
   "name": "rajath-portfolio",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://rajath.github.io/rajath_hegde",
+  "homepage": "https://rajath-hk.github.io/HegdeOS",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
