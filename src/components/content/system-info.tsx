@@ -50,16 +50,16 @@ const SystemInfo = () => {
 
   return (
     <div className="h-full flex flex-col">
-      <div className="border-b p-4">
+      <div className="border-b p-4" role="banner" aria-label="System Information Header">
         <h1 className="text-2xl font-bold">System Information</h1>
         <p className="text-muted-foreground">Detailed information about your system</p>
       </div>
       
-      <div className="flex-1 overflow-y-auto p-4 space-y-6">
+      <div className="flex-1 overflow-y-auto p-4 space-y-6" role="main">
         {/* System Overview */}
-        <Card>
+        <Card role="region" aria-labelledby="system-overview-title">
           <CardHeader>
-            <CardTitle className="flex items-center">
+            <CardTitle id="system-overview-title" className="flex items-center">
               <Monitor className="w-5 h-5 mr-2" />
               System Overview
             </CardTitle>
@@ -97,9 +97,9 @@ const SystemInfo = () => {
         </Card>
         
         {/* Performance */}
-        <Card>
+        <Card role="region" aria-labelledby="performance-title">
           <CardHeader>
-            <CardTitle className="flex items-center">
+            <CardTitle id="performance-title" className="flex items-center">
               <Activity className="w-5 h-5 mr-2" />
               Performance
             </CardTitle>
@@ -111,9 +111,9 @@ const SystemInfo = () => {
                   <Cpu className="w-4 h-4 mr-2 text-blue-500" />
                   <span className="font-medium">CPU Usage</span>
                 </div>
-                <span className="text-sm">{Math.round(systemStats.cpu)}%</span>
+                <span className="text-sm" aria-live="polite">{Math.round(systemStats.cpu)}%</span>
               </div>
-              <Progress value={systemStats.cpu} className="h-2" />
+              <Progress value={systemStats.cpu} className="h-2" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(systemStats.cpu)} role="progressbar" />
             </div>
             
             <div>
@@ -122,9 +122,9 @@ const SystemInfo = () => {
                   <MemoryStick className="w-4 h-4 mr-2 text-green-500" />
                   <span className="font-medium">Memory Usage</span>
                 </div>
-                <span className="text-sm">{Math.round(systemStats.memory)}%</span>
+                <span className="text-sm" aria-live="polite">{Math.round(systemStats.memory)}%</span>
               </div>
-              <Progress value={systemStats.memory} className="h-2" />
+              <Progress value={systemStats.memory} className="h-2" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(systemStats.memory)} role="progressbar" />
             </div>
             
             <div>
@@ -133,18 +133,18 @@ const SystemInfo = () => {
                   <HardDrive className="w-4 h-4 mr-2 text-purple-500" />
                   <span className="font-medium">Disk Usage</span>
                 </div>
-                <span className="text-sm">{Math.round(systemStats.disk)}%</span>
+                <span className="text-sm" aria-live="polite">{Math.round(systemStats.disk)}%</span>
               </div>
-              <Progress value={systemStats.disk} className="h-2" />
+              <Progress value={systemStats.disk} className="h-2" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(systemStats.disk)} role="progressbar" />
             </div>
           </CardContent>
         </Card>
         
         {/* Network & Power */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card>
+          <Card role="region" aria-labelledby="network-title">
             <CardHeader>
-              <CardTitle className="flex items-center">
+              <CardTitle id="network-title" className="flex items-center">
                 <Wifi className="w-5 h-5 mr-2" />
                 Network
               </CardTitle>
@@ -156,7 +156,7 @@ const SystemInfo = () => {
                     <span className="font-medium">Internet</span>
                     <span className="text-sm">Connected</span>
                   </div>
-                  <Progress value={systemStats.network} className="h-2" />
+                  <Progress value={systemStats.network} className="h-2" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(systemStats.network)} role="progressbar" />
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">IP Address</span>
@@ -174,9 +174,9 @@ const SystemInfo = () => {
             </CardContent>
           </Card>
           
-          <Card>
+          <Card role="region" aria-labelledby="power-title">
             <CardHeader>
-              <CardTitle className="flex items-center">
+              <CardTitle id="power-title" className="flex items-center">
                 <Battery className="w-5 h-5 mr-2" />
                 Power
               </CardTitle>
@@ -186,9 +186,9 @@ const SystemInfo = () => {
                 <div>
                   <div className="flex justify-between mb-1">
                     <span className="font-medium">Battery</span>
-                    <span className="text-sm">{Math.round(systemStats.battery)}%</span>
+                    <span className="text-sm" aria-live="polite">{Math.round(systemStats.battery)}%</span>
                   </div>
-                  <Progress value={systemStats.battery} className="h-2" />
+                  <Progress value={systemStats.battery} className="h-2" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(systemStats.battery)} role="progressbar" />
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Power Source</span>
@@ -208,9 +208,9 @@ const SystemInfo = () => {
         </div>
         
         {/* Device Information */}
-        <Card>
+        <Card role="region" aria-labelledby="device-info-title">
           <CardHeader>
-            <CardTitle className="flex items-center">
+            <CardTitle id="device-info-title" className="flex items-center">
               <Globe className="w-5 h-5 mr-2" />
               Device Information
             </CardTitle>
@@ -245,7 +245,6 @@ const SystemInfo = () => {
           </CardContent>
         </Card>
       </div>
-    </div>
   );
 };
 
