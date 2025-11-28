@@ -5,7 +5,7 @@ const ResumeContent = () => {
   return (
     <div className="flex justify-center p-4 bg-muted/20">
         <Image
-        
+          src=""
           alt="Rajath Hegde's Resume"
           width={850}
           height={1100}
