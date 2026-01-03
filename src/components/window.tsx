@@ -93,7 +93,7 @@ const Window = (props: WindowProps) => {
     // Handle touch events for mobile
     if ('touches' in e) {
       setIsDragging(true);
-      const touch = e.touches[0];
+      const touch = (e as React.TouchEvent<HTMLDivElement>).touches[0];
       const windowRect = windowRef.current?.getBoundingClientRect();
       if (!windowRect) return;
       
@@ -244,7 +244,7 @@ const Window = (props: WindowProps) => {
       // Ensure window remains focused and visible after dragging
       focusWindow(id);
     }
-  }, [isResizing, isDragging, id, size, position, updateWindowSize, updateWindowPosition]);
+  }, [isResizing, isDragging, id, size, position, updateWindowSize, updateWindowPosition, focusWindow]);
 
   useEffect(() => {
     if (isResizing || isDragging) {

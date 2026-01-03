@@ -94,7 +94,7 @@ const saveIconsState = (iconsToSave: AppConfig[]) => {
 // Create content element for a given app ID
 const createContentElement = (id: string) => {
   switch (id) {
-    case 'about':
+    case 'story':
       return <AboutContent />;
     case 'projects':
       return <ProjectsContent />;

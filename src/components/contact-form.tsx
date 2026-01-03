@@ -40,7 +40,7 @@ export function ContactForm() {
 
       if (result.success) {
         toast({
-          title: 'Message Sent!',
+          title: 'Success!',
           description: result.message || 'Your message has been sent successfully!',
           duration: 5000,
         });

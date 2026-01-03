@@ -215,10 +215,16 @@ const NotificationCenter = () => {
       <button
         ref={openButtonRef}
         onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2 rounded-md hover:bg-accent focus:outline-none focus:ring-2 focus:ring-ring"
+        className="relative p-2 rounded-md hover:bg-accent focus:outline-none focus:ring-2 focus:ring-ring transition-colors"
         aria-label={isOpen ? "Close notifications" : "Open notifications"}
         aria-expanded={isOpen}
         aria-haspopup="true"
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            setIsOpen(!isOpen);
+          }
+        }}
       >
         <Bell className="h-5 w-5" />
         {unreadCount > 0 && (

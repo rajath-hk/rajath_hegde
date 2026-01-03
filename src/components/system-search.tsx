@@ -79,8 +79,10 @@ const SystemSearch = ({ open, onClose }: SystemSearchProps) => {
           relevance = 100; // Exact match
         } else if (titleLower.startsWith(searchTerm)) {
           relevance = 50; // Starts with
-        } else {
-          relevance = 10; // Contains
+        } else if (searchTerm.length >= 3 && titleLower.includes(searchTerm)) {
+          relevance = 30; // Contains (only for longer search terms to avoid false positives)
+        } else if (searchTerm.length < 3 && titleLower.includes(searchTerm)) {
+          relevance = 10; // Contains for shorter terms
         }
         
         searchResults.push({
