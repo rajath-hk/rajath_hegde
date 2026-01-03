@@ -39,7 +39,9 @@ class ErrorBoundary extends Component<Props, State> {
               className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
               onClick={() => {
                 this.setState({ hasError: false });
-                window.location.reload();
+                if (typeof window !== 'undefined') {
+                  window.location.reload();
+                }
               }}
             >
               Reload Page

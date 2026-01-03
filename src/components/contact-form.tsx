@@ -31,12 +31,18 @@ export function ContactForm() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       });
+      
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+      
       const result = await res.json();
 
       if (result.success) {
         toast({
           title: 'Message Sent!',
           description: result.message || 'Your message has been sent successfully!',
+          duration: 5000,
         });
         form.reset();
       } else {
@@ -44,6 +50,7 @@ export function ContactForm() {
           title: 'Error',
           description: result.message || 'Failed to send message. Please try again.',
           variant: 'destructive',
+          duration: 5000,
         });
       }
     } catch (error) {
@@ -52,6 +59,7 @@ export function ContactForm() {
         title: 'Error',
         description: 'Failed to send message. Please try again.',
         variant: 'destructive',
+        duration: 5000,
       });
     }
   }

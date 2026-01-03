@@ -1,0 +1,217 @@
+{
+  "tech_stack": [
+    "TypeScript",
+    "Next.js 15.3.3",
+    "React 18.3.1",
+    "Tailwind CSS",
+    "Prisma",
+    "PostgreSQL",
+    "NextAuth.js",
+    "Resend",
+    "Framer Motion",
+    "Radix UI",
+    "Zod",
+    "Playwright"
+  ],
+  "features": [
+    {
+      "name": "Retro OS Interface",
+      "description": "Main OS-like interface component that manages boot screen, desktop, and taskbar",
+      "files": [
+        "src/components/retro-os.tsx",
+        "src/components/boot-screen.tsx",
+        "src/components/desktop.tsx",
+        "src/components/taskbar.tsx",
+        "src/components/dock.tsx"
+      ]
+    },
+    {
+      "name": "Window Management System",
+      "description": "Context-based window management with drag, resize, minimize, maximize, and focus functionality",
+      "files": [
+        "src/contexts/window-context.tsx",
+        "src/components/window.tsx",
+        "src/components/start-menu.tsx"
+      ]
+    },
+    {
+      "name": "Portfolio Content Applications",
+      "description": "Various portfolio content applications including About, Resume, Skills, Projects, My Work, Gallery, and Journey",
+      "files": [
+        "src/components/content/about.tsx",
+        "src/components/content/resume.tsx",
+        "src/components/content/skills.tsx",
+        "src/components/content/projects.tsx",
+        "src/components/content/my-work.tsx",
+        "src/components/content/gallery.tsx",
+        "src/components/content/journey.tsx",
+        "src/components/content/story.tsx"
+      ]
+    },
+    {
+      "name": "Contact Form",
+      "description": "Contact form with validation, API integration, and email sending via Resend",
+      "files": [
+        "src/components/content/contact.tsx",
+        "src/components/contact-form.tsx",
+        "src/app/api/contact/route.ts",
+        "src/lib/schemas.ts"
+      ]
+    },
+    {
+      "name": "Utility Applications",
+      "description": "Various utility applications including Terminal, File Explorer, Browser, Calculator, Notes, Weather, and Media Player",
+      "files": [
+        "src/components/content/terminal.tsx",
+        "src/components/content/file-explorer.tsx",
+        "src/components/content/browser.tsx",
+        "src/components/content/calculator.tsx",
+        "src/components/content/notes.tsx",
+        "src/components/content/weather.tsx",
+        "src/components/content/media-player.tsx"
+      ]
+    },
+    {
+      "name": "System Applications",
+      "description": "System-related applications including Settings, System Info, User Profile, and Socials",
+      "files": [
+        "src/components/content/settings.tsx",
+        "src/components/content/system-info.tsx",
+        "src/components/content/user-profile.tsx",
+        "src/components/content/socials.tsx"
+      ]
+    },
+    {
+      "name": "UI Components",
+      "description": "Reusable UI components built with Radix UI and Tailwind CSS",
+      "files": [
+        "src/components/ui/button.tsx",
+        "src/components/ui/dialog.tsx",
+        "src/components/ui/input.tsx",
+        "src/components/ui/textarea.tsx",
+        "src/components/ui/card.tsx",
+        "src/components/ui/toast.tsx",
+        "src/components/ui/toaster.tsx",
+        "src/components/ui/avatar.tsx",
+        "src/components/ui/badge.tsx",
+        "src/components/ui/accordion.tsx",
+        "src/components/ui/tabs.tsx",
+        "src/components/ui/select.tsx",
+        "src/components/ui/slider.tsx",
+        "src/components/ui/switch.tsx",
+        "src/components/ui/scroll-area.tsx"
+      ]
+    },
+    {
+      "name": "Desktop Icons",
+      "description": "Desktop icon component for displaying and managing application icons on the desktop",
+      "files": [
+        "src/components/desktop-icon.tsx"
+      ]
+    },
+    {
+      "name": "System Search",
+      "description": "System-wide search functionality for finding applications and content",
+      "files": [
+        "src/components/system-search.tsx"
+      ]
+    },
+    {
+      "name": "Notification Center",
+      "description": "Notification system for displaying system and application notifications",
+      "files": [
+        "src/components/notification-center.tsx"
+      ]
+    },
+    {
+      "name": "Error Boundary",
+      "description": "Error boundary component for catching and handling React errors gracefully",
+      "files": [
+        "src/components/error-boundary.tsx"
+      ]
+    },
+    {
+      "name": "Theme Provider",
+      "description": "Theme management with dark/light mode support using next-themes",
+      "files": [
+        "src/components/theme-provider.tsx"
+      ]
+    },
+    {
+      "name": "Top Bar",
+      "description": "Top bar component for system information and controls",
+      "files": [
+        "src/components/top-bar.tsx"
+      ]
+    },
+    {
+      "name": "Custom Hooks",
+      "description": "Custom React hooks for mobile detection and toast notifications",
+      "files": [
+        "src/hooks/use-mobile.tsx",
+        "src/hooks/use-toast.ts"
+      ]
+    },
+    {
+      "name": "Utility Libraries",
+      "description": "Utility functions for file system operations, image loading, and general utilities",
+      "files": [
+        "src/lib/file-system.ts",
+        "src/lib/image-loader.ts",
+        "src/lib/utils.ts",
+        "src/lib/schemas.ts"
+      ]
+    },
+    {
+      "name": "Portfolio Configuration",
+      "description": "Portfolio data and configuration management",
+      "files": [
+        "src/config/portfolio.ts"
+      ]
+    },
+    {
+      "name": "Type Definitions",
+      "description": "TypeScript type definitions for the application",
+      "files": [
+        "src/types/index.ts"
+      ]
+    },
+    {
+      "name": "Database Schema",
+      "description": "Prisma schema for User, Project, Message, Skill, GalleryImage, and Analytics models",
+      "files": [
+        "prisma/schema.prisma"
+      ]
+    },
+    {
+      "name": "Authentication",
+      "description": "NextAuth.js integration for user authentication (configured but may not be fully implemented)",
+      "files": [
+        "prisma/schema.prisma"
+      ]
+    },
+    {
+      "name": "AI Integration",
+      "description": "Genkit AI integration for AI-powered features",
+      "files": [
+        "src/ai/dev.ts",
+        "src/ai/genkit.ts"
+      ]
+    },
+    {
+      "name": "Server Actions",
+      "description": "Next.js server actions for form submissions",
+      "files": [
+        "src/actions/send-message.ts"
+      ]
+    },
+    {
+      "name": "E2E Testing",
+      "description": "Playwright end-to-end tests for desktop functionality",
+      "files": [
+        "tests/desktop.e2e.ts",
+        "playwright.config.ts"
+      ]
+    }
+  ]
+}

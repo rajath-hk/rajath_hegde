@@ -13,6 +13,7 @@ const OsUi = () => {
 
   // Check if we've already shown the boot screen in this session
   useEffect(() => {
+    if (typeof window === 'undefined') return;
     const hasBooted = sessionStorage.getItem('portfolio-os-booted');
     if (hasBooted) {
       setShowBootScreen(false);
@@ -23,7 +24,9 @@ const OsUi = () => {
   const handleBootComplete = () => {
     setBooted(true);
     setShowBootScreen(false);
-    sessionStorage.setItem('portfolio-os-booted', 'true');
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem('portfolio-os-booted', 'true');
+    }
   };
 
   if (showBootScreen) {
@@ -71,6 +74,7 @@ const OsUiInner = () => {
       }
     };
 
+    if (typeof window === 'undefined') return;
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [openAppById, closeFocusedWindow]);

@@ -42,6 +42,7 @@ const UserProfileManager = () => {
 
   // Save profile to localStorage on change
   useEffect(() => {
+    if (typeof window === 'undefined') return;
     if (profile) {
       localStorage.setItem(USER_PROFILE_STORAGE_KEY, JSON.stringify(profile));
     } else {
@@ -72,7 +73,7 @@ const UserProfileManager = () => {
   };
 
   const handleExport = () => {
-    if (!profile) return;
+    if (!profile || typeof window === 'undefined' || typeof document === 'undefined') return;
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(profile));
     const downloadAnchorNode = document.createElement('a');
     downloadAnchorNode.setAttribute("href", dataStr);

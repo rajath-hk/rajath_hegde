@@ -29,7 +29,7 @@ import { motion } from 'framer-motion';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 const StartMenu = () => {
-  const { openWindow } = useWindows();
+  const { openWindow, desktopIcons, openAppById } = useWindows();
   const isMobile = useIsMobile();
   const [activeCategory, setActiveCategory] = useState('all');
   const startMenuRef = useRef<HTMLDivElement>(null);
@@ -38,46 +38,35 @@ const StartMenu = () => {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       // Close start menu with Escape key
-      if (e.key === 'Escape') {
+      if (e.key === 'Escape' && typeof window !== 'undefined') {
         const event = new CustomEvent('closeStartMenu');
         window.dispatchEvent(event);
       }
     };
 
+    if (typeof document === 'undefined') return;
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  // Group apps by category for better organization
-  const categorizedApps = {
-    core: [
-      { id: 'about', title: 'My Story', icon: FileText },
-      { id: 'resume', title: 'My Resume', icon: FileText },
-      { id: 'skills', title: 'Skills', icon: Award },
-      { id: 'projects', title: 'Projects', icon: Folder },
-    ],
-    work: [
-      { id: 'my-work', title: 'My Work', icon: Briefcase },
-      { id: 'gallery', title: 'Gallery', icon: Image },
-      { id: 'media', title: 'Media Player', icon: Play },
-    ],
-    tools: [
-      { id: 'terminal', title: 'Terminal', icon: Terminal },
-      { id: 'explorer', title: 'File Explorer', icon: HardDrive },
-      { id: 'browser', title: 'Web Browser', icon: Globe },
-      { id: 'notes', title: 'Notes', icon: Notebook },
-      { id: 'calculator', title: 'Calculator', icon: Calculator },
-      { id: 'weather', title: 'Weather', icon: Cloud },
-    ],
-    system: [
-      { id: 'settings', title: 'Settings', icon: Settings },
-      { id: 'system', title: 'System Info', icon: Activity },
-    ],
-    communication: [
-      { id: 'contact', title: 'Contact Me', icon: Mail },
-      { id: 'socials', title: 'Socials', icon: Folder },
-    ]
+  // Group apps by category for better organization - use desktopIcons to ensure correct mapping
+  const getCategorizedApps = () => {
+    const coreIds = ['about', 'resume', 'skills', 'projects'];
+    const workIds = ['my-work', 'gallery', 'media'];
+    const toolsIds = ['terminal', 'explorer', 'browser', 'notes', 'calculator', 'weather'];
+    const systemIds = ['settings', 'system'];
+    const communicationIds = ['contact', 'socials'];
+
+    return {
+      core: desktopIcons.filter(app => coreIds.includes(app.id)),
+      work: desktopIcons.filter(app => workIds.includes(app.id)),
+      tools: desktopIcons.filter(app => toolsIds.includes(app.id)),
+      system: desktopIcons.filter(app => systemIds.includes(app.id)),
+      communication: desktopIcons.filter(app => communicationIds.includes(app.id)),
+    };
   };
+
+  const categorizedApps = getCategorizedApps();
 
   // Get apps based on active category
   const getAppsByCategory = () => {
@@ -128,7 +117,12 @@ const StartMenu = () => {
                 key={app.id}
                 variant="ghost"
                 className="flex flex-col h-16 items-center justify-center p-1"
-                onClick={() => openWindow(app)}
+                onClick={() => {
+                  // Use openAppById to ensure correct app mapping from desktopIcons
+                  if (app.id) {
+                    openAppById(app.id);
+                  }
+                }}
               >
                 <div className="w-8 h-8 rounded-lg bg-black/10 dark:bg-white/10 flex items-center justify-center mb-1">
                   <IconComponent className="w-4 h-4" />
@@ -204,7 +198,12 @@ const StartMenu = () => {
                 key={app.id}
                 variant="ghost"
                 className="flex flex-col h-20 items-center justify-center p-2 hover:bg-accent"
-                onClick={() => openWindow(app)}
+                onClick={() => {
+                  // Use openAppById to ensure correct app mapping from desktopIcons
+                  if (app.id) {
+                    openAppById(app.id);
+                  }
+                }}
               >
                 <div className="w-10 h-10 rounded-lg bg-black/10 dark:bg-white/10 flex items-center justify-center mb-2">
                   <IconComponent className="w-5 h-5" />

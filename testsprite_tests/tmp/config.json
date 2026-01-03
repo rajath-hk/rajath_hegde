@@ -1,0 +1,16 @@
+{
+  "status": "commited",
+  "type": "frontend",
+  "scope": "codebase",
+  "localEndpoint": "http://localhost:3000",
+  "executionArgs": {
+    "projectName": "HegdeOS",
+    "projectPath": "C:\\Users\\rajat\\OneDrive\\Documents\\GitHub\\HegdeOS",
+    "testIds": [],
+    "additionalInstruction": "",
+    "envs": {
+      "API_KEY": "sk-user-7EygCdlJqBQ5cjKhqBC0vQukCqM0DoLyEyh4nmnKqaX5ZS-TBJT_HCl5cFZ1IgRSWm5p63H614gHT_MmgVPRFUirPb8TLA8FiHaDz9QvAfAJhyMse772u6qZJfxxf1vnyE0"
+    }
+  },
+  "proxy": "http://7afafddf-73d4-432f-bf73-2723d5ac2def:rzGQBq4YFIW70M3u2EqKmTEIIMmbryI9@tun.testsprite.com:8080"
+}

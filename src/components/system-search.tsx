@@ -12,6 +12,7 @@ interface SearchResult {
   icon: React.ReactNode;
   path: string;
   content?: string;
+  relevance?: number;
 }
 
 interface SystemSearchProps {
@@ -41,6 +42,7 @@ const SystemSearch = ({ open, onClose }: SystemSearchProps) => {
         }
     };
 
+    if (typeof window === 'undefined') return;
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen]);
@@ -67,15 +69,27 @@ const SystemSearch = ({ open, onClose }: SystemSearchProps) => {
     const searchTerm = query.toLowerCase();
     const searchResults: SearchResult[] = [];
 
-    // Search applications
+    // Search applications with relevance scoring
     desktopIcons.forEach(app => {
-      if (app.title.toLowerCase().includes(searchTerm)) {
+      const titleLower = app.title.toLowerCase();
+      if (titleLower.includes(searchTerm)) {
+        // Calculate relevance score: exact match = highest, starts with = high, contains = lower
+        let relevance = 0;
+        if (titleLower === searchTerm) {
+          relevance = 100; // Exact match
+        } else if (titleLower.startsWith(searchTerm)) {
+          relevance = 50; // Starts with
+        } else {
+          relevance = 10; // Contains
+        }
+        
         searchResults.push({
           id: app.id,
           title: app.title,
           type: 'app',
           icon: <app.icon className="w-4 h-4" />,
-          path: 'Applications'
+          path: 'Applications',
+          relevance // Add relevance for sorting
         });
       }
     });
@@ -100,6 +114,16 @@ const SystemSearch = ({ open, onClose }: SystemSearchProps) => {
     };
 
     searchFileSystem(fileSystem);
+
+    // Sort by relevance (highest first), then by title
+    searchResults.sort((a, b) => {
+      const aRelevance = a.relevance || 0;
+      const bRelevance = b.relevance || 0;
+      if (aRelevance !== bRelevance) {
+        return bRelevance - aRelevance; // Higher relevance first
+      }
+      return a.title.localeCompare(b.title); // Alphabetical if same relevance
+    });
 
     setResults(searchResults.slice(0, 10)); // Limit to 10 results
   }, [query, desktopIcons]);

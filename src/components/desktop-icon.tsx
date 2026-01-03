@@ -18,6 +18,7 @@ const DesktopIcon = ({ app, constraintsRef }: DesktopIconProps) => {
 
   // Check if we're on mobile
   useEffect(() => {
+    if (typeof window === 'undefined') return;
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
@@ -30,13 +31,17 @@ const DesktopIcon = ({ app, constraintsRef }: DesktopIconProps) => {
   // Use motion values for a more robust drag implementation
   const x = useMotionValue(app.x ?? 0);
   const y = useMotionValue(app.y ?? 0);
+  const hasDraggedRef = React.useRef(false);
 
   // Sync motion values if the state from context changes (e.g., on initial load or reset)
+  // Only sync if we haven't manually dragged the icon
   useEffect(() => {
-    const currentIcon = desktopIcons.find(icon => icon.id === app.id);
-    if (currentIcon) {
-      x.set(currentIcon.x ?? 0);
-      y.set(currentIcon.y ?? 0);
+    if (!hasDraggedRef.current) {
+      const currentIcon = desktopIcons.find(icon => icon.id === app.id);
+      if (currentIcon) {
+        x.set(currentIcon.x ?? 0);
+        y.set(currentIcon.y ?? 0);
+      }
     }
   }, [app.id, desktopIcons, x, y]);
 
@@ -58,8 +63,20 @@ const DesktopIcon = ({ app, constraintsRef }: DesktopIconProps) => {
         if (isDraggingRef.current) return;
         openWindow(app);
       }}
-      onDragStart={() => { isDraggingRef.current = true; }}
-      onDragEnd={() => { isDraggingRef.current = false; updateIconPosition(app.id, x.get(), y.get()); }}
+      onDragStart={() => { 
+        isDraggingRef.current = true;
+        hasDraggedRef.current = true;
+      }}
+      onDragEnd={(event, info) => { 
+        isDraggingRef.current = false;
+        const finalX = x.get();
+        const finalY = y.get();
+        updateIconPosition(app.id, finalX, finalY);
+        // Reset the flag after a short delay to allow for future syncing
+        setTimeout(() => {
+          hasDraggedRef.current = false;
+        }, 100);
+      }}
       drag={!isMobile} // Only allow drag on desktop
       dragConstraints={constraintsRef}
       dragMomentum={false}

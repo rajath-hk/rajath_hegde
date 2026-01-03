@@ -4,7 +4,8 @@
  * @type {import('next').NextConfig}
  */
 const nextConfig = {
-  output: 'export',
+  // Temporarily disable static export for dev server testing
+  // output: 'export',
   images: {
     unoptimized: true,
   },

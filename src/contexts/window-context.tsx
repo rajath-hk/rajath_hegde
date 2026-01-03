@@ -145,27 +145,23 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
 
   // Check if we're on mobile
   useEffect(() => {
-    const checkMobile = () => {
-      if (typeof window !== 'undefined') {
-        setIsMobile(window.innerWidth < 768);
-      }
-    };
+    if (typeof window === 'undefined') return;
     
-    if (typeof window !== 'undefined') {
-      checkMobile();
-      window.addEventListener('resize', checkMobile);
-    }
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
     
     // Set up resize listener and initial dimensions
     const updateDims = () => setWindowDimensions({width: window.innerWidth, height: window.innerHeight});
+    
+    checkMobile();
     updateDims();
+    window.addEventListener('resize', checkMobile);
     window.addEventListener('resize', updateDims);
     
     return () => {
-      if (typeof window !== 'undefined') {
-        window.removeEventListener('resize', checkMobile);
-        window.removeEventListener('resize', updateDims);
-      }
+      window.removeEventListener('resize', checkMobile);
+      window.removeEventListener('resize', updateDims);
     };
   }, []);
 

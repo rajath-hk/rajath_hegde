@@ -1,0 +1,501 @@
+[
+  {
+    "id": "TC001",
+    "title": "Boot and Login Flow",
+    "description": "Verify that the user can boot into the PortfolioOS using the simulated login screen with any input or guest access and reach the desktop environment.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to PortfolioOS boot screen"
+      },
+      {
+        "type": "action",
+        "description": "Enter valid login input or select guest access"
+      },
+      {
+        "type": "action",
+        "description": "Submit login form"
+      },
+      {
+        "type": "assertion",
+        "description": "Check that desktop environment is loaded with icons and taskbar visible"
+      }
+    ]
+  },
+  {
+    "id": "TC002",
+    "title": "Desktop Icon Interactions",
+    "description": "Test the ability to interact with desktop icons including dragging and opening corresponding applications.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Locate a desktop icon"
+      },
+      {
+        "type": "action",
+        "description": "Drag the icon to a new position and release"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify icon position is updated and persisted"
+      },
+      {
+        "type": "action",
+        "description": "Double-click the icon to open the associated application"
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm that the correct application window opens and gains focus"
+      }
+    ]
+  },
+  {
+    "id": "TC003",
+    "title": "Window Management - Drag, Resize, Minimize, Maximize, Snap",
+    "description": "Ensure all window management functionalities work as expected, including dragging windows, resizing, minimizing, maximizing, snapping to screen edges, and keyboard shortcuts.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Open any application window"
+      },
+      {
+        "type": "action",
+        "description": "Drag window to new location"
+      },
+      {
+        "type": "assertion",
+        "description": "Window position is updated correctly"
+      },
+      {
+        "type": "action",
+        "description": "Resize window using mouse by dragging edges and corners"
+      },
+      {
+        "type": "assertion",
+        "description": "Window resizes smoothly without visual glitches"
+      },
+      {
+        "type": "action",
+        "description": "Click minimize button"
+      },
+      {
+        "type": "assertion",
+        "description": "Window minimizes to taskbar or dock"
+      },
+      {
+        "type": "action",
+        "description": "Click maximize button"
+      },
+      {
+        "type": "assertion",
+        "description": "Window maximizes to full desktop area"
+      },
+      {
+        "type": "action",
+        "description": "Drag window to edge to trigger snap"
+      },
+      {
+        "type": "assertion",
+        "description": "Window snaps properly to screen edge"
+      },
+      {
+        "type": "action",
+        "description": "Use keyboard shortcuts to minimize, maximize, and close a window"
+      },
+      {
+        "type": "assertion",
+        "description": "Keyboard shortcut functions perform expected window management actions"
+      }
+    ]
+  },
+  {
+    "id": "TC004",
+    "title": "Theme and Wallpaper Customization Persistence",
+    "description": "Verify theme and wallpaper selections apply instantly and persist correctly across sessions using localStorage.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Open Settings application"
+      },
+      {
+        "type": "action",
+        "description": "Change theme to dark, light, and system modes"
+      },
+      {
+        "type": "assertion",
+        "description": "UI theme updates accordingly with smooth transition"
+      },
+      {
+        "type": "action",
+        "description": "Select different wallpaper images"
+      },
+      {
+        "type": "assertion",
+        "description": "Desktop wallpaper updates immediately"
+      },
+      {
+        "type": "action",
+        "description": "Reload the browser or re-open PortfolioOS"
+      },
+      {
+        "type": "assertion",
+        "description": "Selected theme and wallpaper persist and are correctly loaded"
+      }
+    ]
+  },
+  {
+    "id": "TC005",
+    "title": "Contact Form Validation and Submission",
+    "description": "Verify client-side validation using Zod is enforced, server-side email sending via Resend works, and user receives proper feedback via toast notifications.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Open Contact application"
+      },
+      {
+        "type": "action",
+        "description": "Submit empty form"
+      },
+      {
+        "type": "assertion",
+        "description": "Validation errors shown for required fields"
+      },
+      {
+        "type": "action",
+        "description": "Fill inputs with invalid email and submit"
+      },
+      {
+        "type": "assertion",
+        "description": "Validation error for invalid email format is shown"
+      },
+      {
+        "type": "action",
+        "description": "Fill valid data and submit form"
+      },
+      {
+        "type": "assertion",
+        "description": "Form submits successfully"
+      },
+      {
+        "type": "assertion",
+        "description": "Success toast notification is displayed"
+      },
+      {
+        "type": "action",
+        "description": "Simulate server error response on submission"
+      },
+      {
+        "type": "assertion",
+        "description": "Error toast notification is displayed indicating submission failure"
+      }
+    ]
+  },
+  {
+    "id": "TC006",
+    "title": "Accessibility Compliance Check",
+    "description": "Ensure all UI components across the OS comply with accessibility standards including ARIA roles, labels, keyboard navigation, and screen reader support.",
+    "category": "accessibility",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Use keyboard to navigate entire OS interface starting from login to desktop apps"
+      },
+      {
+        "type": "assertion",
+        "description": "All interactive elements are reachable and operable using keyboard only"
+      },
+      {
+        "type": "action",
+        "description": "Use screen reader to traverse UI"
+      },
+      {
+        "type": "assertion",
+        "description": "All UI components provide meaningful ARIA attributes and screen reader announces them correctly"
+      },
+      {
+        "type": "action",
+        "description": "Verify focus management on opening/closing windows and dialogs"
+      },
+      {
+        "type": "assertion",
+        "description": "Focus is correctly set and trapped where appropriate"
+      }
+    ]
+  },
+  {
+    "id": "TC007",
+    "title": "Notification Center Functionality and Accessibility",
+    "description": "Test notification center for keyboard and pointer interactions, proper focus management, and screen reader alerts.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Trigger a system notification"
+      },
+      {
+        "type": "assertion",
+        "description": "Notification appears in notification center"
+      },
+      {
+        "type": "action",
+        "description": "Use keyboard to open notification center"
+      },
+      {
+        "type": "assertion",
+        "description": "Notification center opens and receives focus"
+      },
+      {
+        "type": "action",
+        "description": "Navigate through notifications using keyboard"
+      },
+      {
+        "type": "assertion",
+        "description": "Focus moves correctly across each notification item"
+      },
+      {
+        "type": "action",
+        "description": "Use pointer to click a notification"
+      },
+      {
+        "type": "assertion",
+        "description": "Notification interaction responds correctly and dismisses if applicable"
+      },
+      {
+        "type": "action",
+        "description": "Verify screen reader announces new notifications"
+      },
+      {
+        "type": "assertion",
+        "description": "Screen reader reads notification content and alert role is properly set"
+      }
+    ]
+  },
+  {
+    "id": "TC008",
+    "title": "Responsive Design across Devices",
+    "description": "Verify that the UI adapts gracefully across desktop, tablet, and mobile environments, including touch gesture support and appropriate layout changes.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Open PortfolioOS on desktop viewport"
+      },
+      {
+        "type": "assertion",
+        "description": "Full OS interface with desktop icons, taskbar, and resizable windows is visible"
+      },
+      {
+        "type": "action",
+        "description": "Resize viewport to tablet dimensions"
+      },
+      {
+        "type": "assertion",
+        "description": "Layout adjusts to tablet view with appropriate scaling and touch-friendly controls"
+      },
+      {
+        "type": "action",
+        "description": "Open PortfolioOS on mobile viewport"
+      },
+      {
+        "type": "assertion",
+        "description": "Mobile-optimized UI with bottom navigation for minimized windows is visible"
+      },
+      {
+        "type": "action",
+        "description": "Use touch gestures to open, close, minimize, and navigate windows"
+      },
+      {
+        "type": "assertion",
+        "description": "Touch gestures respond accurately and UI behaves as expected"
+      }
+    ]
+  },
+  {
+    "id": "TC009",
+    "title": "Error Boundary Handling",
+    "description": "Validate that the error boundary component catches runtime errors in any part of the app and displays fallback UI without crashing the whole application.",
+    "category": "error handling",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Introduce a runtime error in a component (simulate throwing an error)"
+      },
+      {
+        "type": "assertion",
+        "description": "Error boundary catches the error and renders fallback UI"
+      },
+      {
+        "type": "assertion",
+        "description": "Other parts of the OS remain operational and user can continue interacting"
+      }
+    ]
+  },
+  {
+    "id": "TC010",
+    "title": "Performance and Animation Smoothness",
+    "description": "Ensure performance optimizations such as lazy loading and smooth animations are functioning under typical user interactions.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Open multiple applications with delayed load components"
+      },
+      {
+        "type": "assertion",
+        "description": "Lazy loading triggers as expected and no blocking UI occurs"
+      },
+      {
+        "type": "action",
+        "description": "Perform window drag, resize, theme switch, and open animations"
+      },
+      {
+        "type": "assertion",
+        "description": "Animations are smooth with no jank or frame drops"
+      }
+    ]
+  },
+  {
+    "id": "TC011",
+    "title": "System-Wide Search Functionality",
+    "description": "Test the system search application can find and open installed applications and portfolio content reliably.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Focus on the system search input"
+      },
+      {
+        "type": "action",
+        "description": "Type partial application names or portfolio content keywords"
+      },
+      {
+        "type": "assertion",
+        "description": "Relevant search results appear dynamically"
+      },
+      {
+        "type": "action",
+        "description": "Select a result via keyboard or pointer"
+      },
+      {
+        "type": "assertion",
+        "description": "The corresponding app or content window opens and gains focus"
+      }
+    ]
+  },
+  {
+    "id": "TC012",
+    "title": "Contact Form Server Failure Fallback Handling",
+    "description": "Confirm that when the Resend API fails or is unreachable, the system simulates sending with proper user notification and does not crash.",
+    "category": "error handling",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Intercept contact form submission and simulate Resend API failure"
+      },
+      {
+        "type": "action",
+        "description": "Submit form with valid inputs"
+      },
+      {
+        "type": "assertion",
+        "description": "Fallback simulation triggers and success notification is shown"
+      },
+      {
+        "type": "assertion",
+        "description": "Application remains stable with no crashes or unresponsive UI"
+      }
+    ]
+  },
+  {
+    "id": "TC013",
+    "title": "Local Storage Persistence for Window Positions and Icon Layout",
+    "description": "Verify window positions, sizes, and desktop icon layouts persist accurately across sessions using localStorage.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Move and resize an open application window"
+      },
+      {
+        "type": "action",
+        "description": "Rearrange multiple desktop icons"
+      },
+      {
+        "type": "action",
+        "description": "Reload the application"
+      },
+      {
+        "type": "assertion",
+        "description": "Previously set window sizes and positions are restored"
+      },
+      {
+        "type": "assertion",
+        "description": "Desktop icons are shown in the rearranged positions"
+      }
+    ]
+  },
+  {
+    "id": "TC014",
+    "title": "Keyboard Shortcut for Window Management",
+    "description": "Test all supported keyboard shortcuts related to window management are recognized and perform correct actions.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Open an application window and bring it into focus"
+      },
+      {
+        "type": "action",
+        "description": "Use keyboard shortcuts for minimize, maximize, snap, and close"
+      },
+      {
+        "type": "assertion",
+        "description": "Each shortcut triggers the correct window management operation"
+      },
+      {
+        "type": "assertion",
+        "description": "No unexpected side effects occur and focus is managed properly"
+      }
+    ]
+  },
+  {
+    "id": "TC015",
+    "title": "Glassmorphism UI Theme Modes and Transitions",
+    "description": "Verify the glassmorphism-based UI design supports light, dark, and system theme modes with smooth visual effects and animations.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Switch between light, dark, and system theme modes in settings"
+      },
+      {
+        "type": "assertion",
+        "description": "Glassmorphism effects render correctly in all modes"
+      },
+      {
+        "type": "assertion",
+        "description": "Transitions between themes are smooth with proper animations"
+      }
+    ]
+  }
+]

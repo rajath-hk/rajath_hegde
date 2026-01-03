@@ -19,6 +19,7 @@ const Desktop = () => {
 
   // Check if we're on mobile
   useEffect(() => {
+    if (typeof window === 'undefined') return;
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
@@ -30,12 +31,14 @@ const Desktop = () => {
 
   // Load wallpaper from localStorage
   useEffect(() => {
+    if (typeof window === 'undefined') return;
     const savedWallpaper = localStorage.getItem('portfolio-wallpaper') || 'https://wallpaperaccess.com/full/317501.jpg';
     setWallpaper(savedWallpaper);
   }, []);
 
   // Listen for wallpaper changes
   useEffect(() => {
+    if (typeof window === 'undefined') return;
     const handleWallpaperChange = (event: CustomEvent) => {
       setWallpaper(event.detail);
     };

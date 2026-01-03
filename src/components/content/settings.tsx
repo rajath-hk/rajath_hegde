@@ -32,6 +32,7 @@ const Settings = () => {
 
   // Load settings from localStorage
   useEffect(() => {
+    if (typeof window === 'undefined') return;
     const savedWallpaper = localStorage.getItem('portfolio-wallpaper') || '/logo.png';
     const savedVolume = localStorage.getItem('portfolio-volume') || '80';
     const savedNotifications = localStorage.getItem('portfolio-notifications') || 'true';
@@ -49,10 +50,11 @@ const Settings = () => {
 
   // Save settings to localStorage
   const saveSetting = (key: string, value: string | number | boolean) => {
+    if (typeof window === 'undefined') return;
     localStorage.setItem(`portfolio-${key}`, String(value));
     
     // Special handling for wallpaper
-    if (key === 'wallpaper') {
+    if (key === 'wallpaper' && typeof window !== 'undefined') {
       const event = new CustomEvent('wallpaperChange', { detail: value });
       window.dispatchEvent(event);
     }

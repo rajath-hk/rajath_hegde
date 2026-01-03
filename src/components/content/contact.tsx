@@ -67,7 +67,11 @@ const ContactContent = () => {
             <Button
               variant="outline"
               className="w-full justify-start gap-2"
-              onClick={() => window.location.href = `mailto:${portfolioConfig.personal.email || 'contact@rajathhegde.com'}`}
+              onClick={() => {
+                if (typeof window !== 'undefined') {
+                  window.location.href = `mailto:${portfolioConfig.personal.email || 'contact@rajathhegde.com'}`;
+                }
+              }}
             >
               <Mail className="h-4 w-4" />
               <span>{portfolioConfig.personal.email || 'contact@rajathhegde.com'}</span>

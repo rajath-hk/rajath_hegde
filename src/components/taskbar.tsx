@@ -9,7 +9,6 @@ import {
   Battery, 
   Volume2, 
   Search,
-  Bell,
   Calendar,
   User,
   Minus,
@@ -17,6 +16,7 @@ import {
 } from 'lucide-react';
 import { format } from 'date-fns';
 import StartMenu from '@/components/start-menu';
+import NotificationCenter from '@/components/notification-center';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
 
@@ -37,6 +37,7 @@ const Taskbar = () => {
 
   // Handle closing start menu from other components
   useEffect(() => {
+    if (typeof window === 'undefined') return;
     const closeStartMenu = () => setShowStartMenu(false);
     window.addEventListener('closeStartMenu', closeStartMenu);
     return () => window.removeEventListener('closeStartMenu', closeStartMenu);
@@ -111,18 +112,7 @@ const Taskbar = () => {
               <Search className="w-6 h-6" />
             </Button>
             
-            <Button 
-              variant="ghost" 
-              size="icon"
-              className="h-12 w-12 rounded-full hover:bg-accent/50"
-              aria-label="Notifications"
-              onClick={() => {
-                const app = desktopIcons.find(i => i.id === 'notifications');
-                if (app) openWindow(app);
-              }}
-            >
-              <Bell className="w-6 h-6" />
-            </Button>
+            <NotificationCenter />
           </div>
         </div>
       </>
@@ -220,18 +210,7 @@ const Taskbar = () => {
             <Search className="w-4 h-4" />
           </Button>
           
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            className="h-8 w-8 p-0 hover:bg-accent/50"
-            aria-label="Notifications"
-            onClick={() => {
-              const app = desktopIcons.find(i => i.id === 'notifications');
-              if (app) openWindow(app);
-            }}
-          >
-            <Bell className="w-4 h-4" />
-          </Button>
+          <NotificationCenter />
           
           <div className="flex items-center px-2 text-sm backdrop-blur-sm rounded" aria-label="System information">
             <Wifi className="w-4 h-4 mr-1 text-muted-foreground" aria-hidden="true" />

@@ -79,6 +79,7 @@ const NotificationCenter = () => {
       }
     };
 
+    if (typeof document === 'undefined') return;
     if (isOpen) {
       document.addEventListener('keydown', handleKeyDown);
       document.addEventListener('mousedown', handleClickOutside);

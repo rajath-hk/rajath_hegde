@@ -37,6 +37,7 @@ const Window = (props: WindowProps) => {
 
   // Check if we're on mobile
   useEffect(() => {
+    if (typeof window === 'undefined') return;
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
@@ -48,6 +49,7 @@ const Window = (props: WindowProps) => {
 
   // Adjust window size and position for mobile
   useEffect(() => { 
+    if (typeof window === 'undefined') return;
     if (isMobile) {
       // On mobile, make windows take up most of the screen with proper margins
       const newWidth = Math.min(window.innerWidth - 20, 600);
@@ -109,21 +111,28 @@ const Window = (props: WindowProps) => {
         const newY = moveTouch.clientY - offsetY;
         
         // Keep window within bounds
-        const boundedX = Math.max(0, Math.min(newX, window.innerWidth - windowWidth));
-        const boundedY = Math.max(0, Math.min(newY, window.innerHeight - windowHeight));
-        
-        setPosition({ x: boundedX, y: boundedY });
+        if (typeof window !== 'undefined') {
+          const boundedX = Math.max(0, Math.min(newX, window.innerWidth - windowWidth));
+          const boundedY = Math.max(0, Math.min(newY, window.innerHeight - windowHeight));
+          setPosition({ x: boundedX, y: boundedY });
+        }
       };
       
       const handleTouchEnd = () => {
         updateWindowPosition(id, position.x, position.y);
         setIsDragging(false);
-        window.removeEventListener('touchmove', handleTouchMove);
-        window.removeEventListener('touchend', handleTouchEnd);
+        // Ensure window remains focused and visible after dragging
+        focusWindow(id);
+        if (typeof window !== 'undefined') {
+          window.removeEventListener('touchmove', handleTouchMove);
+          window.removeEventListener('touchend', handleTouchEnd);
+        }
       };
       
-      window.addEventListener('touchmove', handleTouchMove);
-      window.addEventListener('touchend', handleTouchEnd);
+      if (typeof window !== 'undefined') {
+        window.addEventListener('touchmove', handleTouchMove);
+        window.addEventListener('touchend', handleTouchEnd);
+      }
     } else {
       // Handle mouse events for desktop
       if (headerRef.current && headerRef.current.contains(e.target as Node)) {
@@ -189,10 +198,11 @@ const Window = (props: WindowProps) => {
       const newY = e.clientY - 20;
       
       // Boundary checks to keep window within screen
-      const boundedX = Math.max(0, Math.min(newX, window.innerWidth - windowWidth));
-      const boundedY = Math.max(0, Math.min(newY, window.innerHeight - windowHeight));
-      
-      setPosition({ x: boundedX, y: boundedY });
+      if (typeof window !== 'undefined') {
+        const boundedX = Math.max(0, Math.min(newX, window.innerWidth - windowWidth));
+        const boundedY = Math.max(0, Math.min(newY, window.innerHeight - windowHeight));
+        setPosition({ x: boundedX, y: boundedY });
+      }
     }
   }, [isResizing, resizeDirection, isDragging, size, position]);
 
@@ -211,16 +221,18 @@ const Window = (props: WindowProps) => {
       let finalY = position.y;
       
       // Snap to edges
-      if (position.x < snapThreshold) {
-        finalX = 0; // Snap to left edge
-      } else if (position.x + size.width > window.innerWidth - snapThreshold) {
-        finalX = window.innerWidth - size.width; // Snap to right edge
-      }
-      
-      if (position.y < snapThreshold) {
-        finalY = 0; // Snap to top edge
-      } else if (position.y + size.height > window.innerHeight - snapThreshold) {
-        finalY = window.innerHeight - size.height; // Snap to bottom edge
+      if (typeof window !== 'undefined') {
+        if (position.x < snapThreshold) {
+          finalX = 0; // Snap to left edge
+        } else if (position.x + size.width > window.innerWidth - snapThreshold) {
+          finalX = window.innerWidth - size.width; // Snap to right edge
+        }
+        
+        if (position.y < snapThreshold) {
+          finalY = 0; // Snap to top edge
+        } else if (position.y + size.height > window.innerHeight - snapThreshold) {
+          finalY = window.innerHeight - size.height; // Snap to bottom edge
+        }
       }
       
       // Update position if snapped
@@ -229,6 +241,8 @@ const Window = (props: WindowProps) => {
       }
       
       updateWindowPosition(id, finalX, finalY);
+      // Ensure window remains focused and visible after dragging
+      focusWindow(id);
     }
   }, [isResizing, isDragging, id, size, position, updateWindowSize, updateWindowPosition]);
 
@@ -245,6 +259,7 @@ const Window = (props: WindowProps) => {
 
   // Handle window maximization for mobile
   useEffect(() => {
+    if (typeof window === 'undefined') return;
     if (isMobile && isMaximized) {
       setSize({
         width: window.innerWidth,
