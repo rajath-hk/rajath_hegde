@@ -6,6 +6,7 @@ import Desktop from './desktop';
 import BootScreen from './boot-screen';
 import Taskbar from './taskbar';
 import ErrorBoundary from './error-boundary';
+import SystemSearch from './system-search';
 
 const OsUi = () => {
   const [booted, setBooted] = useState(false);
@@ -83,6 +84,7 @@ const OsUiInner = () => {
     <div className="fixed inset-0 bg-background font-body select-none">
       <Desktop />
       <Taskbar />
+      <SystemSearch />
     </div>
   );
 };

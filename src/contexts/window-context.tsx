@@ -27,7 +27,61 @@ const WINDOW_STATE_KEY = 'retrofolio-windows-v2';
 
 const LegalContent = () => <div className="p-6 text-card-foreground">This is my portfolio. To access this file, please contact me.</div>;
 
-  const initialAppsData: AppConfig[] = [
+interface WindowContextValue {
+  windows: WindowInstance[];
+  desktopIcons: AppConfig[];
+  openWindow: (app: Partial<AppConfig>) => void;
+  closeWindow: (id: string) => void;
+  focusWindow: (id: string) => void;
+  toggleMinimize: (id: string) => void;
+  toggleMaximize: (id: string) => void;
+  updateWindowPosition: (id: string, x: number, y: number) => void;
+  updateWindowSize: (id: string, width: number, height: number) => void;
+  updateIconPosition: (id: string, x: number, y: number) => void;
+  resetIconPositions: () => void;
+  openAppById: (id: string) => void;
+  closeFocusedWindow: () => void;
+}
+
+type SavedWindow = Omit<WindowInstance, 'content' | 'icon'>;
+type SavedIcon = Pick<AppConfig, 'id' | 'x' | 'y'>;
+
+const WindowContext = createContext<WindowContextValue | undefined>(undefined);
+
+const saveWindowsState = (windows: WindowInstance[]) => {
+  if (typeof window === 'undefined') return;
+
+  const safeWindows: SavedWindow[] = windows.map((win) => ({
+    id: win.id,
+    title: win.title,
+    defaultSize: win.defaultSize,
+    x: win.x,
+    y: win.y,
+    width: win.width,
+    height: win.height,
+    zIndex: win.zIndex,
+    isMinimized: win.isMinimized,
+    isMaximized: win.isMaximized,
+    isFocused: win.isFocused,
+    order: win.order,
+  }));
+
+  localStorage.setItem(WINDOW_STATE_KEY, JSON.stringify(safeWindows));
+};
+
+const saveIconsState = (icons: AppConfig[]) => {
+  if (typeof window === 'undefined') return;
+
+  const safeIcons: SavedIcon[] = icons.map((icon) => ({
+    id: icon.id,
+    x: icon.x,
+    y: icon.y,
+  }));
+
+  localStorage.setItem(ICON_STATE_KEY, JSON.stringify(safeIcons));
+};
+
+const initialAppsData: AppConfig[] = [
   // Core personal apps (first row)
   { id: 'about', title: 'My Story', icon: FileText, content: null, defaultSize: { width: 550, height: 400 }, x: 20, y: 50, order: 1 },
   { id: 'resume', title: 'My Resume', icon: FileText, content: null, defaultSize: { width: 700, height: 800 }, x: 130, y: 50, order: 2 },
@@ -154,7 +208,10 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
       const savedWindows = localStorage.getItem(WINDOW_STATE_KEY);
       if (savedWindows) {
         const parsedWindows = JSON.parse(savedWindows);
-        setWindows(parsedWindows.map((win: any) => {
+        if (!Array.isArray(parsedWindows)) return;
+
+        const restoredWindows: WindowInstance[] = parsedWindows.flatMap((win: Partial<SavedWindow>) => {
+          if (!win.id) return [];
           const appConfig = initialAppsData.find(app => app.id === win.id);
           
           // Ensure window is within screen bounds
@@ -171,15 +228,25 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
             y = appConfig?.y ?? 100;
           }
           
-          return {
+          return [{
             ...win,
+            id: win.id,
             x,
             y,
+            title: win.title ?? appConfig?.title ?? 'Untitled',
             icon: appConfig?.icon || FileText,
             content: createContentElement(win.id),
-            defaultSize: appConfig?.defaultSize
-          };
-        }));
+            defaultSize: appConfig?.defaultSize,
+            width: win.width ?? appConfig?.defaultSize?.width ?? 500,
+            height: win.height ?? appConfig?.defaultSize?.height ?? 400,
+            zIndex: win.zIndex ?? 10,
+            isMinimized: win.isMinimized ?? false,
+            isMaximized: win.isMaximized ?? false,
+            isFocused: win.isFocused ?? false,
+          }];
+        });
+
+        setWindows(restoredWindows);
       }
     } catch (e) {
       console.warn('Failed to load window state from localStorage:', e);
@@ -190,11 +257,13 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
       const savedIcons = localStorage.getItem(ICON_STATE_KEY);
       if (savedIcons) {
         const parsedIcons = JSON.parse(savedIcons);
+        if (!Array.isArray(parsedIcons)) return;
+
         setDesktopIcons(prevIcons => 
           prevIcons.map(icon => {
-            const savedIcon = parsedIcons.find((si: any) => si.id === icon.id);
+            const savedIcon = parsedIcons.find((si: SavedIcon) => si.id === icon.id);
             // Only update position, keep the original content
-            if (savedIcon) {
+            if (savedIcon && typeof savedIcon.x === 'number' && typeof savedIcon.y === 'number') {
               return { ...icon, x: savedIcon.x, y: savedIcon.y };
             }
             return icon;
@@ -229,11 +298,13 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
       const existingWindow = prev.find(w => w.id === id);
       if (existingWindow) {
         // If window exists, bring it to front and unminimize it
-        return prev.map(w => 
+        const updatedWindows = prev.map(w => 
           w.id === id
             ? { ...w, isMinimized: false, zIndex: Math.max(...prev.map(win => win.zIndex), 0) + 1, isFocused: true } 
             : { ...w, isFocused: false }
         );
+        saveWindowsState(updatedWindows);
+        return updatedWindows;
       } else {
         // Create new window with proper content
         const content = createContentElement(id);
@@ -273,6 +344,7 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
           w.id === id ? { ...w, isFocused: true } : { ...w, isFocused: false }
         );
         
+        saveWindowsState(updatedWindows);
         return updatedWindows;
       }
     });

@@ -1,12 +1,19 @@
 import { contactFormSchema, type ContactFormData } from '@/lib/schemas';
 import { Resend } from 'resend';
 
-// Only initialize Resend if API key is available
-const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
+let resendClient: Resend | null = null;
 
-export const config = {
-  runtime: 'edge',
-};
+function getResendClient() {
+  if (!process.env.RESEND_API_KEY) {
+    return null;
+  }
+
+  if (!resendClient) {
+    resendClient = new Resend(process.env.RESEND_API_KEY);
+  }
+
+  return resendClient;
+}
 
 export async function POST(req: Request) {
   try {
@@ -27,9 +34,10 @@ export async function POST(req: Request) {
     }
 
     const { name, email, message } = validatedFields.data;
+    const resend = getResendClient();
 
     // Check if Resend is properly configured
-    if (!resend || !process.env.RESEND_API_KEY) {
+    if (!resend) {
       // Fallback to simulation mode during build or when API key is missing
       console.warn('Resend API key not configured. Simulating email send.');
       

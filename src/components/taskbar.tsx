@@ -21,7 +21,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
 
 const Taskbar = () => {
-  const { windows, desktopIcons, closeWindow, toggleMinimize, openWindow } = useWindows();
+  const { windows, toggleMinimize } = useWindows();
   const [time, setTime] = useState(new Date());
   const [showStartMenu, setShowStartMenu] = useState(false);
   const isMobile = useIsMobile();
@@ -34,6 +34,11 @@ const Taskbar = () => {
     
     return () => clearInterval(timer);
   }, []);
+
+  const openSystemSearch = () => {
+    if (typeof window === 'undefined') return;
+    window.dispatchEvent(new CustomEvent('openSystemSearch'));
+  };
 
   // Handle closing start menu from other components
   useEffect(() => {
@@ -103,11 +108,8 @@ const Taskbar = () => {
               variant="ghost" 
               size="icon"
               className="h-12 w-12 rounded-full hover:bg-accent/50"
-              aria-label="Search"
-              onClick={() => {
-                const app = desktopIcons.find(i => i.id === 'search');
-                if (app) openWindow(app);
-              }}
+            aria-label="Search"
+            onClick={openSystemSearch}
             >
               <Search className="w-6 h-6" />
             </Button>
@@ -202,10 +204,7 @@ const Taskbar = () => {
             size="sm" 
             className="h-8 w-8 p-0 hover:bg-accent/50"
             aria-label="Search"
-            onClick={() => {
-              const app = desktopIcons.find(i => i.id === 'search');
-              if (app) openWindow(app);
-            }}
+            onClick={openSystemSearch}
           >
             <Search className="w-4 h-4" />
           </Button>

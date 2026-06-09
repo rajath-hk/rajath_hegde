@@ -43,8 +43,13 @@ const SystemSearch = ({ open, onClose }: SystemSearchProps) => {
     };
 
     if (typeof window === 'undefined') return;
+    const handleOpenSearch = () => setIsOpen(true);
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener('openSystemSearch', handleOpenSearch);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('openSystemSearch', handleOpenSearch);
+    };
   }, [isOpen]);
 
   // Sync with controlled `open` prop when provided
@@ -159,8 +164,8 @@ const SystemSearch = ({ open, onClose }: SystemSearchProps) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999] flex items-start justify-center pt-20">
-      <div className="w-full max-w-2xl bg-background/90 backdrop-blur-xl rounded-lg shadow-xl overflow-hidden">
+    <div className="fixed inset-0 z-[9999] flex items-start justify-center bg-black/45 px-4 pt-16 backdrop-blur-sm">
+      <div className="w-full max-w-2xl overflow-hidden rounded-md border border-white/20 bg-background/92 shadow-2xl backdrop-blur-xl">
         {/* Search Input */}
         <div className="relative p-4 border-b">
           <Search className="absolute left-7 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
@@ -170,11 +175,11 @@ const SystemSearch = ({ open, onClose }: SystemSearchProps) => {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search apps, files, and more..."
-            className="w-full bg-muted pl-12 pr-4 py-3 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-primary"
+            className="w-full rounded-md bg-muted py-3 pl-12 pr-16 text-lg focus:outline-none focus:ring-2 focus:ring-primary"
           />
           <button 
             onClick={() => { setIsOpen(false); if (onClose) onClose(); }}
-            className="absolute right-7 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
+            className="absolute right-7 top-1/2 -translate-y-1/2 rounded px-2 py-1 text-xs text-muted-foreground hover:bg-accent hover:text-foreground"
           >
             ESC
           </button>

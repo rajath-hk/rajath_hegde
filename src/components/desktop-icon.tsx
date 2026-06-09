@@ -7,7 +7,7 @@ import { motion, useMotionValue } from 'framer-motion';
 
 interface DesktopIconProps {
   app: AppConfig;
-  constraintsRef: React.RefObject<HTMLDivElement>;
+  constraintsRef: React.RefObject<HTMLDivElement | null>;
 }
 
 const DesktopIcon = ({ app, constraintsRef }: DesktopIconProps) => {
@@ -49,7 +49,7 @@ const DesktopIcon = ({ app, constraintsRef }: DesktopIconProps) => {
     <motion.button
   // Use motion values for position via `style`. Framer Motion will manage this.
       style={{ x, y, position: 'absolute' }}
-      className="flex flex-col items-center justify-center text-center focus:outline-none p-2 select-none w-20"
+      className="group flex w-20 select-none flex-col items-center justify-center p-2 text-center focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
       aria-label={`Open ${app.title}`}
       onClick={(e) => {
         e.stopPropagation();
@@ -69,8 +69,8 @@ const DesktopIcon = ({ app, constraintsRef }: DesktopIconProps) => {
       }}
       onDragEnd={(event, info) => { 
         isDraggingRef.current = false;
-        const finalX = info.point.x;
-        const finalY = info.point.y;
+        const finalX = x.get();
+        const finalY = y.get();
         updateIconPosition(app.id, finalX, finalY);
         // Reset the flag after a short delay to allow for future syncing
         setTimeout(() => {
@@ -80,13 +80,13 @@ const DesktopIcon = ({ app, constraintsRef }: DesktopIconProps) => {
       drag={!isMobile} // Only allow drag on desktop
       dragConstraints={constraintsRef}
       dragMomentum={false}
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }} // Better touch feedback on mobile
+      whileHover={{ scale: 1.06 }}
+      whileTap={{ scale: 0.94 }}
     >
-      <div className="w-14 h-14 rounded-lg glassy-icon flex items-center justify-center shadow border">
-        <IconComponent className="w-7 h-7 text-foreground" />
+      <div className="flex h-14 w-14 items-center justify-center rounded-md border border-white/25 bg-black/25 shadow-xl backdrop-blur-md transition-colors group-hover:bg-black/35">
+        <IconComponent className="h-7 w-7 text-white drop-shadow" />
       </div>
-      <span className="text-xs mt-1 text-foreground font-medium [text-shadow:0_1px_2px_rgba(255,255,255,0.2)] dark:[text-shadow:0_1px_2px_rgba(0,0,0,0.5)] px-1 py-0.5 rounded">
+      <span className="mt-1 max-w-full rounded bg-black/30 px-1 py-0.5 text-xs font-medium text-white shadow-sm [text-shadow:0_1px_2px_rgba(0,0,0,0.8)]">
         {app.title}
       </span>
     </motion.button>

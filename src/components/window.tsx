@@ -4,7 +4,6 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import type { WindowInstance } from '@/types';
 import { useWindows } from '@/contexts/window-context';
 import { cn } from '@/lib/utils';
-import { X, Minus, Square, Minimize } from 'lucide-react';
 import { motion } from 'framer-motion';
 import ErrorBoundary from './error-boundary';
 
@@ -34,6 +33,7 @@ const Window = (props: WindowProps) => {
   
   const windowRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
+  const dragOffsetRef = useRef({ x: 0, y: 0 });
 
   // Check if we're on mobile
   useEffect(() => {
@@ -99,6 +99,7 @@ const Window = (props: WindowProps) => {
       
       const offsetX = touch.clientX - windowRect.left;
       const offsetY = touch.clientY - windowRect.top;
+      let lastPosition = { x: position.x, y: position.y };
       
       const handleTouchMove = (moveEvent: TouchEvent) => {
         if (!windowRef.current) return;
@@ -114,12 +115,13 @@ const Window = (props: WindowProps) => {
         if (typeof window !== 'undefined') {
           const boundedX = Math.max(0, Math.min(newX, window.innerWidth - windowWidth));
           const boundedY = Math.max(0, Math.min(newY, window.innerHeight - windowHeight));
+          lastPosition = { x: boundedX, y: boundedY };
           setPosition({ x: boundedX, y: boundedY });
         }
       };
       
       const handleTouchEnd = () => {
-        updateWindowPosition(id, position.x, position.y);
+        updateWindowPosition(id, lastPosition.x, lastPosition.y);
         setIsDragging(false);
         // Ensure window remains focused and visible after dragging
         focusWindow(id);
@@ -142,6 +144,13 @@ const Window = (props: WindowProps) => {
       if (headerRef.current && (headerRef.current === target || headerRef.current.contains(target))) {
         e.preventDefault();
         setIsDragging(true);
+        const rect = windowRef.current?.getBoundingClientRect();
+        if (rect) {
+          dragOffsetRef.current = {
+            x: e.clientX - rect.left,
+            y: e.clientY - rect.top,
+          };
+        }
         // Prevent text selection during drag
         window.getSelection()?.removeAllRanges();
       }
@@ -200,9 +209,8 @@ const Window = (props: WindowProps) => {
       const windowWidth = windowRef.current.offsetWidth;
       const windowHeight = windowRef.current.offsetHeight;
       
-      // Calculate new position based on mouse movement
-      const newX = e.clientX - windowWidth / 2;
-      const newY = e.clientY - 20;
+      const newX = e.clientX - dragOffsetRef.current.x;
+      const newY = e.clientY - dragOffsetRef.current.y;
       
       // Boundary checks to keep window within screen
       if (typeof window !== 'undefined') {
@@ -312,9 +320,13 @@ const Window = (props: WindowProps) => {
     <motion.div
       ref={windowRef}
       className={cn(
-        "fixed bg-background glassy-window border rounded-lg shadow-2xl overflow-hidden flex flex-col transition-shadow",
-        isFocused ? "border-blue-500 shadow-lg" : "border-gray-300 dark:border-gray-600"
+        "fixed flex flex-col overflow-hidden rounded-md border bg-background/88 shadow-2xl backdrop-blur-xl transition-shadow",
+        isFocused ? "border-sky-300/70 shadow-black/35" : "border-white/20 shadow-black/25"
       )}
+      initial={{ opacity: 0, scale: 0.96, y: 12 }}
+      animate={{ opacity: 1, scale: isFocused ? 1 : 0.995, y: 0 }}
+      exit={{ opacity: 0, scale: 0.96, y: 12 }}
+      transition={{ type: 'spring', stiffness: 360, damping: 32, mass: 0.8 }}
       style={{
         width: size.width,
         height: size.height,
@@ -341,10 +353,10 @@ const Window = (props: WindowProps) => {
       <div 
         ref={headerRef}
         className={cn(
-          "h-10 flex items-center justify-between px-4 cursor-move border-b glassy-window transition-colors duration-300 ease-in-out",
+          "h-10 flex cursor-move items-center justify-between border-b px-3 transition-colors duration-200 ease-in-out",
           isFocused 
-            ? "bg-gradient-to-r from-blue-500/20 to-purple-600/20 text-white backdrop-blur-lg" 
-            : "bg-gray-100/30 dark:bg-gray-800/30 text-gray-800 dark:text-gray-200 backdrop-blur-md"
+            ? "border-white/20 bg-slate-950/70 text-white" 
+            : "border-border/60 bg-background/70 text-foreground"
         )}
         onDoubleClick={handleDoubleClick}
         onMouseDown={handleDragStart}
@@ -354,26 +366,26 @@ const Window = (props: WindowProps) => {
         <div className="flex items-center space-x-2">
           <button
             type="button"
-            className="w-3 h-3 rounded-full bg-yellow-400 focus:outline-none focus:ring-2 focus:ring-yellow-300"
-            aria-label="Minimize window"
-            title="Minimize"
-            onClick={(e) => { e.stopPropagation(); toggleMinimize(id); }}
+            className="h-3 w-3 rounded-full bg-red-500 focus:outline-none focus:ring-2 focus:ring-red-300"
+            aria-label="Close window"
+            title="Close"
+            onClick={(e) => { e.stopPropagation(); closeWindow(id); }}
           />
           
           <button
             type="button"
-            className="w-3 h-3 rounded-full bg-green-400 focus:outline-none focus:ring-2 focus:ring-green-300"
-            aria-label={isMaximized ? 'Restore window' : 'Maximize window'}
-            title={isMaximized ? 'Restore' : 'Maximize'}
-            onClick={(e) => { e.stopPropagation(); toggleMaximize(id); }}
+            className="h-3 w-3 rounded-full bg-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-300"
+            aria-label="Minimize window"
+            title="Minimize"
+            onClick={(e) => { e.stopPropagation(); toggleMinimize(id); }}
           />
 
           <button
             type="button"
-            className="w-3 h-3 rounded-full bg-red-400 focus:outline-none focus:ring-2 focus:ring-red-300"
-            aria-label="Close window"
-            title="Close"
-            onClick={(e) => { e.stopPropagation(); closeWindow(id); }}
+            className="h-3 w-3 rounded-full bg-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-300"
+            aria-label={isMaximized ? 'Restore window' : 'Maximize window'}
+            title={isMaximized ? 'Restore' : 'Maximize'}
+            onClick={(e) => { e.stopPropagation(); toggleMaximize(id); }}
           />
 
           {/* Screen-reader only description so color cues are not the only signal */}
@@ -386,7 +398,7 @@ const Window = (props: WindowProps) => {
       </div>
 
       {/* Window Content */}
-      <div className="flex-grow overflow-auto bg-background/70 dark:bg-background/80 relative backdrop-blur-sm" role="main">
+      <div className="relative flex-grow overflow-auto bg-background/92" role="main">
         {isLoading ? (
           <div className="absolute inset-0 flex items-center justify-center" role="status">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>

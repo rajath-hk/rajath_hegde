@@ -34,6 +34,12 @@ const StartMenu = () => {
   const [activeCategory, setActiveCategory] = useState('all');
   const startMenuRef = useRef<HTMLDivElement>(null);
 
+  const openSystemSearch = () => {
+    if (typeof window === 'undefined') return;
+    window.dispatchEvent(new CustomEvent('openSystemSearch'));
+    window.dispatchEvent(new CustomEvent('closeStartMenu'));
+  };
+
   // Handle keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -138,7 +144,7 @@ const StartMenu = () => {
             <Power className="h-4 w-4 mr-2" />
             Power
           </Button>
-          <Button variant="ghost" size="sm">
+          <Button variant="ghost" size="sm" onClick={openSystemSearch}>
             <Search className="h-4 w-4 mr-2" />
             Search
           </Button>
@@ -233,7 +239,7 @@ const StartMenu = () => {
             <p className="text-xs text-muted-foreground">Online</p>
           </div>
         </div>
-        <Button variant="ghost" size="icon">
+        <Button variant="ghost" size="icon" aria-label="Power">
           <Power className="h-5 w-5" />
         </Button>
       </div>

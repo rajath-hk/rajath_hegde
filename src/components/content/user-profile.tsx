@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useWindows } from '@/contexts/window-context';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -21,7 +20,6 @@ interface UserProfile {
 const USER_PROFILE_STORAGE_KEY = 'portfolio-user-profile';
 
 const UserProfileManager = () => {
-  const { windows } = useWindows();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [editMode, setEditMode] = useState(false);
   const [tempProfile, setTempProfile] = useState<UserProfile | null>(null);

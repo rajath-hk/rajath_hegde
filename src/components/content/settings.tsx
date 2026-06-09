@@ -18,12 +18,14 @@ import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
+const DEFAULT_WALLPAPER = '/images/wallpaper-aurora.png';
+const legacyRemoteWallpaper = 'wallpaperaccess.com';
 
 const Settings = () => {
   const { theme, setTheme } = useTheme();
   const [activeTab, setActiveTab] = useState('system');
-  const [wallpaper, setWallpaper] = useState('/logo.png');
+  const [wallpaper, setWallpaper] = useState(DEFAULT_WALLPAPER);
   const [volume, setVolume] = useState(80);
   const [notifications, setNotifications] = useState(true);
   const [sound, setSound] = useState(true);
@@ -33,14 +35,15 @@ const Settings = () => {
   // Load settings from localStorage
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    const savedWallpaper = localStorage.getItem('portfolio-wallpaper') || '/logo.png';
+    const savedWallpaper = localStorage.getItem('portfolio-wallpaper');
+    const nextWallpaper = savedWallpaper?.includes(legacyRemoteWallpaper) ? DEFAULT_WALLPAPER : savedWallpaper;
     const savedVolume = localStorage.getItem('portfolio-volume') || '80';
     const savedNotifications = localStorage.getItem('portfolio-notifications') || 'true';
     const savedSound = localStorage.getItem('portfolio-sound') || 'true';
     const savedAutoSave = localStorage.getItem('portfolio-auto-save') || 'true';
     const savedStartupAnimation = localStorage.getItem('portfolio-startup-animation') || 'true';
     
-    setWallpaper(savedWallpaper);
+    setWallpaper(nextWallpaper || DEFAULT_WALLPAPER);
     setVolume(parseInt(savedVolume));
     setNotifications(savedNotifications === 'true');
     setSound(savedSound === 'true');
@@ -96,12 +99,8 @@ const Settings = () => {
   };
 
   const wallpaperOptions = [
-    { id: 'default', name: 'Default', url: 'https://wallpaperaccess.com/full/317501.jpg' },
-    { id: 'abstract', name: 'Abstract', url: 'https://images.unsplash.com/photo-1579546929662-711aa81148cf' },
-    { id: 'mountains', name: 'Mountains', url: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b' },
-    { id: 'city', name: 'City', url: 'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df' },
-    { id: 'space', name: 'Space', url: 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564' },
-    { id: 'ocean', name: 'Ocean', url: 'https://images.unsplash.com/photo-1505228395891-9a51e7e86bf6' },
+    { id: 'aurora', name: 'Aurora', url: DEFAULT_WALLPAPER },
+    { id: 'daylight', name: 'Daylight', url: '/images/wallpaper-daylight.png' },
   ];
 
   const themeOptions = [
@@ -264,12 +263,13 @@ const Settings = () => {
                     <Button
                       key={option.id}
                       variant={wallpaper === option.url ? "default" : "outline"}
-                      className="flex flex-col h-24 items-center justify-center p-2"
+                      className="flex h-24 flex-col items-center justify-center overflow-hidden p-2"
                       onClick={() => handleWallpaperChange(option.url)}
                     >
-                      <div className="w-12 h-12 rounded bg-muted mb-2 flex items-center justify-center">
-                        <Palette className="w-6 h-6" />
-                      </div>
+                      <div
+                        className="mb-2 h-12 w-16 rounded border bg-cover bg-center shadow-sm"
+                        style={{ backgroundImage: `url('${option.url}')` }}
+                      />
                       <span className="text-xs">{option.name}</span>
                     </Button>
                   ))}

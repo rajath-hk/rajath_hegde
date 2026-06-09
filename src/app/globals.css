@@ -4,7 +4,7 @@
 
 @layer utilities {
   .anime-wallpaper {
-    background-image: var(--wallpaper-url, url('https://wallpaperaccess.com/full/317501.jpg'));
+    background-image: var(--wallpaper-url, url('/images/wallpaper-aurora.png'));
     background-size: cover;
     background-position: center;
   }
