@@ -69,8 +69,8 @@ const DesktopIcon = ({ app, constraintsRef }: DesktopIconProps) => {
       }}
       onDragEnd={(event, info) => { 
         isDraggingRef.current = false;
-        const finalX = x.get();
-        const finalY = y.get();
+        const finalX = info.point.x;
+        const finalY = info.point.y;
         updateIconPosition(app.id, finalX, finalY);
         // Reset the flag after a short delay to allow for future syncing
         setTimeout(() => {

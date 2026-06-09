@@ -123,6 +123,9 @@ const Window = (props: WindowProps) => {
         setIsDragging(false);
         // Ensure window remains focused and visible after dragging
         focusWindow(id);
+        // Add a small delay to ensure focus is maintained
+        setTimeout(() => focusWindow(id), 50);
+        
         if (typeof window !== 'undefined') {
           window.removeEventListener('touchmove', handleTouchMove);
           window.removeEventListener('touchend', handleTouchEnd);
@@ -135,8 +138,12 @@ const Window = (props: WindowProps) => {
       }
     } else {
       // Handle mouse events for desktop
-      if (headerRef.current && headerRef.current.contains(e.target as Node)) {
+      const target = e.target as HTMLElement;
+      if (headerRef.current && (headerRef.current === target || headerRef.current.contains(target))) {
+        e.preventDefault();
         setIsDragging(true);
+        // Prevent text selection during drag
+        window.getSelection()?.removeAllRanges();
       }
     }
   };
@@ -243,6 +250,9 @@ const Window = (props: WindowProps) => {
       updateWindowPosition(id, finalX, finalY);
       // Ensure window remains focused and visible after dragging
       focusWindow(id);
+      
+      // Add a small timeout to ensure the focus is maintained
+      setTimeout(() => focusWindow(id), 50);
     }
   }, [isResizing, isDragging, id, size, position, updateWindowSize, updateWindowPosition, focusWindow]);
 
@@ -316,11 +326,15 @@ const Window = (props: WindowProps) => {
       onMouseDown={(e) => {
         e.stopPropagation();
         focusWindow(id);
+        // Prevent text selection when clicking on window
+        window.getSelection()?.removeAllRanges();
       }}
       onTouchStart={(e) => {
         e.stopPropagation();
         focusWindow(id);
         handleDragStart(e);
+        // Prevent text selection on touch devices
+        window.getSelection()?.removeAllRanges();
       }}
     >
       {/* Window Header */}

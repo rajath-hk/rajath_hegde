@@ -59,42 +59,10 @@ const LegalContent = () => <div className="p-6 text-card-foreground">This is my 
   { id: 'legal', title: 'Legal', icon: Folder, content: null, defaultSize: { width: 500, height: 300 }, x: 20, y: 800, order: 18 },
 ];
 
-interface WindowContextType {
-  windows: WindowInstance[];
-  desktopIcons: AppConfig[];
-  openWindow: (app: Partial<AppConfig>) => void;
-  closeWindow: (id: string) => void;
-  focusWindow: (id: string) => void;
-  toggleMinimize: (id: string) => void;
-  toggleMaximize: (id: string) => void;
-  updateWindowPosition: (id: string, x: number, y: number) => void;
-  updateWindowSize: (id: string, width: number, height: number) => void;
-  updateIconPosition: (id: string, x: number, y: number) => void;
-  resetIconPositions: () => void;
-  openAppById: (id: string) => void; // New function for keyboard shortcuts
-  closeFocusedWindow: () => void; // New function for ESC key
-}
-
-const WindowContext = createContext<WindowContextType | undefined>(undefined);
-
-// Helper to save serializable window state to localStorage
-const saveWindowsState = (windowsToSave: WindowInstance[]) => {
-  if (typeof window === 'undefined') return;
-  const serializableWindows = windowsToSave.map(({ content, icon, ...rest }) => rest);
-  localStorage.setItem(WINDOW_STATE_KEY, JSON.stringify(serializableWindows));
-};
-
-// Helper to save serializable icon state to localStorage
-const saveIconsState = (iconsToSave: AppConfig[]) => {
-  if (typeof window === 'undefined') return;
-  const serializableIcons = iconsToSave.map(({ id, x, y }) => ({ id, x, y }));
-  localStorage.setItem(ICON_STATE_KEY, JSON.stringify(serializableIcons));
-};
-
 // Create content element for a given app ID
 const createContentElement = (id: string) => {
   switch (id) {
-    case 'story':
+    case 'about':
       return <AboutContent />;
     case 'projects':
       return <ProjectsContent />;
@@ -137,27 +105,39 @@ const createContentElement = (id: string) => {
 
 export const WindowProvider = ({ children }: { children: ReactNode }) => {
   const [windows, setWindows] = useState<WindowInstance[]>([]);
-  const [desktopIcons, setDesktopIcons] = useState<AppConfig[]>(initialAppsData);
+  const [desktopIcons, setDesktopIcons] = useState<AppConfig[]>([]);
   const [zIndexCounter, setZIndexCounter] = useState(10);
   const [windowDimensions, setWindowDimensions] = useState({width: 0, height: 0});
   const [isLoaded, setIsLoaded] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
-  // Check if we're on mobile
+  // Initialize on client-side only
   useEffect(() => {
     if (typeof window === 'undefined') return;
     
+    // Check if we're on mobile
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
     
     // Set up resize listener and initial dimensions
-    const updateDims = () => setWindowDimensions({width: window.innerWidth, height: window.innerHeight});
+    const updateDims = () => {
+      if (typeof window !== 'undefined') {
+        setWindowDimensions({width: window.innerWidth, height: window.innerHeight});
+      }
+    };
     
     checkMobile();
     updateDims();
     window.addEventListener('resize', checkMobile);
     window.addEventListener('resize', updateDims);
+    
+    // Initialize desktop icons with content
+    const iconsWithData = initialAppsData.map(app => ({
+      ...app,
+      content: createContentElement(app.id)
+    }));
+    setDesktopIcons(iconsWithData);
     
     return () => {
       window.removeEventListener('resize', checkMobile);
@@ -165,9 +145,9 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
     };
   }, []);
 
-  // Load state from localStorage once dimensions are available
+  // Load state from localStorage once dimensions are available and icons are set
   useEffect(() => {
-    if (typeof window === 'undefined' || windowDimensions.width === 0 || isLoaded) return;
+    if (typeof window === 'undefined' || windowDimensions.width === 0 || desktopIcons.length === 0 || isLoaded) return;
     
     // Load windows state
     try {
@@ -225,16 +205,8 @@ export const WindowProvider = ({ children }: { children: ReactNode }) => {
       console.warn('Failed to load icon state from localStorage:', e);
     }
     
-    // Set the content for desktop icons
-    setDesktopIcons(prevIcons => 
-      prevIcons.map(icon => ({
-        ...icon,
-        content: createContentElement(icon.id)
-      }))
-    );
-    
     setIsLoaded(true);
-  }, [windowDimensions, isLoaded]);
+  }, [windowDimensions, desktopIcons, isLoaded]);
 
   const focusWindow = (id: string) => {
     setZIndexCounter(prev => prev + 1);

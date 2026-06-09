@@ -72,17 +72,24 @@ const SystemSearch = ({ open, onClose }: SystemSearchProps) => {
     // Search applications with relevance scoring
     desktopIcons.forEach(app => {
       const titleLower = app.title.toLowerCase();
-      if (titleLower.includes(searchTerm)) {
+      const searchLower = searchTerm.toLowerCase();
+      
+      if (titleLower.includes(searchLower)) {
         // Calculate relevance score: exact match = highest, starts with = high, contains = lower
         let relevance = 0;
-        if (titleLower === searchTerm) {
+        if (titleLower === searchLower) {
           relevance = 100; // Exact match
-        } else if (titleLower.startsWith(searchTerm)) {
+        } else if (titleLower.startsWith(searchLower)) {
           relevance = 50; // Starts with
-        } else if (searchTerm.length >= 3 && titleLower.includes(searchTerm)) {
+        } else if (searchLower.length >= 3 && titleLower.includes(searchLower)) {
           relevance = 30; // Contains (only for longer search terms to avoid false positives)
-        } else if (searchTerm.length < 3 && titleLower.includes(searchTerm)) {
+        } else if (searchLower.length < 3 && titleLower.includes(searchLower)) {
           relevance = 10; // Contains for shorter terms
+        }
+        
+        // Additional boost for more specific matches
+        if (titleLower.startsWith(searchLower) && searchLower.length > 1) {
+          relevance += 20; // Extra boost for starting matches with multi-character search
         }
         
         searchResults.push({
