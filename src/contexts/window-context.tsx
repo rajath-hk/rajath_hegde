@@ -82,35 +82,23 @@ const saveIconsState = (icons: AppConfig[]) => {
 };
 
 const initialAppsData: AppConfig[] = [
-  // Core personal apps (first row)
-  { id: 'about', title: 'My Story', icon: FileText, content: null, defaultSize: { width: 550, height: 400 }, x: 20, y: 50, order: 1 },
-  { id: 'resume', title: 'My Resume', icon: FileText, content: null, defaultSize: { width: 700, height: 800 }, x: 130, y: 50, order: 2 },
+  // First Row (Top)
+  { id: 'about', title: 'About Me', icon: FileText, content: null, defaultSize: { width: 550, height: 400 }, x: 20, y: 50, order: 1 },
+  { id: 'projects', title: 'Projects', icon: Folder, content: null, defaultSize: { width: 650, height: 500 }, x: 130, y: 50, order: 2 },
   { id: 'skills', title: 'Skills', icon: Award, content: null, defaultSize: { width: 700, height: 600 }, x: 240, y: 50, order: 3 },
-  { id: 'projects', title: 'Projects', icon: Folder, content: null, defaultSize: { width: 650, height: 500 }, x: 350, y: 50, order: 4 },
+  { id: 'contact', title: 'Contact', icon: Mail, content: null, defaultSize: { width: 450, height: 580 }, x: 350, y: 50, order: 4 },
   
-  // Work and portfolio apps (second row)
-  { id: 'my-work', title: 'My Work', icon: Briefcase, content: null, defaultSize: { width: 500, height: 350 }, x: 20, y: 200, order: 5 },
-  { id: 'gallery', title: 'Gallery', icon: Image, content: null, defaultSize: { width: 800, height: 600 }, x: 130, y: 200, order: 6 },
-  { id: 'media', title: 'Media Player', icon: Play, content: null, defaultSize: { width: 700, height: 500 }, x: 240, y: 200, order: 7 },
+  // Second Row
+  { id: 'terminal', title: 'Terminal', icon: Terminal, content: null, defaultSize: { width: 650, height: 450 }, x: 20, y: 200, order: 5 },
+  { id: 'notes', title: 'Notes', icon: Notebook, content: null, defaultSize: { width: 600, height: 500 }, x: 130, y: 200, order: 6 },
+  { id: 'system', title: 'System Info', icon: Activity, content: null, defaultSize: { width: 700, height: 600 }, x: 240, y: 200, order: 7 },
+  { id: 'weather', title: 'Weather', icon: Cloud, content: null, defaultSize: { width: 500, height: 600 }, x: 350, y: 200, order: 8 },
   
-  // Utilities and tools (third row)
-  { id: 'terminal', title: 'Terminal', icon: Terminal, content: null, defaultSize: { width: 650, height: 450 }, x: 20, y: 350, order: 8 },
-  { id: 'explorer', title: 'File Explorer', icon: HardDrive, content: null, defaultSize: { width: 800, height: 500 }, x: 130, y: 350, order: 9 },
-  { id: 'browser', title: 'Web Browser', icon: Globe, content: null, defaultSize: { width: 900, height: 600 }, x: 240, y: 350, order: 10 },
-  { id: 'notes', title: 'Notes', icon: Notebook, content: null, defaultSize: { width: 600, height: 500 }, x: 350, y: 350, order: 11 },
-  
-  // System and settings (fourth row)
-  { id: 'settings', title: 'Settings', icon: Settings, content: null, defaultSize: { width: 700, height: 500 }, x: 20, y: 500, order: 12 },
-  { id: 'system', title: 'System Info', icon: Activity, content: null, defaultSize: { width: 700, height: 600 }, x: 130, y: 500, order: 13 },
-  { id: 'calculator', title: 'Calculator', icon: Calculator, content: null, defaultSize: { width: 300, height: 400 }, x: 240, y: 500, order: 14 },
-  { id: 'weather', title: 'Weather', icon: Cloud, content: null, defaultSize: { width: 500, height: 600 }, x: 300, y: 500, order: 15 },
-  
-  // Communication (bottom row)
-  { id: 'contact', title: 'Contact Me', icon: Mail, content: null, defaultSize: { width: 450, height: 580 }, x: 20, y: 650, order: 16 },
-  { id: 'socials', title: 'Socials', icon: Folder, content: null, defaultSize: { width: 450, height: 350 }, x: 130, y: 650, order: 17 },
-  
-  // Hidden/Legal
-  { id: 'legal', title: 'Legal', icon: Folder, content: null, defaultSize: { width: 500, height: 300 }, x: 20, y: 800, order: 18 },
+  // Third Row
+  { id: 'settings', title: 'Settings', icon: Settings, content: null, defaultSize: { width: 700, height: 500 }, x: 20, y: 350, order: 9 },
+  { id: 'calculator', title: 'Calculator', icon: Calculator, content: null, defaultSize: { width: 300, height: 400 }, x: 130, y: 350, order: 10 },
+  { id: 'explorer', title: 'File Explorer', icon: HardDrive, content: null, defaultSize: { width: 800, height: 500 }, x: 240, y: 350, order: 11 },
+  { id: 'browser', title: 'Web Browser', icon: Globe, content: null, defaultSize: { width: 900, height: 600 }, x: 350, y: 350, order: 12 },
 ];
 
 // Create content element for a given app ID

@@ -50,7 +50,8 @@ const Weather = () => {
   });
 
   const getWeatherIcon = (condition: string) => {
-    switch (condition.toLowerCase()) {
+    const cond = condition ? condition.toLowerCase() : 'sunny';
+    switch (cond) {
       case 'sunny':
         return <Sun className="w-10 h-10 text-yellow-500" />;
       case 'partly cloudy':
@@ -125,7 +126,7 @@ const Weather = () => {
           <CardContent>
             <div className="flex overflow-x-auto pb-2 space-x-4">
               {weatherData.hourlyForecast.map((hour, index) => (
-                <div key={index} className="flex flex-col items-center min-w-[60px]">
+                <div key={`hourly-${hour.time}-${index}`} className="flex flex-col items-center min-w-[60px]">
                   <div className="text-sm text-muted-foreground">{hour.time}</div>
                   <div className="my-2">
                     {getWeatherIcon(hour.condition)}
@@ -147,7 +148,7 @@ const Weather = () => {
           <CardContent>
             <div className="space-y-3">
               {weatherData.weeklyForecast.map((day, index) => (
-                <div key={index} className="flex items-center justify-between py-2">
+                <div key={`weekly-${day.day}-${index}`} className="flex items-center justify-between py-2">
                   <div className="w-16 font-medium">{day.day}</div>
                   <div className="flex-1 flex items-center justify-center">
                     {getWeatherIcon(day.condition)}

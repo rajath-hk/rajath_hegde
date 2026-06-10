@@ -16,26 +16,39 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 
 const Notes = () => {
-  const [notes, setNotes] = useState<any[]>([
-    {
-      id: 1,
-      title: 'Welcome to Portfolio Notes',
-      content: 'This is your personal note-taking application. You can create, edit, and organize your notes here.\n\nFeatures:\n- Create new notes\n- Edit existing notes\n- Delete notes\n- Search through your notes',
-      createdAt: new Date('2024-01-15'),
-      updatedAt: new Date('2024-01-15'),
-      tags: ['welcome', 'portfolio']
-    },
-    {
-      id: 2,
-      title: 'Project Ideas',
-      content: '1. AI-powered task manager\n2. Real-time collaboration tool\n3. Personal finance tracker\n4. Health and fitness dashboard\n5. Learning progress tracker',
-      createdAt: new Date('2024-01-10'),
-      updatedAt: new Date('2024-01-12'),
-      tags: ['projects', 'ideas']
+  const [notes, setNotes] = useState<any[]>([]);
+
+  useEffect(() => {
+    const savedNotes = localStorage.getItem('hegdeos-notes');
+    if (savedNotes) {
+      setNotes(JSON.parse(savedNotes));
+    } else {
+      setNotes([
+        {
+          id: 1,
+          title: 'Welcome to HegdeOS Notes',
+          content: 'This is your personal note-taking application. You can create, edit, and organize your notes here.\n\nFeatures:\n- Create new notes\n- Edit existing notes\n- Delete notes\n- Search through your notes',
+          createdAt: new Date('2024-01-15'),
+          updatedAt: new Date('2024-01-15'),
+          tags: ['welcome', 'hegdeos']
+        }
+      ]);
     }
-  ]);
+  }, []);
+
+  useEffect(() => {
+    if (notes.length > 0) {
+      localStorage.setItem('hegdeos-notes', JSON.stringify(notes));
+    }
+  }, [notes]);
   
-  const [currentNote, setCurrentNote] = useState(notes[0]);
+  const [currentNote, setCurrentNote] = useState<any>(null);
+
+  useEffect(() => {
+    if (!currentNote && notes.length > 0) {
+      setCurrentNote(notes[0]);
+    }
+  }, [notes, currentNote]);
   const [isEditing, setIsEditing] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [newTitle, setNewTitle] = useState(currentNote?.title || '');

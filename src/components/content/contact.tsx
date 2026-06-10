@@ -81,7 +81,7 @@ const ContactContent = () => {
               const Icon = link.icon;
               return (
                 <a
-                  key={index}
+                  key={`social-${index}`}
                   href={link.url}
                   target="_blank"
                   rel="noopener noreferrer"

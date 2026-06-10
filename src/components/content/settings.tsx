@@ -113,7 +113,7 @@ const Settings = () => {
     <div className="h-full flex flex-col">
       <div className="border-b p-4">
         <h1 className="text-2xl font-bold">Settings</h1>
-        <p className="text-muted-foreground">Customize your PortfolioOS experience</p>
+        <p className="text-muted-foreground">Customize your HegdeOS experience</p>
       </div>
       
       <div className="flex flex-1 overflow-hidden">
@@ -383,12 +383,12 @@ const Settings = () => {
                   <div className="flex items-center justify-between">
                     <div>
                       <Label className="text-base">Usage Analytics</Label>
-                      <p className="text-sm text-muted-foreground">Help improve PortfolioOS by sending usage data</p>
-                    </div>
-                    <Switch />
+                    <p className="text-sm text-muted-foreground">Help improve HegdeOS by sending usage data</p>
                   </div>
+                  <Switch />
                 </div>
               </div>
+            </div>
               
               <div>
                 <h3 className="text-lg font-medium mb-3">Location</h3>
@@ -413,26 +413,26 @@ const Settings = () => {
                 <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
                   <Info className="w-8 h-8 text-primary" />
                 </div>
-                <h3 className="text-2xl font-bold">PortfolioOS</h3>
-                <p className="text-muted-foreground">Version 1.0.0</p>
-                <p className="mt-2 text-sm">Your personal portfolio operating system</p>
+                <h3 className="text-2xl font-bold">HegdeOS</h3>
+                <p className="text-muted-foreground">Version 2.0.0</p>
+                <p className="mt-2 text-sm">A professional portfolio operating system by Rajath Hegde</p>
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="border rounded-lg p-4">
                   <h4 className="font-medium mb-2">System Information</h4>
                   <div className="space-y-1 text-sm text-muted-foreground">
-                    <p>OS Build: PortfolioOS 1.0.0</p>
-                    <p>Architecture: Web-based</p>
-                    <p>Kernel: React.js</p>
+                    <p>OS Build: HegdeOS 2.0.0 (Glass Edition)</p>
+                    <p>Architecture: Web-based / Next.js</p>
+                    <p>Kernel: React 18.2</p>
                   </div>
                 </div>
                 
                 <div className="border rounded-lg p-4">
                   <h4 className="font-medium mb-2">Support</h4>
                   <div className="space-y-1 text-sm text-muted-foreground">
-                    <p>Documentation: Available online</p>
-                    <p>Support: rajath@example.com</p>
+                    <p>Documentation: hegdeos.docs</p>
+                    <p>Support: contact@rajathhegde.com</p>
                   </div>
                 </div>
               </div>

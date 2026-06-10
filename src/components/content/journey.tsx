@@ -36,7 +36,7 @@ const Journey = () => {
       
       <div className="space-y-8">
         {milestones.map((milestone, index) => (
-          <div key={index} className="relative pl-8 pb-8 last:pb-0">
+          <div key={`milestone-${milestone.year}-${index}`} className="relative pl-8 pb-8 last:pb-0">
             {/* Timeline line */}
             <div className="absolute left-2 top-2 bottom-0 w-px bg-border" 
                  style={{ display: index === milestones.length - 1 ? 'none' : 'block' }} />

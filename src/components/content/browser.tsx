@@ -16,20 +16,45 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
 const Browser = () => {
-  const [url, setUrl] = useState('https://github.com/rajath-hk');
+  const [url, setUrl] = useState('');
+  const [inputUrl, setInputUrl] = useState('');
   const [bookmarks, setBookmarks] = useState([
     { id: 1, name: 'GitHub', url: 'https://github.com/rajath-hk' },
     { id: 2, name: 'LinkedIn', url: 'https://linkedin.com/in/rajath-hegde' },
-    { id: 3, name: 'Portfolio', url: 'https://rajath.github.io/rajath_hegde' },
+    { id: 3, name: 'HegdeOS Docs', url: 'https://github.com/rajath-hk/HegdeOS' },
   ]);
   const [showBookmarks, setShowBookmarks] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
-  const handleNavigate = (newUrl: string) => {
-    if (!newUrl.startsWith('http')) {
-      newUrl = 'https://' + newUrl;
+  const blockedDomains = [
+    'github.com',
+    'linkedin.com',
+    'google.com',
+    'facebook.com',
+    'twitter.com',
+    'x.com',
+    'instagram.com',
+    'youtube.com',
+    'netflix.com'
+  ];
+
+  const isBlocked = (urlToCheck: string) => {
+    try {
+      const domain = new URL(urlToCheck).hostname.toLowerCase();
+      return blockedDomains.some(blocked => domain.includes(blocked));
+    } catch (e) {
+      return false;
     }
-    setUrl(newUrl);
+  };
+
+  const handleNavigate = (newUrl: string) => {
+    if (!newUrl) return;
+    let formattedUrl = newUrl.trim();
+    if (!formattedUrl.startsWith('http')) {
+      formattedUrl = 'https://' + formattedUrl;
+    }
+    setUrl(formattedUrl);
+    setInputUrl(formattedUrl);
   };
 
   const handleRefresh = () => {
@@ -39,10 +64,12 @@ const Browser = () => {
   };
 
   const handleHome = () => {
-    setUrl('https://github.com/rajath-hk');
+    setUrl('');
+    setInputUrl('');
   };
 
   const addBookmark = () => {
+    if (!url) return;
     const newBookmark = {
       id: bookmarks.length + 1,
       name: url.replace('https://', '').replace('http://', '').split('/')[0],
@@ -76,6 +103,7 @@ const Browser = () => {
             variant="ghost" 
             size="sm" 
             onClick={handleRefresh}
+            disabled={!url}
           >
             <RotateCw className="w-4 h-4" />
           </Button>
@@ -91,11 +119,11 @@ const Browser = () => {
         <div className="flex-1 flex items-center">
           <Input
             type="text"
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleNavigate(url)}
+            value={inputUrl}
+            onChange={(e) => setInputUrl(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleNavigate(inputUrl)}
             className="w-full"
-            placeholder="Enter URL"
+            placeholder="Enter URL (e.g., wikipedia.org)"
           />
         </div>
         
@@ -104,6 +132,7 @@ const Browser = () => {
             variant="ghost" 
             size="sm" 
             onClick={addBookmark}
+            disabled={!url}
           >
             <Bookmark className="w-4 h-4" />
           </Button>
@@ -138,8 +167,50 @@ const Browser = () => {
       )}
       
       {/* Browser Content */}
-      <div className="flex-1 relative">
-        {url ? (
+      <div className="flex-1 relative bg-background">
+        {!url ? (
+          <div className="flex items-center justify-center h-full">
+            <div className="text-center p-6 max-w-md">
+              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                <Globe className="w-8 h-8 text-primary" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">HegdeOS Web Browser</h3>
+              <p className="text-muted-foreground mb-6">
+                Enter a URL to browse. Note: Some websites (like GitHub, Google) block being embedded for security.
+              </p>
+              <div className="grid grid-cols-2 gap-3">
+                {bookmarks.map(b => (
+                  <Button key={b.id} variant="outline" onClick={() => handleNavigate(b.url)}>
+                    {b.name}
+                  </Button>
+                ))}
+              </div>
+            </div>
+          </div>
+        ) : isBlocked(url) ? (
+          <div className="flex items-center justify-center h-full">
+            <div className="text-center p-8 max-w-md bg-muted/30 rounded-lg border">
+              <X className="w-12 h-12 text-destructive mx-auto mb-4" />
+              <h3 className="text-xl font-semibold mb-2">Embedding Blocked</h3>
+              <p className="text-muted-foreground mb-6">
+                {new URL(url).hostname} does not allow being viewed inside another website for security reasons.
+              </p>
+              <Button 
+                onClick={() => window.open(url, '_blank')}
+                className="w-full"
+              >
+                Open in New Tab
+              </Button>
+              <Button 
+                variant="link" 
+                onClick={handleHome}
+                className="mt-4"
+              >
+                Back to Home
+              </Button>
+            </div>
+          </div>
+        ) : (
           <iframe
             ref={iframeRef}
             src={url}
@@ -147,18 +218,6 @@ const Browser = () => {
             title="Browser"
             sandbox="allow-same-origin allow-scripts allow-forms allow-popups"
           />
-        ) : (
-          <div className="flex items-center justify-center h-full">
-            <div className="text-center">
-              <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mx-auto mb-4">
-                <Globe className="w-8 h-8 text-muted-foreground" />
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Welcome to Portfolio Browser</h3>
-              <p className="text-muted-foreground">
-                Enter a URL in the address bar to start browsing
-              </p>
-            </div>
-          </div>
         )}
       </div>
     </div>

@@ -22,12 +22,12 @@ const SystemInfo = () => {
     disk: 40,
     network: 75,
     battery: 85,
-    uptime: '5 days, 3 hours',
-    os: 'PortfolioOS 1.0.0',
-    kernel: 'Web 5.15.0',
-    resolution: '1920x1080',
-    browser: 'Chrome',
-    location: 'Bengaluru, India'
+    uptime: '0 days, 2 hours',
+    os: 'HegdeOS 2.0.0',
+    kernel: 'Web 6.1.0',
+    resolution: typeof window !== 'undefined' ? `${window.innerWidth}x${window.innerHeight}` : '1920x1080',
+    browser: typeof navigator !== 'undefined' ? navigator.userAgent.split(' ')[0] : 'Chrome',
+    location: 'Karnataka, India'
   });
 
   // Simulate updating stats
@@ -44,13 +44,67 @@ const SystemInfo = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const formatUptime = (uptime: string) => {
-    return uptime;
-  };
-
   return (
-    <div>
-      <h1>System Information</h1>
+    <div className="p-4 space-y-4 overflow-y-auto h-full">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium flex items-center">
+              <Cpu className="w-4 h-4 mr-2" /> CPU Usage
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{Math.round(systemStats.cpu)}%</div>
+            <Progress value={systemStats.cpu} className="mt-2" />
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium flex items-center">
+              <MemoryStick className="w-4 h-4 mr-2" /> Memory
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{Math.round(systemStats.memory)}%</div>
+            <Progress value={systemStats.memory} className="mt-2" />
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg flex items-center">
+            <Monitor className="w-5 h-5 mr-2" /> System Details
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-1">
+            <div className="text-sm text-muted-foreground">OS Name</div>
+            <div className="font-medium">{systemStats.os}</div>
+          </div>
+          <div className="space-y-1">
+            <div className="text-sm text-muted-foreground">Kernel</div>
+            <div className="font-medium">{systemStats.kernel}</div>
+          </div>
+          <div className="space-y-1">
+            <div className="text-sm text-muted-foreground">Uptime</div>
+            <div className="font-medium">{systemStats.uptime}</div>
+          </div>
+          <div className="space-y-1">
+            <div className="text-sm text-muted-foreground">Location</div>
+            <div className="font-medium">{systemStats.location}</div>
+          </div>
+          <div className="space-y-1">
+            <div className="text-sm text-muted-foreground">Resolution</div>
+            <div className="font-medium">{systemStats.resolution}</div>
+          </div>
+          <div className="space-y-1">
+            <div className="text-sm text-muted-foreground">Browser</div>
+            <div className="font-medium">{systemStats.browser}</div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };

@@ -74,7 +74,7 @@ export function ContactForm() {
             <FormItem>
               <FormLabel>Name</FormLabel>
               <FormControl>
-                <Input placeholder="Your Name" {...field} disabled={isSubmitting} />
+                <Input id="contact-name" placeholder="Your Name" {...field} disabled={isSubmitting} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -87,7 +87,7 @@ export function ContactForm() {
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input type="email" placeholder="your.email@example.com" {...field} disabled={isSubmitting} />
+                <Input id="contact-email" type="email" placeholder="your.email@example.com" {...field} disabled={isSubmitting} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -101,6 +101,7 @@ export function ContactForm() {
               <FormLabel>Message</FormLabel>
               <FormControl>
                 <Textarea
+                  id="contact-message"
                   placeholder="Tell me about your project or just say hi!"
                   className="resize-none"
                   {...field}

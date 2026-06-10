@@ -4,8 +4,8 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
-  title: "PortfolioOS",
-  description: "A portfolio website that looks like an operating system",
+  title: "HegdeOS | Rajath Hegde",
+  description: "A professional portfolio built as a modern desktop operating system.",
 };
 
 export default function RootLayout({

@@ -147,7 +147,7 @@ const Taskbar = () => {
           aria-expanded={showStartMenu}
           aria-controls={showStartMenu ? "start-menu" : undefined}
         >
-          <span className="font-bold text-lg">_portfolio</span>
+          <span className="font-bold text-lg">HegdeOS</span>
         </Button>
 
         {/* Open Windows */}

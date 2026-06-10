@@ -31,11 +31,11 @@ const AboutContent = () => {
 
       <div className="space-y-6">
         <section>
-          <h2 className="text-2xl font-semibold mb-4">Welcome to My Digital Space 👋</h2>
+          <h2 className="text-2xl font-semibold mb-4">Welcome to HegdeOS 👋</h2>
           <p>
             I'm a passionate developer who believes in the power of technology to solve real-world problems. 
-            This portfolio is more than just a showcase—it's a reflection of my journey in tech, designed as 
-            an interactive operating system to demonstrate both my technical skills and creative approach to 
+            HegdeOS is more than just a portfolio—it's a reflection of my journey in tech, designed as 
+             a professional desktop environment to demonstrate both my technical skills and creative approach to 
             problem-solving.
           </p>
         </section>

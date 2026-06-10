@@ -103,7 +103,7 @@ const StartMenu = () => {
       >
         <div className="p-4 border-b">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-bold">PortfolioOS</h2>
+            <h2 className="text-lg font-bold">HegdeOS</h2>
             <div className="flex items-center space-x-2">
               <Button variant="ghost" size="icon" className="h-8 w-8" aria-label="User profile">
                 <User className="h-4 w-4" />
@@ -162,7 +162,7 @@ const StartMenu = () => {
     >
       {/* Header */}
       <div className="p-4 border-b flex items-center justify-between">
-        <h2 className="text-xl font-bold">PortfolioOS</h2>
+        <h2 className="text-xl font-bold">HegdeOS</h2>
         <div className="flex items-center space-x-2">
           <Button variant="ghost" size="icon">
             <User className="h-5 w-5" />

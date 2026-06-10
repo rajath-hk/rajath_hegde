@@ -77,17 +77,17 @@ const Terminal = () => {
     ],
     neofetch: () => [
       '┌────────────────────────────────────────────────────────────┐',
-      '│  ██████╗ ███████╗████████╗██████╗  ██████╗ ████████╗      │',
-      '│  ██╔══██╗██╔════╝╚══██╔══╝██╔══██╗██╔═══██╗╚══██╔══╝      │',
-      '│  ██████╔╝█████╗     ██║   ██████╔╝██║   ██║   ██║         │',
-      '│  ██╔═══╝ ██╔══╝     ██║   ██╔══██╗██║   ██║   ██║         │',
-      '│  ██║     ███████╗   ██║   ██║  ██║╚██████╔╝   ██║         │',
-      '│  ╚═╝     ╚══════╝   ╚═╝   ╚═╝  ╚═╝ ╚═════╝    ╚═╝         │',
+      '│  ██╗  ██╗███████╗ ██████╗ ██████╗ ███████╗ ██████╗ ███████╗ │',
+      '│  ██║  ██║██╔════╝██╔════╝ ██╔══██╗██╔════╝██╔═══██╗██╔════╝ │',
+      '│  ███████║█████╗  ██║  ███╗██║  ██║█████╗  ██║   ██║███████╗ │',
+      '│  ██╔══██║██╔══╝  ██║   ██║██║  ██║██╔══╝  ██║   ██║╚════██║ │',
+      '│  ██║  ██║███████╗╚██████╔╝██████╔╝███████╗╚██████╔╝███████║ │',
+      '│  ╚═╝  ╚═╝╚══════╝ ╚═════╝ ╚═════╝ ╚══════╝ ╚═════╝ ╚══════╝ │',
       '└────────────────────────────────────────────────────────────┘',
       '',
-      `  ${portfolioConfig.personal?.name || 'User'}@PortfolioOS`,
+      `  ${portfolioConfig.personal?.name || 'User'}@HegdeOS`,
       '  -----------------------',
-      '  OS: PortfolioOS 1.0.0',
+      '  OS: HegdeOS 2.0.0',
       '  Shell: Web Terminal',
       '  Theme: Modern Dark',
       `  Location: ${portfolioConfig.personal?.location || 'Unknown'}`,
@@ -120,22 +120,22 @@ const Terminal = () => {
     cat: (file: string) => {
       const fileContents: { [key: string]: string[] } = {
         'README.md': [
-          '# PortfolioOS',
+          '# HegdeOS',
           '',
-          'A modern, interactive portfolio built as a desktop operating system.',
+          'A modern, professional portfolio built as a desktop operating system.',
           '',
           '## Features',
-          '- Desktop environment with windows',
-          '- File explorer',
-          '- Terminal emulator',
-          '- Project showcase',
-          '- Contact form'
+          '- Glassy desktop environment',
+          '- Multi-window management',
+          '- Real-time terminal emulator',
+          '- Responsive mobile experience',
+          '- Personalized app suite'
         ],
         'package.json': [
           '{',
-          '  "name": "portfolio-os",',
-          '  "version": "1.0.0",',
-          '  "description": "Interactive portfolio as desktop OS",',
+          '  "name": "hegde-os",',
+          '  "version": "2.0.0",',
+          '  "description": "Interactive portfolio OS by Rajath Hegde",',
           '  "main": "next.config.js",',
           '  "scripts": {',
           '    "dev": "next dev",',
@@ -152,7 +152,7 @@ const Terminal = () => {
   useEffect(() => {
     // Initial welcome message
     const welcomeMessage = [
-      'Welcome to PortfolioOS Terminal v1.0.0',
+      'Welcome to HegdeOS Terminal v2.0.0',
       'Type "help" for available commands.',
       '',
     ];
